@@ -1,254 +1,302 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
-  <title>🚀 Cosmic Dodger — Nível Progressivo</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Pedido de Namoro 🌹</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      font-family: 'Inter', sans-serif;
-      background: radial-gradient(circle at 30% 30%, #1a2a6c, #000000);
-      color: #e6f0ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      background: linear-gradient(to bottom, #d6f0ff, #fff);
+      text-align: center;
       overflow: hidden;
+      font-family: Arial, sans-serif;
       user-select: none;
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
       touch-action: manipulation;
     }
-    .game-card {
-      width: 90%;
-      max-width: 900px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-      padding: 1rem;
+    .container {
+      padding-top: 20px;
+    }
+    .game-area {
       position: relative;
+      height: 70vh;
+      max-height: 500px;
+      margin: 20px auto;
+      width: 90%;
+      border-radius: 10px;
+      border: 2px solid #ccc;
+      background: #fefefe;
     }
-    canvas {
-      width: 100%;
-      height: 500px;
-      background: radial-gradient(circle at 50% 20%, #0b1729, #000);
-      border-radius: 12px;
-      display: block;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
+    .boy, .girl, .basket {
+      position: absolute;
+      bottom: 10%;
+      text-align: center;
     }
-    .hud {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 0.5rem;
+    .boy { left: 5%; }
+    .girl { right: 5%; transition: all 2s ease; }
+    .basket {
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 8vw;
+    }
+    .character {
+      font-size: 12vw;
+      transition: all 1.5s ease;
+    }
+    .rose {
+      position: absolute;
+      font-size: 8vw;
+      transition: all 1.5s ease-in-out;
+    }
+    .together {
+      bottom: 20% !important;
+      position: absolute !important;
+    }
+    .boy.together { left: 40% !important; }
+    .girl.together { left: 60% !important; right: auto !important; }
+    .hearts {
+      position: absolute;
+      font-size: 6vw;
+      color: red;
+      animation: floatUp 2s linear infinite;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-80px) scale(1.5); opacity: 0; }
+    }
+    .sad {
+      transform: scale(1.1);
+      color: #555;
+    }
+    #restart-btn {
+      display: none;
+      margin-top: 15px;
+      font-size: 4vw;
+      padding: 8px 16px;
+    }
+    #result-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 8vw;
+      font-weight: bold;
+      color: #d63384;
+      display: none;
+      z-index: 100;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    #name-form {
+      margin: 20px auto;
+      width: 80%;
+      max-width: 400px;
     }
     .btn {
-      border-radius: 50px;
+      font-size: 4vw;
+      padding: 8px 16px;
+      margin: 5px;
     }
-    /* Botão Iniciar na parte superior */
-    #startBtn {
-      position: absolute;
+    h1 {
+      font-size: 6vw;
+      margin: 15px 0;
+    }
+    p {
+      font-size: 4vw;
+      margin: 10px 0;
+    }
+    #game-content {
+      margin-bottom: 20px;
+    }
+    /* Botão "Começar Jogo" na parte superior */
+    #start-game-btn {
+      position: fixed;
       top: 10px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 100;
-      margin: 0 !important;
-      padding: 0.5rem 1rem;
-    }
-    /* Botões mobile */
-    .mobile-controls {
-      position: absolute;
-      bottom: 15px;
-      left: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      pointer-events: none;
-      z-index: 10;
-    }
-    .mobile-btn {
-      pointer-events: all;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      font-size: 2rem;
-      border-radius: 50%;
-      width: 70px;
-      height: 70px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-    }
-    .mobile-btn:active {
-      background: rgba(255, 255, 255, 0.3);
-    }
-    @media (min-width: 768px) {
-      .mobile-controls { display: none; }
+      z-index: 1000;
+      font-size: 4vw;
+      padding: 8px 16px;
     }
   </style>
 </head>
 <body oncontextmenu="return false">
-  <div class="game-card text-center">
-    <button id="startBtn" class="btn btn-primary btn-sm">Iniciar</button>
-    <h3 class="mb-3">🚀 Cosmic Dodger — Nível Progressivo</h3>
-    <canvas id="gameCanvas" width="900" height="500" oncontextmenu="return false;"></canvas>
-    <div class="hud">
-      <div>Placar: <span id="score">0</span></div>
-      <div>Recorde: <span id="best">0</span></div>
-      <button id="pauseBtn" class="btn btn-outline-light btn-sm">Pausar</button>
+
+  <button id="start-game-btn" class="btn btn-primary" onclick="startGame()">Começar Jogo</button>
+
+  <div class="container mt-3">
+    <h1>🌹 Pedido de Namoro 🌹</h1>
+    <div id="name-form">
+      <div class="mb-3">
+        <label for="boy-name" class="form-label">Nome do Rapaz:</label>
+        <input type="text" class="form-control" id="boy-name" placeholder="Digite o nome do rapaz">
+      </div>
+      <div class="mb-3">
+        <label for="girl-name" class="form-label">Nome da Moça:</label>
+        <input type="text" class="form-control" id="girl-name" placeholder="Digite o nome da moça">
+      </div>
     </div>
-    <!-- Controles móveis -->
-    <div class="mobile-controls">
-      <button id="leftBtn" class="mobile-btn">⬅️</button>
-      <button id="rightBtn" class="mobile-btn">➡️</button>
+    <div id="game-content" style="display: none;">
+      <p>Lance rosas no cesto.<br>
+        ✅ Se acertar 3 → ela aceita e os dois se aproximam ❤️<br>
+        ❌ Se errar 3 → os dois ficam tristes 😢
+      </p>
+      <button class="btn btn-danger" onclick="throwRose()">🎯 Lançar Rosa (ou use Espaço)</button>
+      <h3 id="score">Acertos: 0 | Erros: 0</h3>
+      <button id="restart-btn" class="btn btn-primary" onclick="restartGame()">🔄 Recomeçar</button>
+    </div>
+    <div class="game-area">
+      <div id="result-message"></div>
+      <div class="boy" id="boy">
+        <div class="character" id="boy-char">👦</div>
+        <div id="boy-name-display">Rapaz</div>
+      </div>
+      <div class="basket" id="basket">🧺</div>
+      <div class="girl" id="girl">
+        <div class="character" id="girl-char">👧</div>
+        <div id="girl-name-display">Mocinha</div>
+      </div>
     </div>
   </div>
+
+  <!-- sons -->
+  <audio id="throw-sound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+  <audio id="success-sound" src="https://www.soundjay.com/human/sounds/applause-01.mp3"></audio>
+  <audio id="love-sound" src="https://www.soundjay.com/human/sounds/kiss-1.mp3"></audio>
+  <audio id="fail-sound" src="https://www.soundjay.com/misc/sounds/fail-buzzer-01.mp3"></audio>
+  <audio id="cheer-sound" src="https://www.soundjay.com/human/sounds/cheering-2.mp3"></audio>
+  <audio id="boo-sound" src="https://www.soundjay.com/human/sounds/boo-1.mp3"></audio>
+
   <script>
-    // Desabilita o menu de contexto no canvas e no body
-    document.body.oncontextmenu = function(e) { e.preventDefault(); };
-    document.getElementById('gameCanvas').oncontextmenu = function(e) { e.preventDefault(); };
+    // Desabilita menu de contexto
+    document.addEventListener('contextmenu', event => event.preventDefault());
 
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    const startBtn = document.getElementById('startBtn');
-    const pauseBtn = document.getElementById('pauseBtn');
-    const leftBtn = document.getElementById('leftBtn');
-    const rightBtn = document.getElementById('rightBtn');
-    const scoreEl = document.getElementById('score');
-    const bestEl = document.getElementById('best');
-    const bgMusic = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_77a7e3e0b8.mp3?filename=space-ambient-110185.mp3');
-    bgMusic.loop = true;
-    bgMusic.volume = 0.2;
-    const hitSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_d2187c81f1.mp3?filename=explosion-6081.mp3');
-    const pointSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_2f63b8f25b.mp3?filename=collect-coin-190960.mp3');
-    const player = { x: 420, y: 440, w: 40, h: 30, color: '#7dd3fc', vx: 0, speed: 6 };
-    let obstacles = [], running = false, paused = false, score = 0, best = localStorage.getItem('bestScore') || 0;
-    bestEl.textContent = best;
+    let score = 0;
+    let errors = 0;
+    let gameOver = false;
+    let boyName = "Rapaz";
+    let girlName = "Mocinha";
 
-    function spawnObstacle() {
-      const size = 20 + Math.random() * 40;
-      const x = Math.random() * (canvas.width - size);
-      const baseSpeed = 2 + Math.random() * 3;
-      obstacles.push({ x, y: -size, w: size, h: size, speed: baseSpeed });
+    function startGame() {
+      boyName = document.getElementById('boy-name').value || "Rapaz";
+      girlName = document.getElementById('girl-name').value || "Mocinha";
+      document.getElementById('boy-name-display').textContent = boyName;
+      document.getElementById('girl-name-display').textContent = girlName;
+      document.getElementById('name-form').style.display = 'none';
+      document.getElementById('game-content').style.display = 'block';
+      document.getElementById('start-game-btn').style.display = 'none';
     }
 
-    function update() {
-      if (!running || paused) return;
-      const difficulty = 1 + score * 0.02;
-      player.x += player.vx * player.speed;
-      if (player.x < 0) player.x = 0;
-      if (player.x + player.w > canvas.width) player.x = canvas.width - player.w;
-      if (Math.random() < 0.02 * difficulty) spawnObstacle();
-      for (let i = obstacles.length - 1; i >= 0; i--) {
-        const o = obstacles[i];
-        o.y += o.speed * difficulty;
-        if (o.y > canvas.height) {
-          obstacles.splice(i, 1);
-          score++;
-          pointSound.currentTime = 0;
-          pointSound.play();
-          scoreEl.textContent = score;
-          if (score > best) {
-            best = score;
-            bestEl.textContent = best;
-            localStorage.setItem('bestScore', best);
-          }
-        }
-        if (rectCollide(player, o)) {
-          running = false;
-          hitSound.play();
-          bgMusic.pause();
-          navigator.vibrate?.(200);
-        }
-      }
-    }
-
-    function rectCollide(a, b) {
-      return !(a.x > b.x + b.w || a.x + a.w < b.x || a.y > b.y + b.h || a.y + a.h < b.y);
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < 80; i++) {
-        ctx.fillStyle = 'rgba(255,255,255,' + Math.random() * 0.6 + ')';
-        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 2, 2);
-      }
-      ctx.fillStyle = 'rgba(125, 211, 252, 0.2)';
-      ctx.beginPath();
-      ctx.moveTo(player.x + player.w / 2, player.y + player.h);
-      ctx.lineTo(player.x + player.w / 2 - 10, player.y + player.h + 20);
-      ctx.lineTo(player.x + player.w / 2 + 10, player.y + player.h + 20);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = player.color;
-      ctx.beginPath();
-      ctx.moveTo(player.x + player.w / 2, player.y);
-      ctx.lineTo(player.x + player.w, player.y + player.h);
-      ctx.lineTo(player.x, player.y + player.h);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = 'orange';
-      for (const o of obstacles) {
-        ctx.beginPath();
-        ctx.arc(o.x + o.w / 2, o.y + o.h / 2, o.w / 2, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    function loop() {
-      if (running) {
-        update();
-        draw();
-        requestAnimationFrame(loop);
+    function throwRose() {
+      if (gameOver) return;
+      const game = document.querySelector('.game-area');
+      const rose = document.createElement('div');
+      rose.className = 'rose';
+      rose.innerHTML = '🌹';
+      rose.style.left = '15vw';
+      rose.style.bottom = '30vh';
+      game.appendChild(rose);
+      document.getElementById('throw-sound').play();
+      const hit = Math.random() > 0.5;
+      let targetX, targetY;
+      if (hit) {
+        targetX = "50%";
+        targetY = "40vh";
       } else {
-        draw();
-        ctx.fillStyle = 'white';
-        ctx.font = '24px Inter';
-        ctx.fillText('💥 Game Over — toque em Iniciar', canvas.width / 2 - 180, canvas.height / 2);
+        targetX = (20 + Math.random() * 70) + "vw";
+        targetY = (10 + Math.random() * 50) + "vh";
+      }
+      setTimeout(() => {
+        rose.style.left = targetX;
+        rose.style.bottom = targetY;
+      }, 100);
+      setTimeout(() => {
+        if (hit) {
+          score++;
+        } else {
+          errors++;
+        }
+        document.getElementById('score').innerText = "Acertos: " + score + " | Erros: " + errors;
+        rose.remove();
+        if (score === 3) {
+          gameOver = true;
+          document.getElementById('success-sound').play();
+          document.getElementById('cheer-sound').play();
+          document.getElementById('basket').style.display = 'none';
+          document.getElementById('boy').classList.add('together');
+          document.getElementById('girl').classList.add('together');
+          spawnHearts();
+          setTimeout(() => document.getElementById('love-sound').play(), 2000);
+          document.getElementById('result-message').innerText = "Namorados!";
+          document.getElementById('result-message').style.display = "block";
+          showRestart();
+        }
+        if (errors === 3) {
+          gameOver = true;
+          document.getElementById('fail-sound').play();
+          document.getElementById('boo-sound').play();
+          document.getElementById('boy-char').innerText = "😢";
+          document.getElementById('girl-char').innerText = "😭";
+          document.getElementById('boy-char').classList.add('sad');
+          document.getElementById('girl-char').classList.add('sad');
+          document.getElementById('result-message').innerText = "Encalhados!";
+          document.getElementById('result-message').style.display = "block";
+          showRestart();
+        }
+      }, 1600);
+    }
+
+    function spawnHearts() {
+      const gameArea = document.querySelector('.game-area');
+      const centerPos = (gameArea.offsetWidth / 2) - (6 * window.innerWidth / 100);
+      for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+          const heart = document.createElement('div');
+          heart.className = 'hearts';
+          heart.innerHTML = '❤️';
+          heart.style.left = centerPos + "px";
+          heart.style.bottom = "30vh";
+          gameArea.appendChild(heart);
+          setTimeout(() => heart.remove(), 2000);
+        }, i * 300);
       }
     }
 
-    window.addEventListener('keydown', e => {
-      if (e.key === 'ArrowLeft') player.vx = -1;
-      if (e.key === 'ArrowRight') player.vx = 1;
-    });
+    function showRestart() {
+      document.getElementById("restart-btn").style.display = "inline-block";
+    }
 
-    window.addEventListener('keyup', e => {
-      if (['ArrowLeft', 'ArrowRight'].includes(e.key)) player.vx = 0;
-    });
+    function restartGame() {
+      score = 0;
+      errors = 0;
+      gameOver = false;
+      document.getElementById('score').innerText = "Acertos: 0 | Erros: 0";
+      document.getElementById('boy-char').innerText = "👦";
+      document.getElementById('girl-char').innerText = "👧";
+      document.getElementById('boy-char').classList.remove('sad');
+      document.getElementById('girl-char').classList.remove('sad');
+      document.getElementById('boy').classList.remove('together');
+      document.getElementById('girl').classList.remove('together');
+      document.getElementById('boy').style.left = "5%";
+      document.getElementById('girl').style.right = "5%";
+      document.getElementById('girl').style.left = "auto";
+      document.getElementById('basket').style.display = 'block';
+      document.querySelectorAll('.hearts').forEach(h => h.remove());
+      document.getElementById('result-message').style.display = "none";
+      document.getElementById("restart-btn").style.display = "none";
+      document.getElementById('start-game-btn').style.display = 'block';
+      document.getElementById('name-form').style.display = 'block';
+      document.getElementById('game-content').style.display = 'none';
+    }
 
-    leftBtn.addEventListener('touchstart', () => player.vx = -1);
-    rightBtn.addEventListener('touchstart', () => player.vx = 1);
-    leftBtn.addEventListener('touchend', () => player.vx = 0);
-    rightBtn.addEventListener('touchend', () => player.vx = 0);
-
-    startBtn.addEventListener('click', () => {
-      if (!running) {
-        score = 0;
-        obstacles = [];
-        player.x = 420;
-        running = true;
-        bgMusic.currentTime = 0;
-        bgMusic.play();
-        loop();
+    document.body.onkeydown = (e) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        throwRose();
       }
-    });
-
-    pauseBtn.addEventListener('click', () => {
-      paused = !paused;
-      if (!paused) loop();
-    });
+    }
   </script>
 </body>
 </html>
