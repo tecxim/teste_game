@@ -78,29 +78,47 @@
       z-index: 100;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     }
+    #name-form {
+      margin: 20px auto;
+      width: 80%;
+      max-width: 400px;
+    }
   </style>
 </head>
 <body>
   <div class="container mt-3">
     <h1 class="mb-3">🌹 Pedido de Namoro 🌹</h1>
-    <p>Lance rosas no cesto.
-      ✅ Se acertar 3 → ela aceita e os dois se aproximam ❤️
-      ❌ Se errar 3 → os dois ficam tristes 😢
-    </p>
-    <button class="btn btn-danger" onclick="throwRose()">🎯 Lançar Rosa (ou use Espaço)</button>
-    <h3 id="score">Acertos: 0 | Erros: 0</h3>
-    <button id="restart-btn" class="btn btn-primary" onclick="restartGame()">🔄 Recomeçar</button>
-  </div>
-  <div class="game-area">
-    <div id="result-message"></div>
-    <div class="boy" id="boy">
-      <div class="character" id="boy-char">👦</div>
-      <div>Rapaz</div>
+    <div id="name-form">
+      <div class="mb-3">
+        <label for="boy-name" class="form-label">Nome do Rapaz:</label>
+        <input type="text" class="form-control" id="boy-name" placeholder="Digite o nome do rapaz">
+      </div>
+      <div class="mb-3">
+        <label for="girl-name" class="form-label">Nome da Moça:</label>
+        <input type="text" class="form-control" id="girl-name" placeholder="Digite o nome da moça">
+      </div>
+      <button class="btn btn-primary" onclick="startGame()">Começar Jogo</button>
     </div>
-    <div class="basket" id="basket">🧺</div>
-    <div class="girl" id="girl">
-      <div class="character" id="girl-char">👧</div>
-      <div>Mocinha</div>
+    <div id="game-content" style="display: none;">
+      <p>Lance rosas no cesto.
+        ✅ Se acertar 3 → ela aceita e os dois se aproximam ❤️
+        ❌ Se errar 3 → os dois ficam tristes 😢
+      </p>
+      <button class="btn btn-danger" onclick="throwRose()">🎯 Lançar Rosa (ou use Espaço)</button>
+      <h3 id="score">Acertos: 0 | Erros: 0</h3>
+      <button id="restart-btn" class="btn btn-primary" onclick="restartGame()">🔄 Recomeçar</button>
+    </div>
+    <div class="game-area">
+      <div id="result-message"></div>
+      <div class="boy" id="boy">
+        <div class="character" id="boy-char">👦</div>
+        <div id="boy-name-display">Rapaz</div>
+      </div>
+      <div class="basket" id="basket">🧺</div>
+      <div class="girl" id="girl">
+        <div class="character" id="girl-char">👧</div>
+        <div id="girl-name-display">Mocinha</div>
+      </div>
     </div>
   </div>
   <!-- sons -->
@@ -114,6 +132,17 @@
     let score = 0;
     let errors = 0;
     let gameOver = false;
+    let boyName = "Rapaz";
+    let girlName = "Mocinha";
+
+    function startGame() {
+      boyName = document.getElementById('boy-name').value || "Rapaz";
+      girlName = document.getElementById('girl-name').value || "Mocinha";
+      document.getElementById('boy-name-display').textContent = boyName;
+      document.getElementById('girl-name-display').textContent = girlName;
+      document.getElementById('name-form').style.display = 'none';
+      document.getElementById('game-content').style.display = 'block';
+    }
 
     function throwRose() {
       if (gameOver) return;
@@ -149,25 +178,25 @@
         if (score === 3) {
           gameOver = true;
           document.getElementById('success-sound').play();
-          document.getElementById('cheer-sound').play(); // Eeeeeeeeeeeeee
+          document.getElementById('cheer-sound').play();
           document.getElementById('basket').style.display = 'none';
           document.getElementById('boy').classList.add('together');
           document.getElementById('girl').classList.add('together');
           spawnHearts();
           setTimeout(() => document.getElementById('love-sound').play(), 2000);
-          document.getElementById('result-message').innerText = "Namorados!";
+          document.getElementById('result-message').innerText = `${boyName} e ${girlName} estão namorando!`;
           document.getElementById('result-message').style.display = "block";
           showRestart();
         }
         if (errors === 3) {
           gameOver = true;
           document.getElementById('fail-sound').play();
-          document.getElementById('boo-sound').play(); // Uuuuuuuuuuuuuu
+          document.getElementById('boo-sound').play();
           document.getElementById('boy-char').innerText = "😢";
           document.getElementById('girl-char').innerText = "😭";
           document.getElementById('boy-char').classList.add('sad');
           document.getElementById('girl-char').classList.add('sad');
-          document.getElementById('result-message').innerText = "Encalhados!";
+          document.getElementById('result-message').innerText = `${boyName} e ${girlName} encalhados!`;
           document.getElementById('result-message').style.display = "block";
           showRestart();
         }
