@@ -39,8 +39,8 @@
 
     .canvas-container {
       width: 100%;
-      aspect-ratio: 1/1; /* Mantém o canvas quadrado */
-      max-height: 80vh;
+      height: 80vh; /* Aumenta a altura do canvas para ocupar mais espaço vertical */
+      max-height: 500px; /* Limita a altura máxima para evitar excesso */
       margin: 0 auto;
       overflow: hidden;
       border-radius: 12px;
@@ -162,12 +162,11 @@
     const hitSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_d2187c81f1.mp3?filename=explosion-6081.mp3');
     const pointSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_2f63b8f25b.mp3?filename=collect-coin-190960.mp3');
 
-    // Ajusta o tamanho do canvas para preencher o container quadrado
+    // Ajusta o tamanho do canvas para preencher o container vertical
     function resizeCanvas() {
       const container = document.querySelector('.canvas-container');
-      const size = Math.min(container.clientWidth, container.clientHeight);
-      canvas.width = size;
-      canvas.height = size;
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
     }
 
     window.addEventListener('resize', resizeCanvas);
