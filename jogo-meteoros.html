@@ -21,6 +21,8 @@
       -moz-user-select: none;
       -ms-user-select: none;
       touch-action: manipulation;
+      margin: 0;
+      padding: 0;
     }
     .game-card {
       width: 90%;
@@ -30,6 +32,7 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
       padding: 1rem;
       position: relative;
+      margin-bottom: 90px; /* Espaço para os botões móveis */
     }
     canvas {
       width: 100%;
@@ -47,19 +50,22 @@
       justify-content: space-between;
       align-items: center;
       margin-top: 0.5rem;
+      position: relative;
+      z-index: 10; /* Garante que fique acima dos botões móveis */
     }
     .btn {
       border-radius: 50px;
     }
     /* Botões mobile */
     .mobile-controls {
-      position: absolute;
+      position: fixed;
       bottom: 15px;
       left: 0;
       width: 100%;
       display: flex;
       justify-content: space-around;
       pointer-events: none;
+      z-index: 5; /* Menor que o z-index do .hud */
     }
     .mobile-btn {
       pointer-events: all;
@@ -99,11 +105,11 @@
         <button id="pauseBtn" class="btn btn-outline-light btn-sm">Pausar</button>
       </div>
     </div>
-    <!-- Controles móveis -->
-    <div class="mobile-controls">
-      <button id="leftBtn" class="mobile-btn">⬅️</button>
-      <button id="rightBtn" class="mobile-btn">➡️</button>
-    </div>
+  </div>
+  <!-- Controles móveis fora do .game-card -->
+  <div class="mobile-controls">
+    <button id="leftBtn" class="mobile-btn">⬅️</button>
+    <button id="rightBtn" class="mobile-btn">➡️</button>
   </div>
   <script>
     const canvas = document.getElementById('gameCanvas');
@@ -123,7 +129,6 @@
     let obstacles = [], running = false, paused = false, score = 0, best = localStorage.getItem('bestScore') || 0;
     bestEl.textContent = best;
 
-    // Desabilita o menu de contexto no canvas
     canvas.addEventListener('contextmenu', e => e.preventDefault());
 
     function spawnObstacle() {
@@ -135,7 +140,7 @@
 
     function update() {
       if (!running || paused) return;
-      const difficulty = 1 + score * 0.02; // aumenta a dificuldade gradualmente
+      const difficulty = 1 + score * 0.02;
       player.x += player.vx * player.speed;
       if (player.x < 0) player.x = 0;
       if (player.x + player.w > canvas.width) player.x = canvas.width - player.w;
@@ -209,7 +214,6 @@
       }
     }
 
-    // Controles teclado
     window.addEventListener('keydown', e => {
       if (e.key === 'ArrowLeft') player.vx = -1;
       if (e.key === 'ArrowRight') player.vx = 1;
@@ -219,7 +223,6 @@
       if (['ArrowLeft', 'ArrowRight'].includes(e.key)) player.vx = 0;
     });
 
-    // Controles toque
     leftBtn.addEventListener('touchstart', () => player.vx = -1);
     rightBtn.addEventListener('touchstart', () => player.vx = 1);
     leftBtn.addEventListener('touchend', () => player.vx = 0);
