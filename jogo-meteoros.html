@@ -16,50 +16,60 @@
       -moz-user-select: none;
       -ms-user-select: none;
       touch-action: manipulation;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
     }
     .container {
-      padding-top: 20px;
+      padding-top: 10vh;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
     }
     .game-area {
       position: relative;
-      height: 70vh;
-      max-height: 500px;
-      margin: 20px auto;
-      width: 90%;
+      width: 90vw;
+      max-width: 400px;
+      height: 90vw;
+      max-height: 400px;
+      margin: 2vh auto;
       border-radius: 10px;
       border: 2px solid #ccc;
       background: #fefefe;
+      aspect-ratio: 1/1;
     }
     .boy, .girl, .basket {
       position: absolute;
       bottom: 10%;
       text-align: center;
+      width: 20vw;
+      max-width: 80px;
     }
     .boy { left: 5%; }
     .girl { right: 5%; transition: all 2s ease; }
     .basket {
       left: 50%;
       transform: translateX(-50%);
-      font-size: 8vw;
+      font-size: 12vw;
     }
     .character {
-      font-size: 12vw;
+      font-size: 15vw;
       transition: all 1.5s ease;
     }
     .rose {
       position: absolute;
-      font-size: 8vw;
+      font-size: 10vw;
       transition: all 1.5s ease-in-out;
     }
     .together {
       bottom: 20% !important;
       position: absolute !important;
     }
-    .boy.together { left: 40% !important; }
+    .boy.together { left: 35% !important; }
     .girl.together { left: 60% !important; right: auto !important; }
     .hearts {
       position: absolute;
-      font-size: 6vw;
+      font-size: 8vw;
       color: red;
       animation: floatUp 2s linear infinite;
     }
@@ -73,16 +83,16 @@
     }
     #restart-btn {
       display: none;
-      margin-top: 15px;
+      margin-top: 2vh;
       font-size: 4vw;
-      padding: 8px 16px;
+      padding: 2vw 4vw;
     }
     #result-message {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 8vw;
+      font-size: 10vw;
       font-weight: bold;
       color: #d63384;
       display: none;
@@ -90,43 +100,40 @@
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     }
     #name-form {
-      margin: 20px auto;
+      margin: 2vh auto;
       width: 80%;
       max-width: 400px;
     }
     .btn {
       font-size: 4vw;
-      padding: 8px 16px;
-      margin: 5px;
+      padding: 2vw 4vw;
+      margin: 1vh 0;
     }
     h1 {
-      font-size: 6vw;
-      margin: 15px 0;
+      font-size: 8vw;
+      margin: 2vh 0;
     }
     p {
       font-size: 4vw;
-      margin: 10px 0;
+      margin: 1vh 0;
     }
     #game-content {
-      margin-bottom: 20px;
+      margin-bottom: 2vh;
     }
-    /* Botão "Começar Jogo" na parte superior */
     #start-game-btn {
       position: fixed;
-      top: 10px;
+      top: 2vh;
       left: 50%;
       transform: translateX(-50%);
       z-index: 1000;
       font-size: 4vw;
-      padding: 8px 16px;
+      padding: 2vw 4vw;
     }
   </style>
 </head>
 <body oncontextmenu="return false">
-
   <button id="start-game-btn" class="btn btn-primary" onclick="startGame()">Começar Jogo</button>
-
-  <div class="container mt-3">
+  <div class="container">
     <h1>🌹 Pedido de Namoro 🌹</h1>
     <div id="name-form">
       <div class="mb-3">
@@ -160,7 +167,6 @@
       </div>
     </div>
   </div>
-
   <!-- sons -->
   <audio id="throw-sound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
   <audio id="success-sound" src="https://www.soundjay.com/human/sounds/applause-01.mp3"></audio>
@@ -168,11 +174,8 @@
   <audio id="fail-sound" src="https://www.soundjay.com/misc/sounds/fail-buzzer-01.mp3"></audio>
   <audio id="cheer-sound" src="https://www.soundjay.com/human/sounds/cheering-2.mp3"></audio>
   <audio id="boo-sound" src="https://www.soundjay.com/human/sounds/boo-1.mp3"></audio>
-
   <script>
-    // Desabilita menu de contexto
     document.addEventListener('contextmenu', event => event.preventDefault());
-
     let score = 0;
     let errors = 0;
     let gameOver = false;
