@@ -31,8 +31,21 @@
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
       padding: 1rem;
-      margin-bottom: 10vh; /* Espaço para os botões móveis */
+      margin-bottom: 10vh;
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .hud {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 10;
+      padding: 0.5rem 0;
     }
     canvas {
       width: 100%;
@@ -46,19 +59,17 @@
       -moz-user-select: none;
       -ms-user-select: none;
     }
-    .hud {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 0.5rem;
-      position: relative;
-      z-index: 10;
-      padding: 0.5rem 0;
-    }
     .btn {
       border-radius: 50px;
       font-size: 3vw;
       padding: 0.3rem 0.8rem;
+      margin: 0 0.3rem;
+    }
+    .controls-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 0.5rem;
     }
     /* Botões mobile */
     .mobile-controls {
@@ -100,25 +111,35 @@
     }
     h3 {
       font-size: 6vw;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
+      text-align: center;
     }
     .hud div {
       font-size: 4vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .score-container {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 0.5rem;
     }
   </style>
 </head>
 <body oncontextmenu="return false">
   <div class="game-card text-center">
     <h3>🚀 Cosmic Dodger</h3>
-    <canvas id="gameCanvas"></canvas>
-    <div class="hud">
+    <div class="score-container">
       <div>Placar: <span id="score">0</span></div>
       <div>Recorde: <span id="best">0</span></div>
-      <div>
-        <button id="startBtn" class="btn btn-primary">Iniciar</button>
-        <button id="pauseBtn" class="btn btn-outline-light">Pausar</button>
-      </div>
     </div>
+    <div class="controls-container">
+      <button id="startBtn" class="btn btn-primary">Iniciar</button>
+      <button id="pauseBtn" class="btn btn-outline-light">Pausar</button>
+    </div>
+    <canvas id="gameCanvas"></canvas>
   </div>
   <div class="mobile-controls">
     <button id="leftBtn" class="mobile-btn">⬅️</button>
@@ -139,7 +160,6 @@
     const hitSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_d2187c81f1.mp3?filename=explosion-6081.mp3');
     const pointSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_2f63b8f25b.mp3?filename=collect-coin-190960.mp3');
 
-    // Ajusta o tamanho do canvas para a largura da tela
     function resizeCanvas() {
       const gameCard = document.querySelector('.game-card');
       const cardWidth = gameCard.offsetWidth;
