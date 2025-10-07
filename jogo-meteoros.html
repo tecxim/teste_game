@@ -27,25 +27,12 @@
     .game-card {
       width: 95%;
       max-width: 900px;
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.05);
       border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
       padding: 1rem;
       margin-bottom: 10vh;
       position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .hud {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      position: relative;
-      z-index: 10;
-      padding: 0.5rem 0;
     }
     canvas {
       width: 100%;
@@ -59,17 +46,29 @@
       -moz-user-select: none;
       -ms-user-select: none;
     }
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.5rem;
+      position: relative;
+      z-index: 10;
+    }
     .btn {
       border-radius: 50px;
       font-size: 3vw;
       padding: 0.3rem 0.8rem;
-      margin: 0 0.3rem;
     }
-    .controls-container {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      margin-top: 0.5rem;
+    /* Botão Iniciar reposicionado */
+    #startBtn {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      margin: 0 !important;
+      padding: 0.5rem 1rem;
+      font-size: 4vw;
     }
     /* Botões mobile */
     .mobile-controls {
@@ -85,8 +84,8 @@
     }
     .mobile-btn {
       pointer-events: all;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       color: white;
       font-size: 5vw;
       border-radius: 50%;
@@ -104,42 +103,28 @@
       -ms-user-select: none;
     }
     .mobile-btn:active {
-      background: rgba(255,255,255,0.3);
+      background: rgba(255, 255, 255, 0.3);
     }
     @media (min-width: 768px) {
       .mobile-controls { display: none; }
     }
     h3 {
       font-size: 6vw;
-      margin-bottom: 0.5rem;
-      text-align: center;
-    }
-    .hud div {
-      font-size: 4vw;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .score-container {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      margin-bottom: 0.5rem;
+      margin-bottom: 1rem;
+      margin-top: 2rem;
     }
   </style>
 </head>
 <body oncontextmenu="return false">
   <div class="game-card text-center">
-    <h3>🚀 Cosmic Dodger</h3>
-    <div class="score-container">
+    <button id="startBtn" class="btn btn-primary">Iniciar</button>
+    <h3>🚀 Cosmic Dodger — Nível Progressivo</h3>
+    <canvas id="gameCanvas"></canvas>
+    <div class="hud">
       <div>Placar: <span id="score">0</span></div>
       <div>Recorde: <span id="best">0</span></div>
-    </div>
-    <div class="controls-container">
-      <button id="startBtn" class="btn btn-primary">Iniciar</button>
       <button id="pauseBtn" class="btn btn-outline-light">Pausar</button>
     </div>
-    <canvas id="gameCanvas"></canvas>
   </div>
   <div class="mobile-controls">
     <button id="leftBtn" class="mobile-btn">⬅️</button>
