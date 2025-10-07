@@ -21,23 +21,19 @@
       -moz-user-select: none;
       -ms-user-select: none;
       touch-action: manipulation;
-      margin: 0;
-      padding: 0;
     }
     .game-card {
-      width: 95%;
+      width: 90%;
       max-width: 900px;
       background: rgba(255, 255, 255, 0.05);
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
       padding: 1rem;
-      margin-bottom: 10vh;
       position: relative;
     }
     canvas {
       width: 100%;
-      height: 60vw;
-      max-height: 500px;
+      height: 500px;
       background: radial-gradient(circle at 50% 20%, #0b1729, #000);
       border-radius: 12px;
       display: block;
@@ -51,48 +47,40 @@
       justify-content: space-between;
       align-items: center;
       margin-top: 0.5rem;
-      position: relative;
-      z-index: 10;
     }
     .btn {
       border-radius: 50px;
-      font-size: 3vw;
-      padding: 0.3rem 0.8rem;
     }
-    /* Botão Iniciar reposicionado */
+    /* Botão Iniciar na parte superior */
     #startBtn {
       position: absolute;
       top: 10px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 20;
+      z-index: 100;
       margin: 0 !important;
       padding: 0.5rem 1rem;
-      font-size: 4vw;
     }
     /* Botões mobile */
     .mobile-controls {
-      position: fixed;
-      bottom: 5vh;
+      position: absolute;
+      bottom: 15px;
       left: 0;
       width: 100%;
       display: flex;
       justify-content: space-around;
       pointer-events: none;
-      z-index: 5;
-      padding: 0 5vw;
+      z-index: 10;
     }
     .mobile-btn {
       pointer-events: all;
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.3);
       color: white;
-      font-size: 5vw;
+      font-size: 2rem;
       border-radius: 50%;
-      width: 15vw;
-      height: 15vw;
-      max-width: 70px;
-      max-height: 70px;
+      width: 70px;
+      height: 70px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -108,29 +96,29 @@
     @media (min-width: 768px) {
       .mobile-controls { display: none; }
     }
-    h3 {
-      font-size: 6vw;
-      margin-bottom: 1rem;
-      margin-top: 2rem;
-    }
   </style>
 </head>
 <body oncontextmenu="return false">
   <div class="game-card text-center">
-    <button id="startBtn" class="btn btn-primary">Iniciar</button>
-    <h3>🚀 Cosmic Dodger — Nível Progressivo</h3>
-    <canvas id="gameCanvas"></canvas>
+    <button id="startBtn" class="btn btn-primary btn-sm">Iniciar</button>
+    <h3 class="mb-3">🚀 Cosmic Dodger — Nível Progressivo</h3>
+    <canvas id="gameCanvas" width="900" height="500" oncontextmenu="return false;"></canvas>
     <div class="hud">
       <div>Placar: <span id="score">0</span></div>
       <div>Recorde: <span id="best">0</span></div>
-      <button id="pauseBtn" class="btn btn-outline-light">Pausar</button>
+      <button id="pauseBtn" class="btn btn-outline-light btn-sm">Pausar</button>
+    </div>
+    <!-- Controles móveis -->
+    <div class="mobile-controls">
+      <button id="leftBtn" class="mobile-btn">⬅️</button>
+      <button id="rightBtn" class="mobile-btn">➡️</button>
     </div>
   </div>
-  <div class="mobile-controls">
-    <button id="leftBtn" class="mobile-btn">⬅️</button>
-    <button id="rightBtn" class="mobile-btn">➡️</button>
-  </div>
   <script>
+    // Desabilita o menu de contexto no canvas e no body
+    document.body.oncontextmenu = function(e) { e.preventDefault(); };
+    document.getElementById('gameCanvas').oncontextmenu = function(e) { e.preventDefault(); };
+
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const startBtn = document.getElementById('startBtn');
@@ -144,21 +132,9 @@
     bgMusic.volume = 0.2;
     const hitSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_d2187c81f1.mp3?filename=explosion-6081.mp3');
     const pointSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_2f63b8f25b.mp3?filename=collect-coin-190960.mp3');
-
-    function resizeCanvas() {
-      const gameCard = document.querySelector('.game-card');
-      const cardWidth = gameCard.offsetWidth;
-      canvas.width = cardWidth;
-      canvas.height = cardWidth * 0.6;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    const player = { x: canvas.width / 2 - 20, y: canvas.height - 50, w: 40, h: 30, color: '#7dd3fc', vx: 0, speed: 6 };
+    const player = { x: 420, y: 440, w: 40, h: 30, color: '#7dd3fc', vx: 0, speed: 6 };
     let obstacles = [], running = false, paused = false, score = 0, best = localStorage.getItem('bestScore') || 0;
     bestEl.textContent = best;
-
-    canvas.addEventListener('contextmenu', e => e.preventDefault());
 
     function spawnObstacle() {
       const size = 20 + Math.random() * 40;
@@ -261,7 +237,7 @@
       if (!running) {
         score = 0;
         obstacles = [];
-        player.x = canvas.width / 2 - 20;
+        player.x = 420;
         running = true;
         bgMusic.currentTime = 0;
         bgMusic.play();
