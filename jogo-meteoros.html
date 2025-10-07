@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
   <title>🚀 Cosmic Dodger — Nível Progressivo</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -25,18 +25,19 @@
       padding: 0;
     }
     .game-card {
-      width: 90%;
+      width: 95%;
       max-width: 900px;
       background: rgba(255,255,255,0.05);
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
       padding: 1rem;
+      margin-bottom: 10vh; /* Espaço para os botões móveis */
       position: relative;
-      margin-bottom: 90px; /* Espaço para os botões móveis */
     }
     canvas {
       width: 100%;
-      height: 500px;
+      height: 60vw;
+      max-height: 500px;
       background: radial-gradient(circle at 50% 20%, #0b1729, #000);
       border-radius: 12px;
       display: block;
@@ -51,31 +52,37 @@
       align-items: center;
       margin-top: 0.5rem;
       position: relative;
-      z-index: 10; /* Garante que fique acima dos botões móveis */
+      z-index: 10;
+      padding: 0.5rem 0;
     }
     .btn {
       border-radius: 50px;
+      font-size: 3vw;
+      padding: 0.3rem 0.8rem;
     }
     /* Botões mobile */
     .mobile-controls {
       position: fixed;
-      bottom: 15px;
+      bottom: 5vh;
       left: 0;
       width: 100%;
       display: flex;
       justify-content: space-around;
       pointer-events: none;
-      z-index: 5; /* Menor que o z-index do .hud */
+      z-index: 5;
+      padding: 0 5vw;
     }
     .mobile-btn {
       pointer-events: all;
       background: rgba(255,255,255,0.1);
       border: 1px solid rgba(255,255,255,0.3);
       color: white;
-      font-size: 2rem;
+      font-size: 5vw;
       border-radius: 50%;
-      width: 70px;
-      height: 70px;
+      width: 15vw;
+      height: 15vw;
+      max-width: 70px;
+      max-height: 70px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -91,22 +98,28 @@
     @media (min-width: 768px) {
       .mobile-controls { display: none; }
     }
+    h3 {
+      font-size: 6vw;
+      margin-bottom: 1rem;
+    }
+    .hud div {
+      font-size: 4vw;
+    }
   </style>
 </head>
 <body oncontextmenu="return false">
   <div class="game-card text-center">
-    <h3 class="mb-3">🚀 Cosmic Dodger — Nível Progressivo</h3>
-    <canvas id="gameCanvas" width="900" height="500" oncontextmenu="return false"></canvas>
+    <h3>🚀 Cosmic Dodger</h3>
+    <canvas id="gameCanvas"></canvas>
     <div class="hud">
       <div>Placar: <span id="score">0</span></div>
       <div>Recorde: <span id="best">0</span></div>
       <div>
-        <button id="startBtn" class="btn btn-primary btn-sm">Iniciar</button>
-        <button id="pauseBtn" class="btn btn-outline-light btn-sm">Pausar</button>
+        <button id="startBtn" class="btn btn-primary">Iniciar</button>
+        <button id="pauseBtn" class="btn btn-outline-light">Pausar</button>
       </div>
     </div>
   </div>
-  <!-- Controles móveis fora do .game-card -->
   <div class="mobile-controls">
     <button id="leftBtn" class="mobile-btn">⬅️</button>
     <button id="rightBtn" class="mobile-btn">➡️</button>
@@ -125,7 +138,18 @@
     bgMusic.volume = 0.2;
     const hitSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_d2187c81f1.mp3?filename=explosion-6081.mp3');
     const pointSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_2f63b8f25b.mp3?filename=collect-coin-190960.mp3');
-    const player = { x: 420, y: 440, w: 40, h: 30, color: '#7dd3fc', vx: 0, speed: 6 };
+
+    // Ajusta o tamanho do canvas para a largura da tela
+    function resizeCanvas() {
+      const gameCard = document.querySelector('.game-card');
+      const cardWidth = gameCard.offsetWidth;
+      canvas.width = cardWidth;
+      canvas.height = cardWidth * 0.6;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const player = { x: canvas.width / 2 - 20, y: canvas.height - 50, w: 40, h: 30, color: '#7dd3fc', vx: 0, speed: 6 };
     let obstacles = [], running = false, paused = false, score = 0, best = localStorage.getItem('bestScore') || 0;
     bestEl.textContent = best;
 
@@ -232,7 +256,7 @@
       if (!running) {
         score = 0;
         obstacles = [];
-        player.x = 420;
+        player.x = canvas.width / 2 - 20;
         running = true;
         bgMusic.currentTime = 0;
         bgMusic.play();
