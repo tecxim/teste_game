@@ -34,7 +34,7 @@
       text-align: center;
       z-index: 100;
     }
-    #start-button, #restart-button {
+    #start-button, #restart-button, #restart-button-win {
       margin-top: 20px;
       padding: 10px 20px;
       font-size: 18px;
@@ -78,7 +78,7 @@
 
   <div id="win-screen">
     <h1>🏆 Você venceu! 🏆</h1>
-    <p id="final-win-score">Pontos: 0</p>
+    <p id="final-win-score">Pontuação: 0</p>
     <button id="restart-button-win">Jogar Novamente</button>
   </div>
 
@@ -268,7 +268,7 @@
 
       // Obstáculos
       let obstacleInterval = Math.max(30, 80 - speed * 1.5); // Garante que o intervalo não seja muito pequeno
-      if (phase === 20) obstacleInterval = 20; // Obstáculos muito mais frequentes na fase 20
+      if (phase === 20) obstacleInterval = 40; // Aumenta o intervalo para 40 na fase 20 (menos frequente)
       if (frame % obstacleInterval === 0) createObstacle();
 
       for (let i = 0; i < obstacles.length; i++) {
