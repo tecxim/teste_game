@@ -22,31 +22,30 @@
       -ms-user-select: none;
       touch-action: manipulation;
       margin: 0;
-      padding: 1rem 0;
+      padding: 0;
       box-sizing: border-box;
     }
-
     .game-card {
-      width: 95%;
-      max-width: 500px;
+      width: 98vw;
+      max-width: 100vh;
+      max-height: 95vw;
       background: rgba(255,255,255,0.05);
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      padding: 1rem;
+      padding: 0.5rem;
       margin: 0 auto;
       position: relative;
+      transform: rotate(0deg);
     }
-
     .canvas-container {
       width: 100%;
-      height: 80vh; /* Aumenta a altura do canvas para ocupar mais espaço vertical */
-      max-height: 500px; /* Limita a altura máxima para evitar excesso */
+      height: 85vh;
       margin: 0 auto;
       overflow: hidden;
       border-radius: 12px;
       background: radial-gradient(circle at 50% 20%, #0b1729, #000);
+      touch-action: none;
     }
-
     canvas {
       width: 100%;
       height: 100%;
@@ -56,49 +55,43 @@
       -moz-user-select: none;
       -ms-user-select: none;
     }
-
     .hud {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 0.5rem;
+      margin-top: 0.3rem;
       position: relative;
       z-index: 10;
-      padding: 0.5rem 0;
+      padding: 0.3rem 0;
     }
-
     .btn {
       border-radius: 50px;
-      font-size: 3vw;
+      font-size: 3.5vw;
       padding: 0.3rem 0.8rem;
       margin: 0 0.2rem;
     }
-
-    /* Botões mobile */
     .mobile-controls {
-    position: fixed;
-    bottom: 2vh; /* Aumentado para 20vh para afastar das setas do botão "Iniciar" */
-    left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    pointer-events: none;
-    z-index: 5;
-    padding: 0 5vw;
-  }
-
-
+      position: fixed;
+      bottom: 1vh;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      pointer-events: none;
+      z-index: 5;
+      padding: 0 5vw;
+    }
     .mobile-btn {
       pointer-events: all;
       background: rgba(255,255,255,0.1);
       border: 1px solid rgba(255,255,255,0.3);
       color: white;
-      font-size: 5vw;
+      font-size: 8vw;
       border-radius: 50%;
-      width: 15vw;
-      height: 15vw;
-      max-width: 70px;
-      max-height: 70px;
+      width: 20vw;
+      height: 20vw;
+      max-width: 80px;
+      max-height: 80px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -108,21 +101,17 @@
       -moz-user-select: none;
       -ms-user-select: none;
     }
-
     .mobile-btn:active {
       background: rgba(255,255,255,0.3);
     }
-
     @media (min-width: 768px) {
       .mobile-controls { display: none; }
     }
-
     h3 {
-      font-size: 6vw;
-      margin-bottom: 1rem;
+      font-size: 7vw;
+      margin-bottom: 0.5rem;
       text-align: center;
     }
-
     .hud div {
       font-size: 4vw;
       text-align: center;
@@ -161,16 +150,21 @@
     bgMusic.loop = true;
     bgMusic.volume = 0.2;
     const hitSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_d2187c81f1.mp3?filename=explosion-6081.mp3');
-    const pointSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_2f63b8f25b.mp3?filename=collect-coin-190960.mp3');
+    const pointSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_2f63b8f25b.mp3?filename=collect-coin-190180.mp3');
 
-    // Ajusta o tamanho do canvas para preencher o container vertical
     function resizeCanvas() {
       const container = document.querySelector('.canvas-container');
       canvas.width = container.clientWidth;
       canvas.height = container.clientHeight;
     }
 
-    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      if (running) {
+        player.x = canvas.width / 2 - 20;
+      }
+    });
+
     resizeCanvas();
 
     const player = { x: canvas.width / 2 - 20, y: canvas.height - 50, w: 40, h: 30, color: '#7dd3fc', vx: 0, speed: 6 };
@@ -257,7 +251,7 @@
       } else {
         draw();
         ctx.fillStyle = 'white';
-        ctx.font = '24px Inter';
+        ctx.font = '6vw Inter';
         ctx.textAlign = 'center';
         ctx.fillText('💥 Game Over — toque em Iniciar', canvas.width / 2, canvas.height / 2);
       }
