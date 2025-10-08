@@ -2,150 +2,163 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pedido de Namoro 🌹</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-  body {
-    background: linear-gradient(to bottom, #d6f0ff, #fff);
-    text-align: center;
-    overflow-x: hidden;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .container {
-    width: 100%;
-    max-width: 600px;
-    padding: 10px;
-  }
-  .game-area {
-    position: relative;
-    height: 70vh;
-    max-height: 500px;
-    width: 100%;
-    margin: 10px auto;
-    border-radius: 10px;
-    border: 2px solid #ccc;
-    background: #fefefe;
-    overflow: hidden;
-  }
-  .boy, .girl, .basket {
-    position: absolute;
-    bottom: 10%;
-    text-align: center;
-    width: 20%;
-  }
-  .boy { left: 5%; }
-  .girl { right: 5%; transition: all 2s ease; }
-  .basket {
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 8vw;
-  }
-  .character {
-    font-size: 12vw;
-    transition: all 1.5s ease;
-  }
-  .rose {
-    position: absolute;
-    font-size: 6vw;
-    transition: all 1.5s ease-in-out;
-  }
-  .together {
-    bottom: 20% !important;
-  }
-  .boy.together { left: 40% !important; }
-  .girl.together { left: 60% !important; right: auto !important; }
-  .hearts {
-    position: absolute;
-    font-size: 6vw;
-    color: red;
-    animation: floatUp 2s linear infinite;
-  }
-  @keyframes floatUp {
-    0% { transform: translateY(0) scale(1); opacity: 1; }
-    100% { transform: translateY(-80px) scale(1.5); opacity: 0; }
-  }
-  .sad {
-    transform: scale(1.1);
-    color: #555;
-  }
-  #restart-btn {
-    display: none;
-    margin-top: 15px;
-  }
-  #result-message {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 8vw;
-    font-weight: bold;
-    color: #d63384;
-    display: none;
-    z-index: 100;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  }
-  #name-form {
-    margin: 10px auto;
-    width: 90%;
-    max-width: 400px;
-  }
-  button {
-    margin: 5px;
-    padding: 8px 16px;
-    font-size: 4vw;
-  }
-  h1 {
-    font-size: 6vw;
-  }
-  h3 {
-    font-size: 4vw;
-  }
-  p {
-    font-size: 3.5vw;
-  }
-</style>
-
+    body {
+      background: linear-gradient(to bottom, #d6f0ff, #fff);
+      text-align: center;
+      overflow-x: hidden;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+    .container {
+      width: 100%;
+      max-width: 100vw;
+      max-height: 100vh;
+      padding: 5px;
+    }
+    .game-area {
+      position: relative;
+      height: 85vh;
+      width: 98vw;
+      margin: 2px auto;
+      border-radius: 10px;
+      border: 2px solid #ccc;
+      background: #fefefe;
+      overflow: hidden;
+      touch-action: none;
+    }
+    .boy, .girl, .basket {
+      position: absolute;
+      bottom: 10%;
+      text-align: center;
+      width: 15%;
+      font-size: 12vw;
+    }
+    .boy { left: 5%; }
+    .girl { right: 5%; transition: all 2s ease; }
+    .basket {
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12vw;
+    }
+    .character {
+      font-size: 12vw;
+      transition: all 1.5s ease;
+    }
+    .rose {
+      position: absolute;
+      font-size: 8vw;
+      transition: all 1.5s ease-in-out;
+      pointer-events: none;
+    }
+    .together {
+      bottom: 20% !important;
+    }
+    .boy.together { left: 40% !important; }
+    .girl.together { left: 60% !important; right: auto !important; }
+    .hearts {
+      position: absolute;
+      font-size: 8vw;
+      color: red;
+      animation: floatUp 2s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-80px) scale(1.5); opacity: 0; }
+    }
+    .sad {
+      transform: scale(1.1);
+      color: #555;
+    }
+    #restart-btn {
+      display: none;
+      margin-top: 5px;
+      font-size: 5vw;
+      padding: 5px 10px;
+    }
+    #result-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 10vw;
+      font-weight: bold;
+      color: #d63384;
+      display: none;
+      z-index: 100;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    #name-form {
+      margin: 5px auto;
+      width: 90%;
+      max-width: 400px;
+    }
+    button {
+      margin: 3px;
+      padding: 6px 12px;
+      font-size: 4vw;
+    }
+    h1 {
+      font-size: 7vw;
+      margin: 5px 0;
+    }
+    h3 {
+      font-size: 5vw;
+      margin: 3px 0;
+    }
+    p {
+      font-size: 4vw;
+      margin: 2px 0;
+    }
+    input.form-control {
+      font-size: 4vw;
+      padding: 5px;
+    }
+  </style>
 </head>
 <body>
-  <div class="container mt-3">
-    <h1 class="mb-3">🌹 Pedido de Namoro 🌹</h1>
+  <div class="container mt-1">
+    <h1 class="mb-2">🌹 Pedido de Namoro 🌹</h1>
     <div id="name-form">
-      <div class="mb-3">
+      <div class="mb-2">
         <label for="boy-name" class="form-label">Nome do Rapaz:</label>
         <input type="text" class="form-control" id="boy-name" placeholder="Digite o nome do rapaz">
       </div>
-      <div class="mb-3">
+      <div class="mb-2">
         <label for="girl-name" class="form-label">Nome da Moça:</label>
         <input type="text" class="form-control" id="girl-name" placeholder="Digite o nome da moça">
       </div>
       <button class="btn btn-primary" onclick="startGame()">Começar Jogo</button>
     </div>
     <div id="game-content" style="display: none;">
-      <p>Lance rosas no cesto.
+      <p>Toque na tela para lançar rosas no cesto.
         ✅ Se acertar 3 → ela aceita e os dois se aproximam ❤️
         ❌ Se errar 3 → os dois ficam tristes 😢
       </p>
-      <button class="btn btn-danger" onclick="throwRose()">🎯 Lançar Rosa (ou use Espaço)</button>
       <h3 id="score">Acertos: 0 | Erros: 0</h3>
       <button id="restart-btn" class="btn btn-primary" onclick="restartGame()">🔄 Recomeçar</button>
     </div>
-    <div class="game-area">
+    <div class="game-area" id="game-area">
       <div id="result-message"></div>
       <div class="boy" id="boy">
         <div class="character" id="boy-char">👦</div>
-        <div id="boy-name-display">Rapaz</div>
+        <div id="boy-name-display" style="font-size: 4vw;">Rapaz</div>
       </div>
       <div class="basket" id="basket">🧺</div>
       <div class="girl" id="girl">
         <div class="character" id="girl-char">👧</div>
-        <div id="girl-name-display">Mocinha</div>
+        <div id="girl-name-display" style="font-size: 4vw;">Mocinha</div>
       </div>
     </div>
   </div>
@@ -170,97 +183,89 @@
       document.getElementById('girl-name-display').textContent = girlName;
       document.getElementById('name-form').style.display = 'none';
       document.getElementById('game-content').style.display = 'block';
+      document.getElementById('game-area').addEventListener('click', throwRose);
+      document.getElementById('game-area').addEventListener('touchstart', throwRose, {passive: true});
     }
 
-    function throwRose() {
-  if (gameOver) return;
+    function throwRose(e) {
+      if (gameOver) return;
+      if (e) e.preventDefault();
+      const game = document.querySelector('.game-area');
+      const rose = document.createElement('div');
+      rose.className = 'rose';
+      rose.innerHTML = '🌹';
+      rose.style.left = '15vw';
+      rose.style.bottom = '30vh';
+      game.appendChild(rose);
+      document.getElementById('throw-sound').play();
 
-  const game = document.querySelector('.game-area');
-  const rose = document.createElement('div');
-  rose.className = 'rose';
-  rose.innerHTML = '🌹';
+      const hit = Math.random() > 0.5;
+      let targetX, targetY;
+      if (hit) {
+        targetX = "50%";
+        targetY = "40vh";
+      } else {
+        targetX = (20 + Math.random() * 70) + "vw";
+        targetY = (10 + Math.random() * 50) + "vh";
+      }
 
-  // Posiciona a rosa relativamente ao tamanho da tela
-  rose.style.left = '15vw';
-  rose.style.bottom = '30vh';
+      setTimeout(() => {
+        rose.style.left = targetX;
+        rose.style.bottom = targetY;
+      }, 100);
 
-  game.appendChild(rose);
-  document.getElementById('throw-sound').play();
+      setTimeout(() => {
+        if (hit) {
+          score++;
+        } else {
+          errors++;
+        }
+        document.getElementById('score').innerText = "Acertos: " + score + " | Erros: " + errors;
+        rose.remove();
 
-  const hit = Math.random() > 0.5;
-  let targetX, targetY;
-
-  if (hit) {
-    targetX = "50%";
-    targetY = "40vh"; // Altura relativa à viewport
-  } else {
-    // Calcula posições aleatórias dentro da área visível
-    targetX = (20 + Math.random() * 70) + "vw";
-    targetY = (10 + Math.random() * 50) + "vh";
-  }
-
-  setTimeout(() => {
-    rose.style.left = targetX;
-    rose.style.bottom = targetY;
-  }, 100);
-
-  setTimeout(() => {
-    if (hit) {
-      score++;
-    } else {
-      errors++;
+        if (score === 3) {
+          gameOver = true;
+          document.getElementById('success-sound').play();
+          document.getElementById('cheer-sound').play();
+          document.getElementById('basket').style.display = 'none';
+          document.getElementById('boy').classList.add('together');
+          document.getElementById('girl').classList.add('together');
+          spawnHearts();
+          setTimeout(() => document.getElementById('love-sound').play(), 2000);
+          document.getElementById('result-message').innerText = "Namorados!";
+          document.getElementById('result-message').style.display = "block";
+          showRestart();
+        }
+        if (errors === 3) {
+          gameOver = true;
+          document.getElementById('fail-sound').play();
+          document.getElementById('boo-sound').play();
+          document.getElementById('boy-char').innerText = "😢";
+          document.getElementById('girl-char').innerText = "😭";
+          document.getElementById('boy-char').classList.add('sad');
+          document.getElementById('girl-char').classList.add('sad');
+          document.getElementById('result-message').innerText = "Encalhados!";
+          document.getElementById('result-message').style.display = "block";
+          showRestart();
+        }
+      }, 1600);
     }
-    document.getElementById('score').innerText = "Acertos: " + score + " | Erros: " + errors;
-    rose.remove();
 
-    if (score === 3) {
-      gameOver = true;
-      document.getElementById('success-sound').play();
-      document.getElementById('cheer-sound').play();
-      document.getElementById('basket').style.display = 'none';
-      document.getElementById('boy').classList.add('together');
-      document.getElementById('girl').classList.add('together');
-      spawnHearts();
-      setTimeout(() => document.getElementById('love-sound').play(), 2000);
-      document.getElementById('result-message').innerText = "Namorados!";
-      document.getElementById('result-message').style.display = "block";
-      showRestart();
+    function spawnHearts() {
+      const gameArea = document.querySelector('.game-area');
+      const centerPos = (gameArea.offsetWidth / 2) - (8 * window.innerWidth / 100);
+      for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+          const heart = document.createElement('div');
+          heart.className = 'hearts';
+          heart.innerHTML = '❤️';
+          heart.style.left = centerPos + "px";
+          heart.style.bottom = "30vh";
+          gameArea.appendChild(heart);
+          setTimeout(() => heart.remove(), 2000);
+        }, i * 300);
+      }
     }
-
-    if (errors === 3) {
-      gameOver = true;
-      document.getElementById('fail-sound').play();
-      document.getElementById('boo-sound').play();
-      document.getElementById('boy-char').innerText = "😢";
-      document.getElementById('girl-char').innerText = "😭";
-      document.getElementById('boy-char').classList.add('sad');
-      document.getElementById('girl-char').classList.add('sad');
-      document.getElementById('result-message').innerText = "Encalhados!";
-      document.getElementById('result-message').style.display = "block";
-      showRestart();
-    }
-  }, 1600);
-}
-
-
-   function spawnHearts() {
-  const gameArea = document.querySelector('.game-area');
-  // Calcula a posição central do gameArea em pixels
-  const centerPos = (gameArea.offsetWidth / 2) - (6 * window.innerWidth / 100);
-
-  for (let i = 0; i < 10; i++) {
-    setTimeout(() => {
-      const heart = document.createElement('div');
-      heart.className = 'hearts';
-      heart.innerHTML = '❤️';
-      heart.style.left = centerPos + "px";
-      heart.style.bottom = "30vh"; // Altura relativa à viewport
-      gameArea.appendChild(heart);
-      setTimeout(() => heart.remove(), 2000);
-    }, i * 300);
-  }
-}
-
 
     function showRestart() {
       document.getElementById("restart-btn").style.display = "inline-block";
@@ -277,20 +282,13 @@
       document.getElementById('girl-char').classList.remove('sad');
       document.getElementById('boy').classList.remove('together');
       document.getElementById('girl').classList.remove('together');
-      document.getElementById('boy').style.left = "20px";
-      document.getElementById('girl').style.right = "0px";
+      document.getElementById('boy').style.left = "5%";
+      document.getElementById('girl').style.right = "5%";
       document.getElementById('girl').style.left = "auto";
       document.getElementById('basket').style.display = 'block';
       document.querySelectorAll('.hearts').forEach(h => h.remove());
       document.getElementById('result-message').style.display = "none";
       document.getElementById("restart-btn").style.display = "none";
-    }
-
-    document.body.onkeydown = (e) => {
-      if (e.code === "Space") {
-        e.preventDefault();
-        throwRose();
-      }
     }
   </script>
 </body>
