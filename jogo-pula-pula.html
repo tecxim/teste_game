@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Dinossauro – Pule os Obstáculos</title>
+  <title>Bailarina – Pule os Obstáculos</title>
   <style>
     body {
       margin: 0;
@@ -15,9 +15,12 @@
     }
     canvas {
       display: block;
+      width: 100%;
+      height: 100vh;
+      max-height: 400px;
     }
     #start-screen {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
@@ -45,7 +48,7 @@
 </head>
 <body>
   <div id="start-screen">
-    <h1>Dinossauro – Pule os Obstáculos</h1>
+    <h1>Bailarina – Pule os Obstáculos</h1>
     <p>Toque na tela ou pressione ESPAÇO para pular.</p>
     <p>Passe por 20 fases e alcance 4000 pontos para vencer!</p>
     <p>A partir da fase 15, o jogo fica muito mais rápido e difícil!</p>
@@ -56,10 +59,18 @@
     // Configuração do Canvas
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = 400;
     const startScreen = document.getElementById("start-screen");
     const startButton = document.getElementById("start-button");
+
+    // Ajusta o tamanho do canvas para ser responsivo
+    function resizeCanvas() {
+      const maxHeight = window.innerHeight > 400 ? 400 : window.innerHeight;
+      canvas.width = window.innerWidth;
+      canvas.height = maxHeight;
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
 
     // Variáveis globais
     let gameOver = false;
@@ -82,15 +93,15 @@
     bgMusic.loop = true;
     bgMusic.volume = 0.3;
 
-    // Dinossauro (emoji virado para a direita)
-    const dino = {
+    // Bailarina (emoji virado para a direita)
+    const dancer = {
       x: 50,
-      y: 300,
+      y: canvas.height - 100, // Ajusta a posição vertical com base na altura do canvas
       width: 50,
       height: 50,
       vy: 0,
       jumping: false,
-      emoji: "🕺🏃‍♀️‍➡️💃" // Emoji já está virado para a direita
+      emoji: "💃"
     };
 
     // Obstáculos
@@ -98,9 +109,9 @@
 
     // Função para pular
     function jump() {
-      if (!dino.jumping && !gameOver && gameStarted) {
-        dino.vy = -15;
-        dino.jumping = true;
+      if (!dancer.jumping && !gameOver && gameStarted) {
+        dancer.vy = -15;
+        dancer.jumping = true;
         jumpSound.currentTime = 0;
         jumpSound.play();
       }
@@ -135,7 +146,7 @@
       const emoji = obstacleEmojis[emojiIndex];
       obstacles.push({
         x: canvas.width,
-        y: 320,
+        y: canvas.height - 100, // Ajusta a posição vertical com base na altura do canvas
         emoji: emoji,
         width: 40,
         height: 40
@@ -145,8 +156,8 @@
     // Cria poeira
     function createDust() {
       dustParticles.push({
-        x: dino.x + 10,
-        y: 350,
+        x: dancer.x + 10,
+        y: canvas.height - 50, // Ajusta a posição vertical com base na altura do canvas
         radius: Math.random() * 4,
         alpha: 1
       });
@@ -187,22 +198,22 @@
 
       // Chão
       ctx.fillStyle = "#006400";
-      ctx.fillRect(0, 350, canvas.width, 50);
+      ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
 
-      // Dinossauro (emoji virado para a direita)
-      dino.vy += gravity;
-      dino.y += dino.vy;
-      if (dino.y > 300) {
-        dino.y = 300;
-        dino.vy = 0;
-        dino.jumping = false;
+      // Bailarina
+      dancer.vy += gravity;
+      dancer.y += dancer.vy;
+      if (dancer.y > canvas.height - 100) {
+        dancer.y = canvas.height - 100;
+        dancer.vy = 0;
+        dancer.jumping = false;
         if (frame % 4 === 0) createDust();
       }
       ctx.font = "40px Arial";
-      ctx.fillText(dino.emoji, dino.x, dino.y + 40);
+      ctx.fillText(dancer.emoji, dancer.x, dancer.y + 40);
 
       // Obstáculos
-      let obstacleInterval = 80 - speed * 1.5;
+      let obstacleInterval = Math.max(30, 80 - speed * 1.5); // Garante que o intervalo não seja muito pequeno
       if (phase === 20) obstacleInterval = 20; // Obstáculos muito mais frequentes na fase 20
       if (frame % obstacleInterval === 0) createObstacle();
 
@@ -214,10 +225,10 @@
 
         // Colisão
         if (
-          dino.x < obs.x + obs.width &&
-          dino.x + dino.width > obs.x &&
-          dino.y < obs.y + obs.height &&
-          dino.y + dino.height > obs.y
+          dancer.x < obs.x + obs.width &&
+          dancer.x + dancer.width > obs.x &&
+          dancer.y < obs.y + obs.height &&
+          dancer.y + dancer.height > obs.y
         ) {
           hitSound.currentTime = 0;
           hitSound.play();
@@ -226,10 +237,10 @@
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.fillStyle = "#fff";
           ctx.font = "48px Arial";
-          ctx.fillText("💥 Fim de jogo!", canvas.width / 2 - 150, 180);
+          ctx.fillText("💥 Fim de jogo!", canvas.width / 2 - 150, canvas.height / 2 - 40);
           ctx.font = "24px Arial";
-          ctx.fillText(`Pontos: ${Math.floor(score)}`, canvas.width / 2 - 50, 220);
-          ctx.fillText("Pressione F5 para jogar novamente", canvas.width / 2 - 180, 260);
+          ctx.fillText(`Pontos: ${Math.floor(score)}`, canvas.width / 2 - 50, canvas.height / 2);
+          ctx.fillText("Pressione F5 para jogar novamente", canvas.width / 2 - 180, canvas.height / 2 + 40);
           gameOver = true;
           return;
         }
@@ -244,8 +255,8 @@
       score += 0.5;
       ctx.fillStyle = "#fff";
       ctx.font = "24px Arial";
-      ctx.fillText(`Pontos: ${Math.floor(score)}`, 20, 40);
-      ctx.fillText(`Fase: ${phase}/20`, 20, 70);
+      ctx.fillText(`Pontos: ${Math.floor(score)}`, 20, 30);
+      ctx.fillText(`Fase: ${phase}/20`, 20, 60);
 
       // Vitória
       if (score >= 4000 && !gameOver) {
@@ -253,10 +264,10 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#FFD700";
         ctx.font = "48px Arial";
-        ctx.fillText("🏆 Você venceu! 🏆", canvas.width / 2 - 200, 180);
+        ctx.fillText("🏆 Você venceu! 🏆", canvas.width / 2 - 200, canvas.height / 2 - 40);
         ctx.font = "24px Arial";
-        ctx.fillText(`Parabéns! Pontuação: ${Math.floor(score)}`, canvas.width / 2 - 150, 220);
-        ctx.fillText("Pressione F5 para jogar novamente", canvas.width / 2 - 180, 260);
+        ctx.fillText(`Parabéns! Pontuação: ${Math.floor(score)}`, canvas.width / 2 - 150, canvas.height / 2);
+        ctx.fillText("Pressione F5 para jogar novamente", canvas.width / 2 - 180, canvas.height / 2 + 40);
         gameOver = true;
         bgMusic.pause();
       }
