@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
   <title>🚀 Cosmic Dodger — Nível Progressivo</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.32/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
   <style>
     body {
@@ -24,6 +24,7 @@
       margin: 0;
       padding: 0;
     }
+
     .game-card {
       width: 95%;
       max-width: 900px;
@@ -31,16 +32,18 @@
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
       padding: 1rem;
-      margin-bottom: 15vh;
+      margin-bottom: 10vh;
       position: relative;
-      height: 80vh;
+      height: 85vh;
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
     }
+
     canvas {
       width: 100%;
-      height: 100%;
-      max-height: 80vh;
+      height: 70%;
+      max-height: 70vh;
       background: radial-gradient(circle at 50% 20%, #0b1729, #000);
       border-radius: 12px;
       display: block;
@@ -48,7 +51,9 @@
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
+      margin-bottom: 1rem;
     }
+
     .hud {
       display: flex;
       justify-content: space-between;
@@ -57,12 +62,16 @@
       position: relative;
       z-index: 10;
       padding: 0.5rem 0;
+      margin-bottom: 1rem;
     }
+
     .btn {
       border-radius: 50px;
       font-size: 3vw;
       padding: 0.3rem 0.8rem;
+      margin: 0 0.3rem;
     }
+
     .mobile-controls {
       position: fixed;
       bottom: 2vh;
@@ -72,9 +81,10 @@
       justify-content: space-around;
       pointer-events: none;
       z-index: 10;
-      padding: 0 5vw;
+      padding: 0 10vw;
       height: 12vh;
     }
+
     .mobile-btn {
       pointer-events: all;
       background: rgba(255, 255, 255, 0.1);
@@ -95,16 +105,20 @@
       -moz-user-select: none;
       -ms-user-select: none;
     }
+
     .mobile-btn:active {
       background: rgba(255, 255, 255, 0.3);
     }
-    @media (min-width: 768px) {
+
+    @media (min-width: 768px) and (orientation: portrait) {
       .mobile-controls { display: none; }
     }
+
     h3 {
       font-size: 6vw;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
     }
+
     .hud div {
       font-size: 4vw;
     }
@@ -113,9 +127,7 @@
 <body oncontextmenu="return false">
   <div class="game-card text-center">
     <h3>🚀 Cosmic Dodger</h3>
-    <div class="canvas-container">
-      <canvas id="gameCanvas"></canvas>
-    </div>
+    <canvas id="gameCanvas"></canvas>
     <div class="hud">
       <div>Placar: <span id="score">0</span></div>
       <div>Recorde: <span id="best">0</span></div>
@@ -144,7 +156,6 @@
     const hitSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_d2187c81f1.mp3?filename=explosion-6081.mp3');
     const pointSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_2f63b8f25b.mp3?filename=collect-coin-190180.mp3');
 
-    // Variáveis globais
     const player = { x: 0, y: 0, w: 40, h: 30, color: '#7dd3fc', vx: 0, speed: 6 };
     let obstacles = [];
     let running = false;
@@ -156,7 +167,7 @@
     function resizeCanvas() {
       const gameCard = document.querySelector('.game-card');
       const cardWidth = gameCard.offsetWidth;
-      const cardHeight = gameCard.offsetHeight - document.querySelector('.hud').offsetHeight - 20;
+      const cardHeight = 0.7 * gameCard.offsetHeight;
       canvas.width = cardWidth;
       canvas.height = cardHeight;
       player.x = canvas.width / 2 - 20;
