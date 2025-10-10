@@ -32,19 +32,19 @@
     border-radius: 16px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     padding: 1rem;
-    margin-bottom: 15vh; /* Espaço extra para os botões móveis */
+    margin-bottom: 15vh; /* Espaço para os botões móveis */
     position: relative;
     height: 85vh;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
   }
 
   canvas {
     width: 100%;
-    height: 68%;
-    max-height: 68vh;
+    height: 60%;
+    max-height: 60vh;
     background: radial-gradient(circle at 50% 20%, #0b1729, #000);
     border-radius: 12px;
     display: block;
@@ -52,8 +52,8 @@
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin-top: 2rem;
+    margin-bottom: 3rem; /* Espaço extra para afastar do HUD */
   }
 
   .hud {
@@ -64,8 +64,7 @@
     position: relative;
     z-index: 10;
     padding: 0.5rem 0;
-    margin-top: 0.5rem;
-    margin-bottom: 1rem; /* Espaço entre canvas e HUD */
+    margin-bottom: 2rem; /* Afasta do rodapé */
   }
 
   .btn {
@@ -84,7 +83,7 @@
     justify-content: space-around;
     pointer-events: none;
     z-index: 10;
-    padding: 0 10vw;
+    padding: 0 15vw;
     height: 12vh;
   }
 
@@ -119,14 +118,13 @@
 
   h3 {
     font-size: 6vw;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
   }
 
   .hud div {
     font-size: 4vw;
   }
 </style>
-
 
 </head>
 <body oncontextmenu="return false">
