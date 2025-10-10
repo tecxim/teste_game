@@ -32,12 +32,10 @@
     border-radius: 16px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     padding: 1rem;
-    margin-bottom: 15vh; /* Espaço para os botões de seta */
     position: relative;
     height: 90vh;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
   }
 
   canvas {
@@ -51,17 +49,26 @@
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    margin: 0 auto 2rem; /* Margem inferior para afastar do HUD */
+    margin: 0 auto;
   }
 
-  .hud {
+  .game-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-top: auto; /* Empurra o HUD para cima */
-    margin-bottom: 1rem; /* Espaço extra para não encostar nos botões de seta */
     padding: 0.5rem 0;
+    margin-bottom: 1rem;
+  }
+
+  .game-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 0.5rem 0;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 
   .btn {
