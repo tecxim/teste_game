@@ -10,7 +10,7 @@
             background-color: #f0f0f0;
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             overflow: hidden;
             user-select: none;
         }
@@ -25,7 +25,7 @@
         }
         #game-canvas {
             width: 100%;
-            height: 500px;
+            height: 400px;
             background: linear-gradient(to bottom, #555, #333);
             position: relative;
             touch-action: none;
@@ -46,14 +46,29 @@
             position: absolute;
             font-size: 40px;
             bottom: 20px;
-            transition: left 0.1s;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            transition: none;
         }
         #player {
             color: gold;
+            left: 70%;
+        }
+        #opponent1 {
+            color: white;
+            left: 10%;
+        }
+        #opponent2 {
+            color: white;
+            left: 30%;
+        }
+        #opponent3 {
+            color: white;
+            left: 50%;
         }
         #score-display, #record-display {
-            font-size: 20px;
+            font-size: 18px;
             color: white;
             position: absolute;
             top: 10px;
@@ -66,6 +81,17 @@
         }
         #record-display {
             right: 10px;
+        }
+        #position-display {
+            font-size: 20px;
+            color: white;
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
         }
         #game-over {
             position: absolute;
@@ -85,19 +111,8 @@
         .controls-info {
             text-align: center;
             margin: 10px 0;
-            color: white;
+            color: #333;
             font-size: 18px;
-        }
-        #position-display {
-            font-size: 24px;
-            color: white;
-            position: absolute;
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 5px 10px;
-            border-radius: 5px;
         }
     </style>
 </head>
@@ -142,80 +157,90 @@
         const finalPositionDisplay = document.getElementById('final-position');
         const restartBtn = document.getElementById('restart-btn');
 
+        let playerPosition = 0;
+        let opponentPositions = [0, 0, 0];
         let playerSpeed = 0;
-        let opponentSpeeds = [2, 1, 3]; // Velocidades iniciais dos oponentes
-        let positions = [0, 0, 0, 0]; // Posições dos corredores (player é o último)
+        let opponentSpeeds = [1, 0.5, 1.5];
         let phase = 1;
-        let record = localStorage.getItem('emojiRaceRecord') || 0;
+        let record = parseInt(localStorage.getItem('emojiRaceRecord')) || 0;
         let gameActive = false;
-        let gameLoopInterval;
+        let animationId;
 
         // Atualiza o recorde na tela
         recordDisplay.textContent = `Recorde: ${record}`;
 
         // Função para iniciar o jogo
         function startGame() {
+            playerPosition = 0;
+            opponentPositions = [0, 0, 0];
             playerSpeed = 0;
-            opponentSpeeds = [2 + (phase * 0.5), 1 + (phase * 0.3), 3 + (phase * 0.4)];
-            positions = [0, 0, 0, 0];
+            opponentSpeeds = [1 + (phase * 0.2), 0.5 + (phase * 0.1), 1.5 + (phase * 0.3)];
             gameActive = true;
             gameOverDisplay.style.display = 'none';
 
-            // Posiciona os corredores
-            player.style.left = '70%';
-            opponents[0].style.left = '10%';
-            opponents[1].style.left = '30%';
-            opponents[2].style.left = '50%';
-
-            // Reinicia o loop do jogo
-            clearInterval(gameLoopInterval);
-            gameLoopInterval = setInterval(gameLoop, 50);
+            // Reinicia a animação
+            cancelAnimationFrame(animationId);
+            updateGame();
         }
 
-        // Função principal do jogo
-        function gameLoop() {
+        // Função principal de atualização do jogo
+        function updateGame() {
             if (!gameActive) return;
 
             // Move o jogador
-            positions[3] += playerSpeed;
+            playerPosition += playerSpeed;
             // Move os oponentes
             for (let i = 0; i < 3; i++) {
-                positions[i] += opponentSpeeds[i] + (Math.random() * 0.5);
+                opponentPositions[i] += opponentSpeeds[i];
             }
 
-            // Atualiza a posição na tela (simulado pela distância percorrida)
-            updatePositions();
+            // Atualiza a posição visual dos corredores
+            updateRunnerPositions();
 
             // Verifica se alguém chegou ao final (1000 unidades de distância)
-            if (positions[3] >= 1000) {
-                // Jogador venceu
-                gameOver(1);
-            } else if (positions.some(pos => pos >= 1000)) {
-                // Oponente venceu
-                const winnerIndex = positions.findIndex(pos => pos >= 1000);
-                gameOver(winnerIndex + 1);
+            if (playerPosition >= 1000) {
+                gameOver(1); // Jogador venceu
+            } else if (opponentPositions.some(pos => pos >= 1000)) {
+                const winnerIndex = opponentPositions.findIndex(pos => pos >= 1000) + 1;
+                gameOver(winnerIndex); // Oponente venceu
+            } else {
+                animationId = requestAnimationFrame(updateGame);
             }
         }
 
-        // Atualiza a posição dos corredores na tela
-        function updatePositions() {
-            // Ordena as posições para determinar a classificação
-            const sortedPositions = [...positions];
-            const currentPosition = sortedPositions
-                .map((pos, index) => ({ pos, index }))
-                .sort((a, b) => b.pos - a.pos)
-                .findIndex(item => item.index === 3) + 1;
+        // Atualiza a posição visual dos corredores
+        function updateRunnerPositions() {
+            // Calcula a posição vertical baseada na distância percorrida
+            const playerBottom = 20 + (playerPosition / 20);
+            const opponent1Bottom = 20 + (opponentPositions[0] / 20);
+            const opponent2Bottom = 20 + (opponentPositions[1] / 20);
+            const opponent3Bottom = 20 + (opponentPositions[2] / 20);
 
-            positionDisplay.textContent = `Posição: ${currentPosition}º`;
+            player.style.bottom = `${playerBottom}px`;
+            opponents[0].style.bottom = `${opponent1Bottom}px`;
+            opponents[1].style.bottom = `${opponent2Bottom}px`;
+            opponents[2].style.bottom = `${opponent3Bottom}px`;
+
+            // Ordena as posições para determinar a classificação
+            const allPositions = [
+                { pos: opponentPositions[0], isPlayer: false },
+                { pos: opponentPositions[1], isPlayer: false },
+                { pos: opponentPositions[2], isPlayer: false },
+                { pos: playerPosition, isPlayer: true }
+            ];
+
+            allPositions.sort((a, b) => b.pos - a.pos);
+            const playerRank = allPositions.findIndex(p => p.isPlayer) + 1;
+            positionDisplay.textContent = `Posição: ${playerRank}º`;
         }
 
         // Função para game over
         function gameOver(winnerIndex) {
             gameActive = false;
-            clearInterval(gameLoopInterval);
+            cancelAnimationFrame(animationId);
 
-            // Atualiza o recorde se o jogador venceu
             if (winnerIndex === 1) {
+                // Jogador venceu
                 if (phase > record) {
                     record = phase;
                     localStorage.setItem('emojiRaceRecord', record);
@@ -232,10 +257,13 @@
         // Controle de toque para acelerar
         gameCanvas.addEventListener('touchstart', function(e) {
             if (!gameActive) return;
-            playerSpeed = 3 + (phase * 0.5); // Acelera com base na fase
+            e.preventDefault();
+            playerSpeed = 2 + (phase * 0.3);
         });
 
         gameCanvas.addEventListener('touchend', function(e) {
+            if (!gameActive) return;
+            e.preventDefault();
             playerSpeed = 0;
         });
 
