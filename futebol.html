@@ -179,28 +179,29 @@
             setTimeout(moveGoalie, 1000 + Math.random() * 1000); // Move a cada 1-2 segundos
         }
 
-        // Função para chutar a bola
-        function shoot(direction) {
+        // Função para chutar a bola com trajetória aleatória
+        function shoot(touchY) {
             if (!gameActive || shots >= maxShots) return;
             shots++;
-            const ballLeft = parseFloat(ball.style.left);
-            const ballBottom = parseFloat(ball.style.bottom);
-            const goalLeft = 70; // Posição horizontal do gol (em %)
-            const goalTop = 30; // Posição vertical do topo do gol (em %)
-            const goalHeight = 40; // Altura do gol (em %)
+            const canvasRect = gameCanvas.getBoundingClientRect();
+            const touchRelativeY = touchY - canvasRect.top;
+            const canvasHeight = canvasRect.height;
 
-            // Define a direção do chute com base no toque
+            // Define a altura do chute com base no toque (baixo, meio, alto)
             let targetBottom;
-            if (direction === 'top') {
-                targetBottom = 60; // Chute alto
-            } else if (direction === 'middle') {
-                targetBottom = goalTop + (goalHeight / 2); // Chute no meio
+            if (touchRelativeY < canvasHeight / 3) {
+                targetBottom = 35; // Chute baixo
+            } else if (touchRelativeY < 2 * canvasHeight / 3) {
+                targetBottom = 50; // Chute no meio
             } else {
-                targetBottom = goalTop + 10; // Chute baixo
+                targetBottom = 65; // Chute alto
             }
 
+            // Adiciona um desvio horizontal aleatório (entre 65% e 75% da largura)
+            const targetLeft = 65 + Math.random() * 10;
+
             // Anima o chute
-            ball.style.left = `${goalLeft}%`;
+            ball.style.left = `${targetLeft}%`;
             ball.style.bottom = `${targetBottom}%`;
 
             // Verifica se o gol foi marcado (se a bola passou pelo goleiro)
@@ -235,18 +236,7 @@
             if (!gameActive) return;
             e.preventDefault();
             const touchY = e.touches[0].clientY;
-            const canvasRect = gameCanvas.getBoundingClientRect();
-            const touchRelativeY = touchY - canvasRect.top;
-            const canvasHeight = canvasRect.height;
-
-            // Divide a tela em 3 áreas: baixo, meio, alto
-            if (touchRelativeY < canvasHeight / 3) {
-                shoot('bottom');
-            } else if (touchRelativeY < 2 * canvasHeight / 3) {
-                shoot('middle');
-            } else {
-                shoot('top');
-            }
+            shoot(touchY);
         });
 
         // Botão de reiniciar
