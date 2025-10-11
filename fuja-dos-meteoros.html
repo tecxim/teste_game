@@ -16,6 +16,9 @@
       --card-bg: rgba(255, 255, 255, 0.05);
       --btn-bg: rgba(255, 255, 255, 0.1);
       --btn-border: rgba(255, 255, 255, 0.3);
+      --silver: #c0c0c0;
+      --gold: #ffd700;
+      --brilliant: #f0f8ff;
     }
     * {
       box-sizing: border-box;
@@ -319,7 +322,6 @@
   <div class="game-container">
     <div class="game-card">
       <h1 class="game-title">🚀 Desviador Cósmico</h1>
-
       <div class="game-header">
         <div class="score-display">
           <div>Placar: <span id="score">0</span></div>
@@ -330,7 +332,6 @@
           <div>Velocidade: <span id="speed">1x</span></div>
         </div>
       </div>
-
       <div class="game-area">
         <canvas id="gameCanvas"></canvas>
         <div id="gameOverScreen" class="game-over" style="display: none;">
@@ -339,13 +340,11 @@
           <button id="restartBtn" class="btn btn-primary">Jogar Novamente</button>
         </div>
       </div>
-
       <div class="game-controls">
         <button id="startBtn" class="btn btn-primary">Iniciar</button>
         <button id="pauseBtn" class="btn btn-outline-light">Pausar</button>
       </div>
     </div>
-
     <div class="mobile-controls">
       <button id="leftBtn" class="mobile-btn">←</button>
       <button id="rightBtn" class="mobile-btn">→</button>
@@ -434,12 +433,18 @@
 
     resizeCanvas();
 
+    function getObstacleColor(score) {
+      if (score >= 100) return '--brilliant';
+      if (score >= 50) return '--gold';
+      if (score >= 20) return '--silver';
+      return ['#ff6b35', '#ffa500', '#ff4757', '#ff6348'][Math.floor(Math.random() * 4)];
+    }
+
     function spawnObstacle() {
       const size = 20 + Math.random() * 40;
       const x = Math.random() * (canvas.width - size);
       const baseSpeed = 2 + Math.random() * 3;
-      const colors = ['#ff6b35', '#ffa500', '#ff4757', '#ff6348'];
-      const color = colors[Math.floor(Math.random() * colors.length)];
+      const color = getObstacleColor(score);
 
       obstacles.push({
         x,
@@ -541,7 +546,9 @@
       ctx.fill();
 
       for (const o of obstacles) {
-        ctx.fillStyle = o.color;
+        ctx.fillStyle = typeof o.color === 'string' && o.color.startsWith('--')
+          ? getComputedStyle(document.documentElement).getPropertyValue(o.color)
+          : o.color;
         ctx.beginPath();
         ctx.arc(o.x + o.w / 2, o.y + o.h / 2, o.w / 2, 0, Math.PI * 2);
         ctx.fill();
