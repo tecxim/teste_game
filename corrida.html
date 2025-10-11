@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Corrida de Emojis</title>
+    <title>Jogo de Pênaltis</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -19,56 +19,56 @@
             max-width: 500px;
             margin: 0 auto;
             position: relative;
-            background-color: #333;
+            background-color: #4CAF50;
             border-radius: 10px;
             overflow: hidden;
         }
         #game-canvas {
             width: 100%;
             height: 400px;
-            background: linear-gradient(to bottom, #555, #333);
+            background-color: #4CAF50;
             position: relative;
             touch-action: none;
         }
-        #track {
+        #field {
             position: absolute;
             width: 100%;
             height: 100%;
-            background: repeating-linear-gradient(
-                to bottom,
-                transparent,
-                transparent 45px,
-                rgba(255, 255, 255, 0.1) 45px,
-                rgba(255, 255, 255, 0.1) 50px
-            );
+            background-color: #4CAF50;
+            border: 3px solid white;
+            border-radius: 5px;
         }
-        .runner {
+        #goal {
             position: absolute;
-            font-size: 40px;
-            bottom: 20px;
-            width: 40px;
-            height: 40px;
-            text-align: center;
-            transition: none;
+            width: 30%;
+            height: 40%;
+            top: 30%;
+            right: 0;
+            background-color: white;
+            border: 3px solid black;
+        }
+        #ball {
+            position: absolute;
+            font-size: 30px;
+            bottom: 20%;
+            left: 20%;
+            transition: all 0.5s ease;
         }
         #player {
-            color: gold;
-            left: 70%;
+            position: absolute;
+            font-size: 40px;
+            bottom: 20%;
+            left: 15%;
         }
-        #opponent1 {
-            color: white;
-            left: 10%;
-        }
-        #opponent2 {
-            color: white;
-            left: 30%;
-        }
-        #opponent3 {
-            color: white;
-            left: 50%;
+        #goalie {
+            position: absolute;
+            font-size: 40px;
+            bottom: 40%;
+            right: 10%;
+            transition: all 0.3s ease;
         }
         #score-display, #record-display {
-            font-size: 18px;
+            font-size: 20px;
             color: white;
             position: absolute;
             top: 10px;
@@ -81,17 +81,6 @@
         }
         #record-display {
             right: 10px;
-        }
-        #position-display {
-            font-size: 20px;
-            color: white;
-            position: absolute;
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 5px 10px;
-            border-radius: 5px;
         }
         #game-over {
             position: absolute;
@@ -118,24 +107,23 @@
 </head>
 <body>
     <div class="container py-3">
-        <h1 class="text-center mb-4">Corrida de Emojis 🏁</h1>
+        <h1 class="text-center mb-4">Jogo de Pênaltis ⚽</h1>
         <div class="controls-info">
-            Toque na tela para <strong>acelerar</strong> e ultrapassar!
+            Toque na tela para <strong>chutar</strong> a bola!
         </div>
         <div id="game-container" class="mx-auto">
             <div id="game-canvas">
-                <div id="track"></div>
-                <div id="player" class="runner">🏃‍♂️</div>
-                <div id="opponent1" class="runner">🏃‍♀️</div>
-                <div id="opponent2" class="runner">🐢</div>
-                <div id="opponent3" class="runner">🐇</div>
-                <div id="score-display">Fase: 1</div>
+                <div id="field"></div>
+                <div id="goal"></div>
+                <div id="ball">⚽</div>
+                <div id="player">👦</div>
+                <div id="goalie">🧤</div>
+                <div id="score-display">Gols: 0</div>
                 <div id="record-display">Recorde: 0</div>
-                <div id="position-display">Posição: 4º</div>
                 <div id="game-over">
-                    <h2>Fim de Fase!</h2>
-                    <p id="final-score">Você terminou em <span id="final-position">4º</span> lugar!</p>
-                    <button id="restart-btn" class="btn btn-primary">Próxima Fase</button>
+                    <h2>Fim de Rodada!</h2>
+                    <p id="final-score">Você marcou <span id="final-goals">0</span> gols!</p>
+                    <button id="restart-btn" class="btn btn-primary">Jogar Novamente</button>
                 </div>
             </div>
         </div>
@@ -143,136 +131,126 @@
 
     <script>
         // Variáveis do jogo
-        const player = document.getElementById('player');
-        const opponents = [
-            document.getElementById('opponent1'),
-            document.getElementById('opponent2'),
-            document.getElementById('opponent3')
-        ];
-        const gameCanvas = document.getElementById('game-canvas');
+        const ball = document.getElementById('ball');
+        const goalie = document.getElementById('goalie');
         const scoreDisplay = document.getElementById('score-display');
         const recordDisplay = document.getElementById('record-display');
-        const positionDisplay = document.getElementById('position-display');
         const gameOverDisplay = document.getElementById('game-over');
-        const finalPositionDisplay = document.getElementById('final-position');
+        const finalGoalsDisplay = document.getElementById('final-goals');
         const restartBtn = document.getElementById('restart-btn');
+        const gameCanvas = document.getElementById('game-canvas');
 
-        let playerPosition = 0;
-        let opponentPositions = [0, 0, 0];
-        let playerSpeed = 0;
-        let opponentSpeeds = [1, 0.5, 1.5];
-        let phase = 1;
-        let record = parseInt(localStorage.getItem('emojiRaceRecord')) || 0;
+        let goals = 0;
+        let record = parseInt(localStorage.getItem('penaltyRecord')) || 0;
         let gameActive = false;
-        let animationId;
+        let goaliePosition = 40; // Posição vertical inicial do goleiro (em %)
+        let shots = 0;
+        const maxShots = 5; // Número de chutes por rodada
 
         // Atualiza o recorde na tela
         recordDisplay.textContent = `Recorde: ${record}`;
 
         // Função para iniciar o jogo
         function startGame() {
-            playerPosition = 0;
-            opponentPositions = [0, 0, 0];
-            playerSpeed = 0;
-            opponentSpeeds = [1 + (phase * 0.2), 0.5 + (phase * 0.1), 1.5 + (phase * 0.3)];
+            goals = 0;
+            shots = 0;
             gameActive = true;
             gameOverDisplay.style.display = 'none';
-
-            // Reinicia a animação
-            cancelAnimationFrame(animationId);
-            updateGame();
+            scoreDisplay.textContent = `Gols: ${goals}`;
+            resetBall();
+            moveGoalie();
         }
 
-        // Função principal de atualização do jogo
-        function updateGame() {
+        // Função para resetar a bola
+        function resetBall() {
+            ball.style.bottom = '20%';
+            ball.style.left = '20%';
+            ball.style.transition = 'none';
+            setTimeout(() => {
+                ball.style.transition = 'all 0.5s ease';
+            }, 10);
+        }
+
+        // Função para mover o goleiro aleatoriamente
+        function moveGoalie() {
             if (!gameActive) return;
-
-            // Move o jogador
-            playerPosition += playerSpeed;
-            // Move os oponentes
-            for (let i = 0; i < 3; i++) {
-                opponentPositions[i] += opponentSpeeds[i];
-            }
-
-            // Atualiza a posição visual dos corredores
-            updateRunnerPositions();
-
-            // Verifica se alguém chegou ao final (1000 unidades de distância)
-            if (playerPosition >= 1000) {
-                gameOver(1); // Jogador venceu
-            } else if (opponentPositions.some(pos => pos >= 1000)) {
-                const winnerIndex = opponentPositions.findIndex(pos => pos >= 1000) + 1;
-                gameOver(winnerIndex); // Oponente venceu
-            } else {
-                animationId = requestAnimationFrame(updateGame);
-            }
+            goaliePosition = Math.random() * 60 + 20; // Entre 20% e 80% da altura do gol
+            goalie.style.bottom = `${goaliePosition}%`;
+            setTimeout(moveGoalie, 1000 + Math.random() * 1000); // Move a cada 1-2 segundos
         }
 
-        // Atualiza a posição visual dos corredores
-        function updateRunnerPositions() {
-            // Calcula a posição vertical baseada na distância percorrida
-            const playerBottom = 20 + (playerPosition / 20);
-            const opponent1Bottom = 20 + (opponentPositions[0] / 20);
-            const opponent2Bottom = 20 + (opponentPositions[1] / 20);
-            const opponent3Bottom = 20 + (opponentPositions[2] / 20);
+        // Função para chutar a bola
+        function shoot(direction) {
+            if (!gameActive || shots >= maxShots) return;
+            shots++;
+            const ballLeft = parseFloat(ball.style.left);
+            const ballBottom = parseFloat(ball.style.bottom);
+            const goalLeft = 70; // Posição horizontal do gol (em %)
+            const goalTop = 30; // Posição vertical do topo do gol (em %)
+            const goalHeight = 40; // Altura do gol (em %)
 
-            player.style.bottom = `${playerBottom}px`;
-            opponents[0].style.bottom = `${opponent1Bottom}px`;
-            opponents[1].style.bottom = `${opponent2Bottom}px`;
-            opponents[2].style.bottom = `${opponent3Bottom}px`;
+            // Define a direção do chute com base no toque
+            let targetBottom;
+            if (direction === 'top') {
+                targetBottom = 60; // Chute alto
+            } else if (direction === 'middle') {
+                targetBottom = goalTop + (goalHeight / 2); // Chute no meio
+            } else {
+                targetBottom = goalTop + 10; // Chute baixo
+            }
 
-            // Ordena as posições para determinar a classificação
-            const allPositions = [
-                { pos: opponentPositions[0], isPlayer: false },
-                { pos: opponentPositions[1], isPlayer: false },
-                { pos: opponentPositions[2], isPlayer: false },
-                { pos: playerPosition, isPlayer: true }
-            ];
+            // Anima o chute
+            ball.style.left = `${goalLeft}%`;
+            ball.style.bottom = `${targetBottom}%`;
 
-            allPositions.sort((a, b) => b.pos - a.pos);
-            const playerRank = allPositions.findIndex(p => p.isPlayer) + 1;
-            positionDisplay.textContent = `Posição: ${playerRank}º`;
+            // Verifica se o gol foi marcado (se a bola passou pelo goleiro)
+            setTimeout(() => {
+                if (Math.abs(targetBottom - goaliePosition) > 10) {
+                    goals++;
+                    scoreDisplay.textContent = `Gols: ${goals}`;
+                }
+                resetBall();
+
+                // Verifica se a rodada terminou
+                if (shots >= maxShots) {
+                    gameOver();
+                }
+            }, 500);
         }
 
         // Função para game over
-        function gameOver(winnerIndex) {
+        function gameOver() {
             gameActive = false;
-            cancelAnimationFrame(animationId);
-
-            if (winnerIndex === 1) {
-                // Jogador venceu
-                if (phase > record) {
-                    record = phase;
-                    localStorage.setItem('emojiRaceRecord', record);
-                    recordDisplay.textContent = `Recorde: ${record}`;
-                }
-                finalPositionDisplay.textContent = `1º`;
-            } else {
-                finalPositionDisplay.textContent = `${winnerIndex}º`;
+            if (goals > record) {
+                record = goals;
+                localStorage.setItem('penaltyRecord', record);
+                recordDisplay.textContent = `Recorde: ${record}`;
             }
-
+            finalGoalsDisplay.textContent = goals;
             gameOverDisplay.style.display = 'block';
         }
 
-        // Controle de toque para acelerar
+        // Controle de toque para chutar
         gameCanvas.addEventListener('touchstart', function(e) {
             if (!gameActive) return;
             e.preventDefault();
-            playerSpeed = 2 + (phase * 0.3);
-        });
+            const touchY = e.touches[0].clientY;
+            const canvasRect = gameCanvas.getBoundingClientRect();
+            const touchRelativeY = touchY - canvasRect.top;
+            const canvasHeight = canvasRect.height;
 
-        gameCanvas.addEventListener('touchend', function(e) {
-            if (!gameActive) return;
-            e.preventDefault();
-            playerSpeed = 0;
+            // Divide a tela em 3 áreas: baixo, meio, alto
+            if (touchRelativeY < canvasHeight / 3) {
+                shoot('bottom');
+            } else if (touchRelativeY < 2 * canvasHeight / 3) {
+                shoot('middle');
+            } else {
+                shoot('top');
+            }
         });
 
         // Botão de reiniciar
-        restartBtn.addEventListener('click', function() {
-            phase++;
-            scoreDisplay.textContent = `Fase: ${phase}`;
-            startGame();
-        });
+        restartBtn.addEventListener('click', startGame);
 
         // Inicia o jogo pela primeira vez
         startGame();
