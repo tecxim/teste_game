@@ -316,6 +316,36 @@
         font-size: 16px !important;
       }
     }
+    .instructions-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 10;
+      border-radius: 12px;
+      padding: 1rem;
+      color: var(--text-color);
+      text-align: center;
+    }
+    .instructions-overlay h2 {
+      font-size: clamp(1.5rem, 6vw, 2.5rem);
+      margin-bottom: 1rem;
+      color: var(--primary-color);
+    }
+    .instructions-overlay p {
+      font-size: clamp(1rem, 4vw, 1.2rem);
+      margin-bottom: 1.5rem;
+      max-width: 80%;
+    }
+    .instructions-overlay button {
+      margin: 0.5rem;
+    }
   </style>
 </head>
 <body oncontextmenu="return false">
@@ -351,6 +381,20 @@
     </div>
   </div>
 
+  <div id="instructionsOverlay" class="instructions-overlay">
+    <h2>🚀 Bem-vindo ao Desviador Cósmico!</h2>
+    <p>Desvie dos meteoros e alcance a maior pontuação possível!</p>
+    <p><strong>Controles:</strong></p>
+    <p>🔄 Teclado: Setas esquerda/direita</p>
+    <p>📱 Toque: Botões na tela</p>
+    <p><strong>Metas:</strong></p>
+    <p>🌟 20 pontos: Meteoros prateados</p>
+    <p>🏆 50 pontos: Meteoros dourados</p>
+    <p>✨ 100 pontos: Meteoros brilhantes</p>
+    <p>🎯 200 pontos: Você vence o jogo!</p>
+    <button id="closeInstructionsBtn" class="btn btn-primary">Jogar!</button>
+  </div>
+
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -365,6 +409,8 @@
     const speedEl = document.getElementById('speed');
     const finalScoreEl = document.getElementById('finalScore');
     const gameOverScreen = document.getElementById('gameOverScreen');
+    const instructionsOverlay = document.getElementById('instructionsOverlay');
+    const closeInstructionsBtn = document.getElementById('closeInstructionsBtn');
 
     const bgMusic = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_77a7e3e0b8.mp3?filename=space-ambient-110185.mp3');
     bgMusic.loop = true;
@@ -394,6 +440,7 @@
     let level = 1;
     let best = localStorage.getItem('bestScore') || 0;
     let animationId;
+    let gameWon = false;
 
     bestEl.textContent = best;
     levelEl.textContent = level;
@@ -490,6 +537,12 @@
             bestEl.textContent = best;
             localStorage.setItem('bestScore', best);
           }
+
+          if (score >= 200 && !gameWon) {
+            gameWon = true;
+            winGame();
+            return;
+          }
         }
 
         if (rectCollide(player, o)) {
@@ -505,6 +558,23 @@
           star.x = Math.random() * canvas.width;
         }
       }
+    }
+
+    function winGame() {
+      running = false;
+      paused = false;
+      bgMusic.pause();
+
+      gameOverScreen.style.display = 'flex';
+      gameOverScreen.innerHTML = `
+        <h2>🎉 Você Venceu!</h2>
+        <p>Parabéns! Você alcançou 200 pontos!</p>
+        <button id="restartBtn" class="btn btn-primary">Jogar Novamente</button>
+      `;
+
+      document.getElementById('restartBtn').addEventListener('click', restartGame);
+
+      cancelAnimationFrame(animationId);
     }
 
     function rectCollide(a, b) {
@@ -589,6 +659,7 @@
       obstacles = [];
       player.x = canvas.width / 2 - player.w / 2;
       player.vx = 0;
+      gameWon = false;
 
       scoreEl.textContent = score;
       levelEl.textContent = level;
@@ -600,6 +671,7 @@
     }
 
     function startGame() {
+      instructionsOverlay.style.display = 'none';
       if (!running) {
         running = true;
         paused = false;
@@ -653,6 +725,7 @@
       player.vx = 0;
     });
 
+    closeInstructionsBtn.addEventListener('click', startGame);
     startBtn.addEventListener('click', startGame);
     pauseBtn.addEventListener('click', togglePause);
     restartBtn.addEventListener('click', restartGame);
