@@ -609,8 +609,15 @@
       if (navigator.vibrate) navigator.vibrate(200);
       finalScoreEl.textContent = score;
       gameOverScreen.style.display = 'flex';
+      gameOverScreen.innerHTML = `
+        <h2>💥 Fim de Jogo! 😂</h2>
+        <p>Seu placar: <span id="finalScore">${score}</span></p>
+        <button id="restartBtn" class="btn btn-primary">Jogar Novamente</button>
+      `;
+      document.getElementById('restartBtn').addEventListener('click', restartGame);
       cancelAnimationFrame(animationId);
     }
+
     function restartGame() {
       score = 0;
       level = 1;
