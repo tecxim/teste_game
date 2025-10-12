@@ -380,7 +380,6 @@
       <button id="rightBtn" class="mobile-btn">→</button>
     </div>
   </div>
-
   <div id="instructionsOverlay" class="instructions-overlay">
     <h2>🚀 Bem-vindo ao Desviador Cósmico!</h2>
     <p>Desvie dos meteoros e alcance a maior pontuação possível!</p>
@@ -394,7 +393,6 @@
     <p>🎯 200 pontos: Você vence o jogo!</p>
     <button id="closeInstructionsBtn" class="btn btn-primary">Jogar!</button>
   </div>
-
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -411,17 +409,16 @@
     const gameOverScreen = document.getElementById('gameOverScreen');
     const instructionsOverlay = document.getElementById('instructionsOverlay');
     const closeInstructionsBtn = document.getElementById('closeInstructionsBtn');
-
     const bgMusic = new Audio('https://actions.google.com/sounds/v1/cartoon/rainstick_slow.ogg');
     bgMusic.loop = true;
     bgMusic.volume = 0.2;
-
     const hitSound = new Audio('https://actions.google.com/sounds/v1/cartoon/siren_whistle.ogg');
     hitSound.volume = 0.5;
-
     const pointSound = new Audio('https://actions.google.com/sounds/v1/cartoon/ufo_zip_whistle.ogg');
     pointSound.volume = 0.3;
-
+    const moveSound = new Audio('https://actions.google.com/sounds/v1/cartoon/blip.ogg');
+    moveSound.loop = true;
+    moveSound.volume = 0.1;
     const player = {
       x: 0,
       y: 0,
@@ -431,7 +428,6 @@
       vx: 0,
       speed: 6
     };
-
     let obstacles = [];
     let stars = [];
     let running = false;
@@ -441,11 +437,9 @@
     let best = localStorage.getItem('bestScore') || 0;
     let animationId;
     let gameWon = false;
-
     bestEl.textContent = best;
     levelEl.textContent = level;
     speedEl.textContent = '1x';
-
     function resizeCanvas() {
       const gameArea = document.querySelector('.game-area');
       canvas.width = gameArea.offsetWidth;
@@ -454,11 +448,9 @@
       player.y = canvas.height - 70;
       createStars();
     }
-
     function createStars() {
       stars = [];
       const starCount = Math.min(100, Math.floor((canvas.width * canvas.height) / 1000));
-
       for (let i = 0; i < starCount; i++) {
         stars.push({
           x: Math.random() * canvas.width,
@@ -469,7 +461,6 @@
         });
       }
     }
-
     window.addEventListener('resize', () => {
       resizeCanvas();
       if (running) {
@@ -477,22 +468,18 @@
         loop();
       }
     });
-
     resizeCanvas();
-
     function getObstacleColor(score) {
       if (score >= 100) return '--brilliant';
       if (score >= 50) return '--gold';
       if (score >= 20) return '--silver';
       return ['#ff6b35', '#ffa500', '#ff4757', '#ff6348'][Math.floor(Math.random() * 4)];
     }
-
     function spawnObstacle() {
       const size = 20 + Math.random() * 40;
       const x = Math.random() * (canvas.width - size);
       const baseSpeed = 2 + Math.random() * 3;
       const color = getObstacleColor(score);
-
       obstacles.push({
         x,
         y: -size,
@@ -502,55 +489,44 @@
         color: color
       });
     }
-
     function update() {
       if (!running || paused) return;
-
       const newLevel = Math.floor(score / 10) + 1;
       if (newLevel !== level) {
         level = newLevel;
         levelEl.textContent = level;
         speedEl.textContent = `${(1 + level * 0.2).toFixed(1)}x`;
       }
-
       const difficulty = 1 + level * 0.2;
-
       player.x += player.vx * player.speed;
       if (player.x < 0) player.x = 0;
       if (player.x + player.w > canvas.width) player.x = canvas.width - player.w;
-
       if (Math.random() < 0.02 * difficulty) spawnObstacle();
-
       for (let i = obstacles.length - 1; i >= 0; i--) {
         const o = obstacles[i];
         o.y += o.speed * difficulty;
-
         if (o.y > canvas.height) {
           obstacles.splice(i, 1);
           score++;
           pointSound.currentTime = 0;
           pointSound.play();
           scoreEl.textContent = score;
-
           if (score > best) {
             best = score;
             bestEl.textContent = best;
             localStorage.setItem('bestScore', best);
           }
-
           if (score >= 200 && !gameWon) {
             gameWon = true;
             winGame();
             return;
           }
         }
-
         if (rectCollide(player, o)) {
           gameOver();
           return;
         }
       }
-
       for (let star of stars) {
         star.y += star.speed;
         if (star.y > canvas.height) {
@@ -559,41 +535,33 @@
         }
       }
     }
-
     function winGame() {
       running = false;
       paused = false;
       bgMusic.pause();
-
       gameOverScreen.style.display = 'flex';
       gameOverScreen.innerHTML = `
         <h2>🎉 Você Venceu!</h2>
         <p>Parabéns! Você alcançou 200 pontos!</p>
         <button id="restartBtn" class="btn btn-primary">Jogar Novamente</button>
       `;
-
       document.getElementById('restartBtn').addEventListener('click', restartGame);
-
       cancelAnimationFrame(animationId);
     }
-
     function rectCollide(a, b) {
       return !(a.x > b.x + b.w ||
                a.x + a.w < b.x ||
                a.y > b.y + b.h ||
                a.y + a.h < b.y);
     }
-
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
       for (let star of stars) {
         ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness})`;
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
         ctx.fill();
       }
-
       ctx.fillStyle = 'rgba(125, 211, 252, 0.3)';
       ctx.beginPath();
       ctx.moveTo(player.x + player.w / 2, player.y + player.h);
@@ -601,7 +569,6 @@
       ctx.lineTo(player.x + player.w / 2 + 15, player.y + player.h + 25);
       ctx.closePath();
       ctx.fill();
-
       ctx.fillStyle = player.color;
       ctx.beginPath();
       ctx.moveTo(player.x + player.w / 2, player.y);
@@ -609,12 +576,10 @@
       ctx.lineTo(player.x, player.y + player.h);
       ctx.closePath();
       ctx.fill();
-
       ctx.fillStyle = '#a5f3fc';
       ctx.beginPath();
       ctx.arc(player.x + player.w / 2, player.y + player.h / 3, player.w / 4, 0, Math.PI * 2);
       ctx.fill();
-
       for (const o of obstacles) {
         ctx.fillStyle = typeof o.color === 'string' && o.color.startsWith('--')
           ? getComputedStyle(document.documentElement).getPropertyValue(o.color)
@@ -622,37 +587,29 @@
         ctx.beginPath();
         ctx.arc(o.x + o.w / 2, o.y + o.h / 2, o.w / 2, 0, Math.PI * 2);
         ctx.fill();
-
         ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
         ctx.beginPath();
         ctx.arc(o.x + o.w / 3, o.y + o.h / 3, o.w / 6, 0, Math.PI * 2);
         ctx.fill();
       }
     }
-
     function loop() {
       update();
       draw();
-
       if (running && !paused) {
         animationId = requestAnimationFrame(loop);
       }
     }
-
     function gameOver() {
       running = false;
       paused = false;
       hitSound.play();
       bgMusic.pause();
-
       if (navigator.vibrate) navigator.vibrate(200);
-
       finalScoreEl.textContent = score;
       gameOverScreen.style.display = 'flex';
-
       cancelAnimationFrame(animationId);
     }
-
     function restartGame() {
       score = 0;
       level = 1;
@@ -660,16 +617,12 @@
       player.x = canvas.width / 2 - player.w / 2;
       player.vx = 0;
       gameWon = false;
-
       scoreEl.textContent = score;
       levelEl.textContent = level;
       speedEl.textContent = '1x';
-
       gameOverScreen.style.display = 'none';
-
       startGame();
     }
-
     function startGame() {
       instructionsOverlay.style.display = 'none';
       if (!running) {
@@ -680,51 +633,58 @@
         loop();
       }
     }
-
     function togglePause() {
       if (!running) return;
-
       paused = !paused;
       pauseBtn.textContent = paused ? 'Continuar' : 'Pausar';
-
       if (!paused) {
         loop();
       }
     }
-
     window.addEventListener('keydown', e => {
-      if (e.key === 'ArrowLeft') player.vx = -1;
-      if (e.key === 'ArrowRight') player.vx = 1;
+      if (e.key === 'ArrowLeft') {
+        player.vx = -1;
+        moveSound.currentTime = 0;
+        moveSound.play();
+      }
+      if (e.key === 'ArrowRight') {
+        player.vx = 1;
+        moveSound.currentTime = 0;
+        moveSound.play();
+      }
       if (e.key === ' ') {
         if (!running) startGame();
         else togglePause();
       }
     });
-
     window.addEventListener('keyup', e => {
-      if (['ArrowLeft', 'ArrowRight'].includes(e.key)) player.vx = 0;
+      if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        player.vx = 0;
+        moveSound.pause();
+      }
     });
-
     leftBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
       player.vx = -1;
+      moveSound.currentTime = 0;
+      moveSound.play();
     });
-
     rightBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
       player.vx = 1;
+      moveSound.currentTime = 0;
+      moveSound.play();
     });
-
     leftBtn.addEventListener('touchend', (e) => {
       e.preventDefault();
       player.vx = 0;
+      moveSound.pause();
     });
-
     rightBtn.addEventListener('touchend', (e) => {
       e.preventDefault();
       player.vx = 0;
+      moveSound.pause();
     });
-
     closeInstructionsBtn.addEventListener('click', startGame);
     startBtn.addEventListener('click', startGame);
     pauseBtn.addEventListener('click', togglePause);
