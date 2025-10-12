@@ -105,6 +105,7 @@
       background: radial-gradient(circle at 50% 20%, #0b1729, #000);
       margin-bottom: 0.5rem;
       min-height: 0;
+      touch-action: none;
     }
     canvas {
       width: 100%;
@@ -385,7 +386,7 @@
     <p>Desvie dos meteoros e alcance a maior pontuação possível!</p>
     <p><strong>Controles:</strong></p>
     <p>🔄 Teclado: Setas esquerda/direita</p>
-    <p>📱 Toque: Botões na tela</p>
+    <p>📱 Toque: Arraste na tela ou use os botões</p>
     <p><strong>Metas:</strong></p>
     <p>🌟 20 pontos: Meteoros prateados</p>
     <p>🏆 50 pontos: Meteoros dourados</p>
@@ -409,16 +410,25 @@
     const gameOverScreen = document.getElementById('gameOverScreen');
     const instructionsOverlay = document.getElementById('instructionsOverlay');
     const closeInstructionsBtn = document.getElementById('closeInstructionsBtn');
-    const bgMusic = new Audio('https://actions.google.com/sounds/v1/cartoon/rainstick_slow.ogg');
+
+    // Sons
+    const bgMusic = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-762.mp3');
     bgMusic.loop = true;
     bgMusic.volume = 0.2;
-    const hitSound = new Audio('https://actions.google.com/sounds/v1/cartoon/siren_whistle.ogg');
-    hitSound.volume = 0.5;
-    const pointSound = new Audio('https://actions.google.com/sounds/v1/cartoon/ufo_zip_whistle.ogg');
-    pointSound.volume = 0.3;
-    const moveSound = new Audio('https://actions.google.com/sounds/v1/cartoon/blip.ogg');
+
+    const moveSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3');
     moveSound.loop = true;
     moveSound.volume = 0.1;
+
+    const hitSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-explosion-2364.mp3');
+    hitSound.volume = 0.5;
+
+    const pointSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3');
+    pointSound.volume = 0.3;
+
+    const winSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-winning-a-challenge-2016.mp3');
+    winSound.volume = 0.5;
+
     const player = {
       x: 0,
       y: 0,
@@ -428,6 +438,7 @@
       vx: 0,
       speed: 6
     };
+
     let obstacles = [];
     let stars = [];
     let running = false;
@@ -437,9 +448,12 @@
     let best = localStorage.getItem('bestScore') || 0;
     let animationId;
     let gameWon = false;
+    let touchStartX = 0;
+
     bestEl.textContent = best;
     levelEl.textContent = level;
     speedEl.textContent = '1x';
+
     function resizeCanvas() {
       const gameArea = document.querySelector('.game-area');
       canvas.width = gameArea.offsetWidth;
@@ -448,6 +462,7 @@
       player.y = canvas.height - 70;
       createStars();
     }
+
     function createStars() {
       stars = [];
       const starCount = Math.min(100, Math.floor((canvas.width * canvas.height) / 1000));
@@ -461,6 +476,7 @@
         });
       }
     }
+
     window.addEventListener('resize', () => {
       resizeCanvas();
       if (running) {
@@ -468,13 +484,16 @@
         loop();
       }
     });
+
     resizeCanvas();
+
     function getObstacleColor(score) {
       if (score >= 100) return '--brilliant';
       if (score >= 50) return '--gold';
       if (score >= 20) return '--silver';
       return ['#ff6b35', '#ffa500', '#ff4757', '#ff6348'][Math.floor(Math.random() * 4)];
     }
+
     function spawnObstacle() {
       const size = 20 + Math.random() * 40;
       const x = Math.random() * (canvas.width - size);
@@ -489,6 +508,7 @@
         color: color
       });
     }
+
     function update() {
       if (!running || paused) return;
       const newLevel = Math.floor(score / 10) + 1;
@@ -535,10 +555,12 @@
         }
       }
     }
+
     function winGame() {
       running = false;
       paused = false;
       bgMusic.pause();
+      winSound.play();
       gameOverScreen.style.display = 'flex';
       gameOverScreen.innerHTML = `
         <h2>🎉 Você Venceu!</h2>
@@ -548,12 +570,14 @@
       document.getElementById('restartBtn').addEventListener('click', restartGame);
       cancelAnimationFrame(animationId);
     }
+
     function rectCollide(a, b) {
       return !(a.x > b.x + b.w ||
                a.x + a.w < b.x ||
                a.y > b.y + b.h ||
                a.y + a.h < b.y);
     }
+
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       for (let star of stars) {
@@ -593,6 +617,7 @@
         ctx.fill();
       }
     }
+
     function loop() {
       update();
       draw();
@@ -600,6 +625,7 @@
         animationId = requestAnimationFrame(loop);
       }
     }
+
     function gameOver() {
       running = false;
       paused = false;
@@ -610,6 +636,7 @@
       gameOverScreen.style.display = 'flex';
       cancelAnimationFrame(animationId);
     }
+
     function restartGame() {
       score = 0;
       level = 1;
@@ -623,6 +650,7 @@
       gameOverScreen.style.display = 'none';
       startGame();
     }
+
     function startGame() {
       instructionsOverlay.style.display = 'none';
       if (!running) {
@@ -633,6 +661,7 @@
         loop();
       }
     }
+
     function togglePause() {
       if (!running) return;
       paused = !paused;
@@ -641,6 +670,8 @@
         loop();
       }
     }
+
+    // Controles de teclado
     window.addEventListener('keydown', e => {
       if (e.key === 'ArrowLeft') {
         player.vx = -1;
@@ -657,34 +688,67 @@
         else togglePause();
       }
     });
+
     window.addEventListener('keyup', e => {
       if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
         player.vx = 0;
         moveSound.pause();
       }
     });
+
+    // Controles móveis (botões)
     leftBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
       player.vx = -1;
       moveSound.currentTime = 0;
       moveSound.play();
     });
+
     rightBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
       player.vx = 1;
       moveSound.currentTime = 0;
       moveSound.play();
     });
+
     leftBtn.addEventListener('touchend', (e) => {
       e.preventDefault();
       player.vx = 0;
       moveSound.pause();
     });
+
     rightBtn.addEventListener('touchend', (e) => {
       e.preventDefault();
       player.vx = 0;
       moveSound.pause();
     });
+
+    // Controles de toque na tela (arrastar)
+    canvas.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      const touchX = e.touches[0].clientX;
+      const diff = touchStartX - touchX;
+      if (diff > 5) {
+        player.vx = -1;
+        moveSound.currentTime = 0;
+        moveSound.play();
+      } else if (diff < -5) {
+        player.vx = 1;
+        moveSound.currentTime = 0;
+        moveSound.play();
+      }
+    });
+
+    canvas.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      player.vx = 0;
+      moveSound.pause();
+    });
+
     closeInstructionsBtn.addEventListener('click', startGame);
     startBtn.addEventListener('click', startGame);
     pauseBtn.addEventListener('click', togglePause);
