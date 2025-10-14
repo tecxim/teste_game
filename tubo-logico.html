@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ball Sort Puzzle</title>
+    <title>TuboLogico</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -220,11 +220,15 @@
         <p>Você completou o nível <span id="completed-level">1</span> em <span id="completed-moves">0</span> movimentos!</p>
         <button class="btn-custom" id="next-level">Próximo Nível</button>
     </div>
-</div>
-
 
     <script>
-        // Configurações do jogo
+        // Sons do jogo
+        const moveSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-arcade-mechanical-bling-216.mp3");
+        const winSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3");
+        const bgMusic = new Audio("https://www.bensound.com/bensound-music/bensound-dreamer.mp3");
+        bgMusic.loop = true;
+        bgMusic.volume = 0.2;
+
         // Configurações do jogo
         const gameConfig = {
             currentLevel: 1,
@@ -234,13 +238,11 @@
             maxBallsPerTube: 4,
             levels: [
                 {
-                    tubes: 6, // 3 tubos cheios + 3 tubos vazios
+                    tubes: 6,
                     colors: ['#4CAF50', '#2196F3', '#FFEB3B', '#FFFFFF', '#E91E63']
-                    // verde, azul, amarela, branca, rosa
                 }
             ]
         };
-
 
         // Elementos DOM
         const tubesContainer = document.getElementById('tubes-container');
@@ -257,6 +259,7 @@
         // Variável para arraste
         let draggedBall = null;
         let draggedFromTube = null;
+        let isMusicPlaying = false;
 
         // Inicializar o jogo
         function initGame() {
@@ -274,20 +277,20 @@
             const level = gameConfig.levels[gameConfig.currentLevel - 1];
             const colors = [...level.colors];
             let balls = [];
-        
+
             // Criar bolas (4 bolas por cor)
             colors.forEach(color => {
                 for (let i = 0; i < gameConfig.maxBallsPerTube; i++) {
                     balls.push(color);
                 }
             });
-        
+
             // Embaralhar bolas
             balls = shuffleArray(balls);
-        
+
             // Número de tubos = número de cores + 1 (tubo vazio extra)
             const numTubes = colors.length + 1;
-        
+
             // Criar tubos com bolas embaralhadas
             for (let i = 0; i < numTubes; i++) {
                 const tube = document.createElement('div');
@@ -295,11 +298,11 @@
                 tube.dataset.index = i;
                 tubesContainer.appendChild(tube);
             }
-        
+
             // Distribuir bolas aleatoriamente nos tubos (exceto o último, que ficará vazio)
             const tubes = document.querySelectorAll('.tube');
             for (let i = 0; i < balls.length; i++) {
-                const randomTubeIndex = Math.floor(Math.random() * (numTubes - 1)); // Não usa o último tubo (vazio)
+                const randomTubeIndex = Math.floor(Math.random() * (numTubes - 1));
                 const tube = tubes[randomTubeIndex];
                 if (tube.children.length < gameConfig.maxBallsPerTube) {
                     const ball = document.createElement('div');
@@ -308,7 +311,6 @@
                     ball.draggable = true;
                     tube.appendChild(ball);
                 } else {
-                    // Se o tubo estiver cheio, tenta outro tubo
                     i--;
                 }
             }
@@ -316,18 +318,15 @@
 
         // Configurar eventos
         function setupEventListeners() {
-            // Eventos de toque/clique nos tubos
             document.querySelectorAll('.tube').forEach(tube => {
                 tube.addEventListener('click', handleTubeClick);
             });
 
-            // Eventos de arraste das bolas
             document.querySelectorAll('.ball').forEach(ball => {
                 ball.addEventListener('dragstart', handleDragStart);
                 ball.addEventListener('dragend', handleDragEnd);
             });
 
-            // Eventos de arraste nos tubos
             document.querySelectorAll('.tube').forEach(tube => {
                 tube.addEventListener('dragover', handleDragOver);
                 tube.addEventListener('dragenter', handleDragEnter);
@@ -335,13 +334,11 @@
                 tube.addEventListener('drop', handleDrop);
             });
 
-            // Botões
             resetButton.addEventListener('click', resetLevel);
             undoButton.addEventListener('click', undoMove);
             hintButton.addEventListener('click', showHint);
             nextLevelButton.addEventListener('click', nextLevel);
 
-            // Prevenir comportamento padrão de toque
             document.addEventListener('touchmove', function(e) {
                 if (e.target.classList.contains('ball') || e.target.classList.contains('tube')) {
                     e.preventDefault();
@@ -354,7 +351,7 @@
             draggedBall = e.target;
             draggedFromTube = e.target.parentElement;
             draggedBall.classList.add('dragging');
-            e.dataTransfer.setData('text/plain', ''); // Necessário para Firefox
+            e.dataTransfer.setData('text/plain', '');
         }
 
         // Fim do arraste da bola
@@ -385,16 +382,15 @@
             e.preventDefault();
             const toTube = e.currentTarget;
             toTube.classList.remove('selected');
-
             if (!draggedBall || !draggedFromTube) return;
 
-            // Verificar se o tubo de destino é válido
             if (isValidMove(draggedFromTube, toTube)) {
                 saveGameState();
                 toTube.appendChild(draggedBall);
                 gameConfig.moves++;
                 updateGameInfo();
-
+                moveSound.currentTime = 0;
+                moveSound.play();
                 if (checkWinCondition()) {
                     showWinMessage();
                 }
@@ -403,26 +399,17 @@
 
         // Verificar se o movimento é válido
         function isValidMove(fromTube, toTube) {
-            // Não pode mover para o mesmo tubo
             if (fromTube === toTube) return false;
-
-            // Tubo de destino cheio
             if (toTube.children.length >= gameConfig.maxBallsPerTube) return false;
-
-            // Tubo de origem vazio
             if (fromTube.children.length === 0) return false;
-
             const topBall = fromTube.lastElementChild;
             const toTopBall = toTube.lastElementChild;
-
-            // Tubo de destino vazio ou mesma cor
             return !toTopBall || toTopBall.style.backgroundColor === topBall.style.backgroundColor;
         }
 
         // Clique no tubo
         function handleTubeClick(e) {
             const tube = e.currentTarget;
-
             if (gameConfig.selectedTube === null) {
                 if (tube.children.length > 0) {
                     gameConfig.selectedTube = tube;
@@ -434,18 +421,17 @@
                     gameConfig.selectedTube = null;
                     return;
                 }
-
                 if (isValidMove(gameConfig.selectedTube, tube)) {
                     saveGameState();
                     tube.appendChild(gameConfig.selectedTube.lastElementChild);
                     gameConfig.moves++;
                     updateGameInfo();
-
+                    moveSound.currentTime = 0;
+                    moveSound.play();
                     if (checkWinCondition()) {
                         showWinMessage();
                     }
                 }
-
                 gameConfig.selectedTube.classList.remove('selected');
                 gameConfig.selectedTube = null;
             }
@@ -461,9 +447,7 @@
                 });
                 state.push(balls);
             });
-
             gameConfig.gameHistory.push(state);
-
             if (gameConfig.gameHistory.length > 50) {
                 gameConfig.gameHistory.shift();
             }
@@ -472,13 +456,10 @@
         // Desfazer movimento
         function undoMove() {
             if (gameConfig.gameHistory.length === 0) return;
-
             const previousState = gameConfig.gameHistory.pop();
-
             document.querySelectorAll('.tube').forEach(tube => {
                 tube.innerHTML = '';
             });
-
             previousState.forEach((balls, index) => {
                 const tube = document.querySelector(`.tube[data-index="${index}"]`);
                 balls.forEach(color => {
@@ -489,18 +470,15 @@
                     tube.appendChild(ball);
                 });
             });
-
             if (gameConfig.moves > 0) {
                 gameConfig.moves--;
                 updateGameInfo();
             }
-
             if (gameConfig.selectedTube) {
                 gameConfig.selectedTube.classList.remove('selected');
                 gameConfig.selectedTube = null;
             }
-
-            setupEventListeners(); // Reconfigurar eventos após desfazer
+            setupEventListeners();
         }
 
         // Mostrar dica
@@ -508,20 +486,14 @@
             const tubes = document.querySelectorAll('.tube');
             let fromTube = null;
             let toTube = null;
-
             for (let i = 0; i < tubes.length; i++) {
                 const currentTube = tubes[i];
                 if (currentTube.children.length === 0) continue;
-
                 const topBallColor = currentTube.lastElementChild.style.backgroundColor;
-
                 for (let j = 0; j < tubes.length; j++) {
                     if (i === j) continue;
-
                     const targetTube = tubes[j];
-
                     if (targetTube.children.length >= gameConfig.maxBallsPerTube) continue;
-
                     const targetTopBall = targetTube.lastElementChild;
                     if (!targetTopBall || targetTopBall.style.backgroundColor === topBallColor) {
                         fromTube = currentTube;
@@ -529,14 +501,11 @@
                         break;
                     }
                 }
-
                 if (fromTube) break;
             }
-
             if (fromTube && toTube) {
                 fromTube.style.boxShadow = '0 0 15px yellow';
                 toTube.style.boxShadow = '0 0 15px yellow';
-
                 setTimeout(() => {
                     fromTube.style.boxShadow = '';
                     toTube.style.boxShadow = '';
@@ -547,13 +516,10 @@
         // Verificar vitória
         function checkWinCondition() {
             const tubes = document.querySelectorAll('.tube');
-
             for (let tube of tubes) {
                 const balls = tube.querySelectorAll('.ball');
-
                 if (balls.length === 0) continue;
                 if (balls.length < gameConfig.maxBallsPerTube) return false;
-
                 const firstColor = balls[0].style.backgroundColor;
                 for (let ball of balls) {
                     if (ball.style.backgroundColor !== firstColor) {
@@ -561,12 +527,13 @@
                     }
                 }
             }
-
             return true;
         }
 
         // Mostrar mensagem de vitória
         function showWinMessage() {
+            winSound.currentTime = 0;
+            winSound.play();
             completedLevel.textContent = gameConfig.currentLevel;
             completedMoves.textContent = gameConfig.moves;
             winMessage.style.display = 'block';
@@ -574,13 +541,12 @@
 
         // Próximo nível
         function nextLevel() {
+            winMessage.style.display = 'none';
             if (gameConfig.currentLevel < gameConfig.levels.length) {
                 gameConfig.currentLevel++;
             } else {
                 gameConfig.currentLevel = 1;
             }
-
-            winMessage.style.display = 'none';
             initGame();
         }
 
@@ -603,6 +569,14 @@
             }
             return array;
         }
+
+        // Iniciar música de fundo após interação do usuário
+        document.addEventListener('click', () => {
+            if (!isMusicPlaying) {
+                bgMusic.play().catch(e => console.log("Playback failed:", e));
+                isMusicPlaying = true;
+            }
+        }, { once: true });
 
         // Inicializar o jogo
         window.addEventListener('load', initGame);
