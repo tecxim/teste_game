@@ -21,33 +21,32 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px;
-            padding-bottom: 100px; /* Espaço extra para os botões */
-            position: relative;
+            padding: 20px;
+            padding-bottom: 120px; /* Espaço extra para os botões */
         }
         .header {
             text-align: center;
-            padding: 10px 0;
+            padding: 15px 0;
             width: 100%;
         }
         h1 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
+            font-size: 2rem;
+            margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         .game-info {
             display: flex;
             justify-content: space-between;
             width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
+            max-width: 550px;
+            margin: 0 auto 20px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 20px;
-            padding: 10px 20px;
+            padding: 12px 20px;
             backdrop-filter: blur(10px);
         }
         .level, .moves {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: bold;
         }
         .game-container {
@@ -57,75 +56,73 @@
             justify-content: center;
             align-items: center;
             width: 100%;
-            max-width: 500px;
-            position: relative;
-            margin-bottom: 80px;
+            max-width: 550px;
+            margin-bottom: 20px;
         }
         .tubes-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 15px;
-            padding: 10px;
+            gap: 20px;
+            padding: 15px;
             width: 100%;
         }
         .tube {
-            width: 60px;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px 10px 5px 5px;
+            width: 70px; /* Aumentado */
+            height: 240px; /* Aumentado */
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px 12px 6px 6px;
             position: relative;
             display: flex;
             flex-direction: column-reverse;
             align-items: center;
-            padding: 5px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
             cursor: pointer;
             transition: all 0.2s;
         }
         .tube.selected {
             border: 2px solid white;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
             transform: translateY(-5px);
         }
         .tube.full {
             pointer-events: none;
         }
         .ball {
-            width: 45px;
-            height: 45px;
+            width: 55px; /* Aumentado */
+            height: 55px; /* Aumentado */
             border-radius: 50%;
-            margin: 2px 0;
+            margin: 5px 0;
             transition: transform 0.3s;
-            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             cursor: grab;
         }
         .ball.dragging {
-            transform: scale(1.1);
+            transform: scale(1.15);
             z-index: 10;
         }
         .controls {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                display: flex;
-                justify-content: center;
-                gap: 15px;
-                padding: 15px;
-                background: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(10px);
-                z-index: 10;
-                margin-bottom: env(safe-area-inset-bottom); /* Evita sobreposição em iPhones */
-            }
-
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            margin-bottom: env(safe-area-inset-bottom);
+        }
         button {
             background: rgba(255, 255, 255, 0.2);
             border: 2px solid white;
             color: white;
             padding: 12px 25px;
             border-radius: 50px;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
@@ -140,37 +137,37 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px 30px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 25px 30px;
             border-radius: 15px;
             text-align: center;
             z-index: 100;
             display: none;
             backdrop-filter: blur(10px);
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
         }
         .message h2 {
             margin-bottom: 15px;
-            font-size: 1.8rem;
+            font-size: 1.9rem;
         }
         .message p {
             margin-bottom: 20px;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
         }
-        @media (max-width: 500px) {
+        @media (max-width: 576px) {
             .tube {
-                width: 50px;
-                height: 180px;
+                width: 60px;
+                height: 200px;
             }
             .ball {
-                width: 40px;
-                height: 40px;
+                width: 50px;
+                height: 50px;
             }
             h1 {
-                font-size: 1.5rem;
+                font-size: 1.7rem;
             }
             .game-info {
-                padding: 8px 15px;
+                padding: 10px 15px;
             }
             .level, .moves {
                 font-size: 1rem;
@@ -178,11 +175,11 @@
         }
         @media (max-height: 700px) {
             .tube {
-                height: 160px;
+                height: 180px;
             }
             .ball {
-                width: 35px;
-                height: 35px;
+                width: 45px;
+                height: 45px;
             }
         }
     </style>
