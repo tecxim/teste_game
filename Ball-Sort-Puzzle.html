@@ -257,23 +257,22 @@
             const level = gameConfig.levels[gameConfig.currentLevel - 1];
             const colors = [...level.colors];
             let balls = [];
-
+        
             // Criar bolas
             colors.forEach(color => {
                 for (let i = 0; i < gameConfig.maxBallsPerTube; i++) {
                     balls.push(color);
                 }
             });
-
+        
             // Embaralhar bolas
             balls = shuffleArray(balls);
-
+        
             // Criar tubos com bolas
             for (let i = 0; i < level.tubes; i++) {
                 const tube = document.createElement('div');
                 tube.className = 'tube';
                 tube.dataset.index = i;
-
                 for (let j = 0; j < gameConfig.maxBallsPerTube; j++) {
                     if (balls.length > 0) {
                         const ball = document.createElement('div');
@@ -283,12 +282,11 @@
                         tube.appendChild(ball);
                     }
                 }
-
                 tubesContainer.appendChild(tube);
             }
-
-            // Adicionar tubos vazios
-            const emptyTubes = Math.max(2, 6 - level.tubes);
+        
+            // Adicionar tubos vazios (sempre 2)
+            const emptyTubes = 2;
             for (let i = 0; i < emptyTubes; i++) {
                 const tube = document.createElement('div');
                 tube.className = 'tube';
