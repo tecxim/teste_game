@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -88,6 +90,22 @@
         .icon-icecream { color: #a5d8ff; }
         .icon-cookie { color: #a5673f; }
         .icon-coffee { color: #6f4e37; }
+        .icon-dog { color: #636e72; }
+        .icon-cat { color: #dfe6e9; }
+        .icon-bird { color: #0984e3; }
+        .icon-fish { color: #00b894; }
+        .icon-lion { color: #fdcb6e; }
+        .icon-elephant { color: #747d8c; }
+        .icon-turtle { color: #006400; }
+        .icon-whale { color: #2d3436; }
+        .icon-book { color: #d63031; }
+        .icon-laptop { color: #000000; }
+        .icon-key { color: #f1c40f; }
+        .icon-lightbulb { color: #fdcb6e; }
+        .icon-bicycle { color: #e17055; }
+        .icon-plane { color: #7158e2; }
+        .icon-house { color: #6c5ce7; }
+        .icon-tree { color: #00b894; }
     </style>
 </head>
 <body>
@@ -102,13 +120,15 @@
                     <span class="badge bg-success">Tempo: <span id="time">0</span>s</span>
                 </div>
                 <div>
+                    <span class="badge bg-info" id="phase">Fase: Alimentos</span>
+                </div>
+                <div>
                     <button id="restart" class="btn btn-danger">Reiniciar</button>
                 </div>
             </div>
             <div class="cards-container" id="cards"></div>
             <div class="win-message" id="winMessage">
-                <h3>Parabéns! Você venceu!</h3>
-                <p>Movimentos: <span id="finalMoves">0</span> | Tempo: <span id="finalTime">0</span>s</p>
+                <h3 id="winText">Parabéns!</h3>
             </div>
         </div>
     </div>
@@ -120,22 +140,56 @@
             const timeElement = document.getElementById('time');
             const restartButton = document.getElementById('restart');
             const winMessage = document.getElementById('winMessage');
+            const winText = document.getElementById('winText');
+            const phaseElement = document.getElementById('phase');
             
             let moves = 0;
             let time = 0;
             let timer;
             let flippedCards = [];
             let matchedPairs = 0;
+            let currentPhase = 0;
             
-            const icons = [
-                { icon: '<i class="fas fa-apple-alt icon icon-apple"></i>', name: "Maçã" },
-                { icon: '<i class="fas fa-banana icon icon-banana"></i>', name: "Banana" },
-                { icon: '<i class="fas fa-carrot icon icon-carrot"></i>', name: "Cenoura" },
-                { icon: '<i class="fas fa-lemon icon icon-lemon"></i>', name: "Limão" },
-                { icon: '<i class="fas fa-pizza-slice icon icon-pizza"></i>', name: "Pizza" },
-                { icon: '<i class="fas fa-ice-cream icon icon-icecream"></i>', name: "Sorvete" },
-                { icon: '<i class="fas fa-cookie icon icon-cookie"></i>', name: "Biscoito" },
-                { icon: '<i class="fas fa-coffee icon icon-coffee"></i>', name: "Café" }
+            const phases = [
+                {
+                    name: "Alimentos",
+                    cards: [
+                        { icon: '<i class="fas fa-apple-alt icon icon-apple"></i>', name: "Maçã" },
+                        { icon: '<i class="fas fa-banana icon icon-banana"></i>', name: "Banana" },
+                        { icon: '<i class="fas fa-carrot icon icon-carrot"></i>', name: "Cenoura" },
+                        { icon: '<i class="fas fa-lemon icon icon-lemon"></i>', name: "Limão" },
+                        { icon: '<i class="fas fa-pizza-slice icon icon-pizza"></i>', name: "Pizza" },
+                        { icon: '<i class="fas fa-ice-cream icon icon-icecream"></i>', name: "Sorvete" },
+                        { icon: '<i class="fas fa-cookie icon icon-cookie"></i>', name: "Biscoito" },
+                        { icon: '<i class="fas fa-coffee icon icon-coffee"></i>', name: "Café" }
+                    ]
+                },
+                {
+                    name: "Animais",
+                    cards: [
+                        { icon: '<i class="fas fa-dog icon icon-dog"></i>', name: "Cachorro" },
+                        { icon: '<i class="fas fa-cat icon icon-cat"></i>', name: "Gato" },
+                        { icon: '<i class="fas fa-dove icon icon-bird"></i>', name: "Pássaro" },
+                        { icon: '<i class="fas fa-fish icon icon-fish"></i>', name: "Peixe" },
+                        { icon: '<i class="fas fa-horse-head icon icon-lion"></i>', name: "Leão" },
+                        { icon: '<i class="fas fa-hippo icon icon-elephant"></i>', name: "Elefante" },
+                        { icon: '<i class="fas fa-frog icon icon-turtle"></i>', name: "Tartaruga" },
+                        { icon: '<i class="fas fa-whale icon icon-whale"></i>', name: "Baleia" }
+                    ]
+                },
+                {
+                    name: "Objetos",
+                    cards: [
+                        { icon: '<i class="fas fa-book icon icon-book"></i>', name: "Livro" },
+                        { icon: '<i class="fas fa-laptop icon icon-laptop"></i>', name: "Laptop" },
+                        { icon: '<i class="fas fa-key icon icon-key"></i>', name: "Chave" },
+                        { icon: '<i class="fas fa-lightbulb icon icon-lightbulb"></i>', name: "Lâmpada" },
+                        { icon: '<i class="fas fa-bicycle icon icon-bicycle"></i>', name: "Bicicleta" },
+                        { icon: '<i class="fas fa-plane icon icon-plane"></i>', name: "Avião" },
+                        { icon: '<i class="fas fa-home icon icon-house"></i>', name: "Casa" },
+                        { icon: '<i class="fas fa-tree icon icon-tree"></i>', name: "Árvore" }
+                    ]
+                }
             ];
             
             function initGame() {
@@ -152,7 +206,7 @@
                     timeElement.textContent = time;
                 }, 1000);
                 
-                const cardValues = [...icons, ...icons];
+                const cardValues = [...phases[currentPhase].cards, ...phases[currentPhase].cards];
                 cardValues.sort(() => 0.5 - Math.random());
                 
                 cards.innerHTML = '';
@@ -173,6 +227,7 @@
                     card.addEventListener('click', flipCard);
                     cards.appendChild(card);
                 });
+                phaseElement.textContent = `Fase: ${phases[currentPhase].name}`;
             }
             
             function flipCard() {
@@ -193,11 +248,20 @@
                 if (card1.dataset.value === card2.dataset.value) {
                     matchedPairs++;
                     flippedCards = [];
-                    if (matchedPairs === icons.length) {
+                    if (matchedPairs === phases[currentPhase].cards.length) {
                         clearInterval(timer);
-                        document.getElementById('finalMoves').textContent = moves;
-                        document.getElementById('finalTime').textContent = time;
-                        winMessage.style.display = 'block';
+                        if (currentPhase < phases.length - 1) {
+                            winText.textContent = `Parabéns! Você completou a fase ${phases[currentPhase].name}! Movimentos: ${moves}, Tempo: ${time}s`;
+                            winMessage.style.display = 'block';
+                            setTimeout(() => {
+                                winMessage.style.display = 'none';
+                                currentPhase++;
+                                initGame();
+                            }, 2000);
+                        } else {
+                            winText.textContent = `Parabéns! Você venceu o jogo! Movimentos: ${moves}, Tempo: ${time}s`;
+                            winMessage.style.display = 'block';
+                        }
                     }
                 } else {
                     setTimeout(() => {
@@ -208,7 +272,10 @@
                 }
             }
             
-            restartButton.addEventListener('click', initGame);
+            restartButton.addEventListener('click', () => {
+                currentPhase = 0;
+                initGame();
+            });
             
             initGame();
         });
