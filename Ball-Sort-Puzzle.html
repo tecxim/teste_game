@@ -255,7 +255,7 @@
             const colors = [...level.colors];
             let balls = [];
         
-            // Criar bolas
+            // Criar bolas (4 bolas por cor)
             colors.forEach(color => {
                 for (let i = 0; i < gameConfig.maxBallsPerTube; i++) {
                     balls.push(color);
@@ -265,30 +265,32 @@
             // Embaralhar bolas
             balls = shuffleArray(balls);
         
-            // Criar tubos com bolas
-            for (let i = 0; i < level.tubes; i++) {
+            // Número de tubos = número de cores + 1 (tubo vazio extra)
+            const numTubes = colors.length + 1;
+        
+            // Criar tubos com bolas embaralhadas
+            for (let i = 0; i < numTubes; i++) {
                 const tube = document.createElement('div');
                 tube.className = 'tube';
                 tube.dataset.index = i;
-                for (let j = 0; j < gameConfig.maxBallsPerTube; j++) {
-                    if (balls.length > 0) {
-                        const ball = document.createElement('div');
-                        ball.className = 'ball';
-                        ball.style.backgroundColor = balls.pop();
-                        ball.draggable = true;
-                        tube.appendChild(ball);
-                    }
-                }
                 tubesContainer.appendChild(tube);
             }
         
-            // Adicionar tubos vazios (sempre 2)
-            const emptyTubes = 2;
-            for (let i = 0; i < emptyTubes; i++) {
-                const tube = document.createElement('div');
-                tube.className = 'tube';
-                tube.dataset.index = level.tubes + i;
-                tubesContainer.appendChild(tube);
+            // Distribuir bolas aleatoriamente nos tubos (exceto o último, que ficará vazio)
+            const tubes = document.querySelectorAll('.tube');
+            for (let i = 0; i < balls.length; i++) {
+                const randomTubeIndex = Math.floor(Math.random() * (numTubes - 1)); // Não usa o último tubo (vazio)
+                const tube = tubes[randomTubeIndex];
+                if (tube.children.length < gameConfig.maxBallsPerTube) {
+                    const ball = document.createElement('div');
+                    ball.className = 'ball';
+                    ball.style.backgroundColor = balls[i];
+                    ball.draggable = true;
+                    tube.appendChild(ball);
+                } else {
+                    // Se o tubo estiver cheio, tenta outro tubo
+                    i--;
+                }
             }
         }
 
