@@ -12,32 +12,28 @@
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
         }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             color: white;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
             padding: 10px;
+            padding-bottom: 80px;
         }
-
         .header {
             text-align: center;
             padding: 10px 0;
             width: 100%;
         }
-
         h1 {
             font-size: 1.8rem;
             margin-bottom: 5px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
-
         .game-info {
             display: flex;
             justify-content: space-between;
@@ -49,12 +45,10 @@
             padding: 10px 20px;
             backdrop-filter: blur(10px);
         }
-
         .level, .moves {
             font-size: 1.1rem;
             font-weight: bold;
         }
-
         .game-container {
             flex: 1;
             display: flex;
@@ -64,8 +58,8 @@
             width: 100%;
             max-width: 500px;
             position: relative;
+            margin-bottom: 80px;
         }
-
         .tubes-container {
             display: flex;
             flex-wrap: wrap;
@@ -74,7 +68,6 @@
             padding: 10px;
             width: 100%;
         }
-
         .tube {
             width: 60px;
             height: 200px;
@@ -89,17 +82,14 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .tube.selected {
             border: 2px solid white;
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
             transform: translateY(-5px);
         }
-
         .tube.full {
             pointer-events: none;
         }
-
         .ball {
             width: 45px;
             height: 45px;
@@ -107,21 +97,25 @@
             margin: 2px 0;
             transition: transform 0.3s;
             box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+            cursor: grab;
         }
-
         .ball.dragging {
             transform: scale(1.1);
             z-index: 10;
         }
-
         .controls {
+            position: fixed;
+            bottom: 10px;
+            left: 0;
+            right: 0;
             display: flex;
             justify-content: center;
             gap: 15px;
-            width: 100%;
-            padding: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            z-index: 10;
         }
-
         button {
             background: rgba(255, 255, 255, 0.2);
             border: 2px solid white;
@@ -134,14 +128,12 @@
             transition: all 0.3s;
             backdrop-filter: blur(5px);
         }
-
         button:hover, button:active {
             background: white;
             color: #6a11cb;
         }
-
         .message {
-            position: absolute;
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -154,46 +146,37 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
         }
-
         .message h2 {
             margin-bottom: 15px;
             font-size: 1.8rem;
         }
-
         .message p {
             margin-bottom: 20px;
             font-size: 1.1rem;
         }
-
         @media (max-width: 500px) {
             .tube {
                 width: 50px;
                 height: 180px;
             }
-            
             .ball {
                 width: 40px;
                 height: 40px;
             }
-            
             h1 {
                 font-size: 1.5rem;
             }
-            
             .game-info {
                 padding: 8px 15px;
             }
-            
             .level, .moves {
                 font-size: 1rem;
             }
         }
-
         @media (max-height: 700px) {
             .tube {
                 height: 160px;
             }
-            
             .ball {
                 width: 35px;
                 height: 35px;
@@ -209,25 +192,19 @@
             <div class="moves">Movimentos: <span id="moves">0</span></div>
         </div>
     </div>
-
     <div class="game-container">
-        <div class="tubes-container" id="tubes-container">
-            <!-- Os tubos serão gerados dinamicamente pelo JavaScript -->
-        </div>
+        <div class="tubes-container" id="tubes-container"></div>
     </div>
-
     <div class="controls">
         <button id="reset">Reiniciar</button>
         <button id="undo">Desfazer</button>
         <button id="hint">Dica</button>
     </div>
-
     <div class="message" id="win-message">
         <h2>Parabéns!</h2>
         <p>Você completou o nível <span id="completed-level">1</span> em <span id="completed-moves">0</span> movimentos!</p>
         <button id="next-level">Próximo Nível</button>
     </div>
-
     <script>
         // Configurações do jogo
         const gameConfig = {
@@ -237,26 +214,11 @@
             gameHistory: [],
             maxBallsPerTube: 4,
             levels: [
-                {
-                    tubes: 4,
-                    colors: ['#FF5252', '#4CAF50', '#2196F3']
-                },
-                {
-                    tubes: 5,
-                    colors: ['#FF5252', '#4CAF50', '#2196F3', '#FFC107']
-                },
-                {
-                    tubes: 6,
-                    colors: ['#FF5252', '#4CAF50', '#2196F3', '#FFC107', '#9C27B0']
-                },
-                {
-                    tubes: 7,
-                    colors: ['#FF5252', '#4CAF50', '#2196F3', '#FFC107', '#9C27B0', '#00BCD4']
-                },
-                {
-                    tubes: 8,
-                    colors: ['#FF5252', '#4CAF50', '#2196F3', '#FFC107', '#9C27B0', '#00BCD4', '#795548']
-                }
+                { tubes: 4, colors: ['#FF5252', '#4CAF50', '#2196F3'] },
+                { tubes: 5, colors: ['#FF5252', '#4CAF50', '#2196F3', '#FFC107'] },
+                { tubes: 6, colors: ['#FF5252', '#4CAF50', '#2196F3', '#FFC107', '#9C27B0'] },
+                { tubes: 7, colors: ['#FF5252', '#4CAF50', '#2196F3', '#FFC107', '#9C27B0', '#00BCD4'] },
+                { tubes: 8, colors: ['#FF5252', '#4CAF50', '#2196F3', '#FFC107', '#9C27B0', '#00BCD4', '#795548'] }
             ]
         };
 
@@ -272,12 +234,15 @@
         const completedMoves = document.getElementById('completed-moves');
         const nextLevelButton = document.getElementById('next-level');
 
+        // Variável para arraste
+        let draggedBall = null;
+        let draggedFromTube = null;
+
         // Inicializar o jogo
         function initGame() {
             gameConfig.moves = 0;
             gameConfig.selectedTube = null;
             gameConfig.gameHistory = [];
-            
             updateGameInfo();
             generateLevel();
             setupEventListeners();
@@ -286,40 +251,39 @@
         // Gerar nível
         function generateLevel() {
             tubesContainer.innerHTML = '';
-            
             const level = gameConfig.levels[gameConfig.currentLevel - 1];
             const colors = [...level.colors];
-            
-            // Criar bolas para o nível
             let balls = [];
+
+            // Criar bolas
             colors.forEach(color => {
                 for (let i = 0; i < gameConfig.maxBallsPerTube; i++) {
                     balls.push(color);
                 }
             });
-            
-            // Embaralhar as bolas
+
+            // Embaralhar bolas
             balls = shuffleArray(balls);
-            
-            // Criar tubos
+
+            // Criar tubos com bolas
             for (let i = 0; i < level.tubes; i++) {
                 const tube = document.createElement('div');
                 tube.className = 'tube';
                 tube.dataset.index = i;
-                
-                // Adicionar bolas aos tubos
+
                 for (let j = 0; j < gameConfig.maxBallsPerTube; j++) {
                     if (balls.length > 0) {
                         const ball = document.createElement('div');
                         ball.className = 'ball';
                         ball.style.backgroundColor = balls.pop();
+                        ball.draggable = true;
                         tube.appendChild(ball);
                     }
                 }
-                
+
                 tubesContainer.appendChild(tube);
             }
-            
+
             // Adicionar tubos vazios
             const emptyTubes = Math.max(2, 6 - level.tubes);
             for (let i = 0; i < emptyTubes; i++) {
@@ -330,20 +294,33 @@
             }
         }
 
-        // Configurar event listeners
+        // Configurar eventos
         function setupEventListeners() {
-            // Eventos de toque para os tubos
+            // Eventos de toque/clique nos tubos
             document.querySelectorAll('.tube').forEach(tube => {
-                tube.addEventListener('touchstart', handleTubeTouch);
                 tube.addEventListener('click', handleTubeClick);
             });
-            
-            // Eventos para os botões
+
+            // Eventos de arraste das bolas
+            document.querySelectorAll('.ball').forEach(ball => {
+                ball.addEventListener('dragstart', handleDragStart);
+                ball.addEventListener('dragend', handleDragEnd);
+            });
+
+            // Eventos de arraste nos tubos
+            document.querySelectorAll('.tube').forEach(tube => {
+                tube.addEventListener('dragover', handleDragOver);
+                tube.addEventListener('dragenter', handleDragEnter);
+                tube.addEventListener('dragleave', handleDragLeave);
+                tube.addEventListener('drop', handleDrop);
+            });
+
+            // Botões
             resetButton.addEventListener('click', resetLevel);
             undoButton.addEventListener('click', undoMove);
             hintButton.addEventListener('click', showHint);
             nextLevelButton.addEventListener('click', nextLevel);
-            
+
             // Prevenir comportamento padrão de toque
             document.addEventListener('touchmove', function(e) {
                 if (e.target.classList.contains('ball') || e.target.classList.contains('tube')) {
@@ -352,75 +329,105 @@
             }, { passive: false });
         }
 
-        // Manipular toque nos tubos
-        function handleTubeTouch(e) {
-            e.preventDefault();
-            const tube = e.currentTarget;
-            handleTubeSelection(tube);
+        // Início do arraste da bola
+        function handleDragStart(e) {
+            draggedBall = e.target;
+            draggedFromTube = e.target.parentElement;
+            draggedBall.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', ''); // Necessário para Firefox
         }
 
-        // Manipular clique nos tubos
+        // Fim do arraste da bola
+        function handleDragEnd() {
+            draggedBall.classList.remove('dragging');
+            draggedBall = null;
+            draggedFromTube = null;
+        }
+
+        // Permitir soltar a bola no tubo
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        // Destacar tubo ao entrar com a bola
+        function handleDragEnter(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('selected');
+        }
+
+        // Remover destaque ao sair do tubo
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('selected');
+        }
+
+        // Soltar a bola no tubo
+        function handleDrop(e) {
+            e.preventDefault();
+            const toTube = e.currentTarget;
+            toTube.classList.remove('selected');
+
+            if (!draggedBall || !draggedFromTube) return;
+
+            // Verificar se o tubo de destino é válido
+            if (isValidMove(draggedFromTube, toTube)) {
+                saveGameState();
+                toTube.appendChild(draggedBall);
+                gameConfig.moves++;
+                updateGameInfo();
+
+                if (checkWinCondition()) {
+                    showWinMessage();
+                }
+            }
+        }
+
+        // Verificar se o movimento é válido
+        function isValidMove(fromTube, toTube) {
+            // Não pode mover para o mesmo tubo
+            if (fromTube === toTube) return false;
+
+            // Tubo de destino cheio
+            if (toTube.children.length >= gameConfig.maxBallsPerTube) return false;
+
+            // Tubo de origem vazio
+            if (fromTube.children.length === 0) return false;
+
+            const topBall = fromTube.lastElementChild;
+            const toTopBall = toTube.lastElementChild;
+
+            // Tubo de destino vazio ou mesma cor
+            return !toTopBall || toTopBall.style.backgroundColor === topBall.style.backgroundColor;
+        }
+
+        // Clique no tubo
         function handleTubeClick(e) {
             const tube = e.currentTarget;
-            handleTubeSelection(tube);
-        }
 
-        // Selecionar tubo
-        function handleTubeSelection(tube) {
-            // Se nenhum tubo está selecionado
             if (gameConfig.selectedTube === null) {
-                // Verificar se o tubo tem bolas
                 if (tube.children.length > 0) {
                     gameConfig.selectedTube = tube;
                     tube.classList.add('selected');
                 }
             } else {
-                // Se o mesmo tubo é clicado novamente, deselecionar
                 if (gameConfig.selectedTube === tube) {
                     gameConfig.selectedTube.classList.remove('selected');
                     gameConfig.selectedTube = null;
                     return;
                 }
-                
-                // Tentar mover a bola
-                moveBall(gameConfig.selectedTube, tube);
-                
-                // Deselecionar o tubo
+
+                if (isValidMove(gameConfig.selectedTube, tube)) {
+                    saveGameState();
+                    tube.appendChild(gameConfig.selectedTube.lastElementChild);
+                    gameConfig.moves++;
+                    updateGameInfo();
+
+                    if (checkWinCondition()) {
+                        showWinMessage();
+                    }
+                }
+
                 gameConfig.selectedTube.classList.remove('selected');
                 gameConfig.selectedTube = null;
-            }
-        }
-
-        // Mover bola entre tubos
-        function moveBall(fromTube, toTube) {
-            // Verificar se o tubo de destino tem espaço
-            if (toTube.children.length >= gameConfig.maxBallsPerTube) {
-                return;
-            }
-            
-            // Obter a bola do topo do tubo de origem
-            const topBall = fromTube.lastElementChild;
-            if (!topBall) return;
-            
-            // Verificar se o movimento é válido
-            const toTopBall = toTube.lastElementChild;
-            if (toTopBall && toTopBall.style.backgroundColor !== topBall.style.backgroundColor) {
-                return;
-            }
-            
-            // Salvar estado atual para desfazer
-            saveGameState();
-            
-            // Mover a bola
-            toTube.appendChild(topBall);
-            
-            // Atualizar contador de movimentos
-            gameConfig.moves++;
-            updateGameInfo();
-            
-            // Verificar vitória
-            if (checkWinCondition()) {
-                showWinMessage();
             }
         }
 
@@ -434,10 +441,9 @@
                 });
                 state.push(balls);
             });
-            
+
             gameConfig.gameHistory.push(state);
-            
-            // Limitar o histórico para evitar uso excessivo de memória
+
             if (gameConfig.gameHistory.length > 50) {
                 gameConfig.gameHistory.shift();
             }
@@ -446,60 +452,56 @@
         // Desfazer movimento
         function undoMove() {
             if (gameConfig.gameHistory.length === 0) return;
-            
+
             const previousState = gameConfig.gameHistory.pop();
-            
-            // Limpar todos os tubos
+
             document.querySelectorAll('.tube').forEach(tube => {
                 tube.innerHTML = '';
             });
-            
-            // Restaurar estado anterior
+
             previousState.forEach((balls, index) => {
                 const tube = document.querySelector(`.tube[data-index="${index}"]`);
                 balls.forEach(color => {
                     const ball = document.createElement('div');
                     ball.className = 'ball';
                     ball.style.backgroundColor = color;
+                    ball.draggable = true;
                     tube.appendChild(ball);
                 });
             });
-            
-            // Atualizar contador de movimentos
+
             if (gameConfig.moves > 0) {
                 gameConfig.moves--;
                 updateGameInfo();
             }
-            
-            // Deselecionar qualquer tubo selecionado
+
             if (gameConfig.selectedTube) {
                 gameConfig.selectedTube.classList.remove('selected');
                 gameConfig.selectedTube = null;
             }
+
+            setupEventListeners(); // Reconfigurar eventos após desfazer
         }
 
         // Mostrar dica
         function showHint() {
-            // Encontrar um movimento válido
             const tubes = document.querySelectorAll('.tube');
             let fromTube = null;
             let toTube = null;
-            
+
             for (let i = 0; i < tubes.length; i++) {
                 const currentTube = tubes[i];
                 if (currentTube.children.length === 0) continue;
-                
+
                 const topBallColor = currentTube.lastElementChild.style.backgroundColor;
-                
+
                 for (let j = 0; j < tubes.length; j++) {
                     if (i === j) continue;
-                    
+
                     const targetTube = tubes[j];
-                    
-                    // Verificar se o tubo de destino tem espaço
+
                     if (targetTube.children.length >= gameConfig.maxBallsPerTube) continue;
-                    
-                    // Verificar se a cor corresponde ou se o tubo está vazio
+
                     const targetTopBall = targetTube.lastElementChild;
                     if (!targetTopBall || targetTopBall.style.backgroundColor === topBallColor) {
                         fromTube = currentTube;
@@ -507,16 +509,14 @@
                         break;
                     }
                 }
-                
+
                 if (fromTube) break;
             }
-            
-            // Destacar os tubos da dica
+
             if (fromTube && toTube) {
-                // Piscar os tubos
                 fromTube.style.boxShadow = '0 0 15px yellow';
                 toTube.style.boxShadow = '0 0 15px yellow';
-                
+
                 setTimeout(() => {
                     fromTube.style.boxShadow = '';
                     toTube.style.boxShadow = '';
@@ -524,20 +524,16 @@
             }
         }
 
-        // Verificar condição de vitória
+        // Verificar vitória
         function checkWinCondition() {
             const tubes = document.querySelectorAll('.tube');
-            
+
             for (let tube of tubes) {
                 const balls = tube.querySelectorAll('.ball');
-                
-                // Se o tubo está vazio, continuar
+
                 if (balls.length === 0) continue;
-                
-                // Se o tubo não está cheio, não é uma vitória
                 if (balls.length < gameConfig.maxBallsPerTube) return false;
-                
-                // Verificar se todas as bolas no tubo são da mesma cor
+
                 const firstColor = balls[0].style.backgroundColor;
                 for (let ball of balls) {
                     if (ball.style.backgroundColor !== firstColor) {
@@ -545,7 +541,7 @@
                     }
                 }
             }
-            
+
             return true;
         }
 
@@ -561,10 +557,9 @@
             if (gameConfig.currentLevel < gameConfig.levels.length) {
                 gameConfig.currentLevel++;
             } else {
-                // Se completou todos os níveis, voltar ao primeiro
                 gameConfig.currentLevel = 1;
             }
-            
+
             winMessage.style.display = 'none';
             initGame();
         }
@@ -580,7 +575,7 @@
             movesElement.textContent = gameConfig.moves;
         }
 
-        // Funções utilitárias
+        // Embaralhar array
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -589,7 +584,7 @@
             return array;
         }
 
-        // Inicializar o jogo quando a página carregar
+        // Inicializar o jogo
         window.addEventListener('load', initGame);
     </script>
 </body>
