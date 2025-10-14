@@ -38,6 +38,8 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         .game-info {
+            display: flex;
+            justify-content: space-between;
             width: 100%;
             max-width: 500px;
             margin: 0 auto;
@@ -45,6 +47,10 @@
             border-radius: 20px;
             padding: 10px 20px;
             backdrop-filter: blur(10px);
+        }
+        .level, .moves {
+            font-size: 1.2rem;
+            font-weight: bold;
         }
         .game-container {
             flex: 1;
@@ -194,29 +200,27 @@
     </style>
 </head>
 <body>
-    <div class="container-fluid p-0">
-        <div class="header">
-            <h1 class="display-6 fw-bold">Ball Sort Puzzle</h1>
+    <div class="header">
+        <h1>Ball Sort Puzzle</h1>
+    </div>
+    <div class="game-info">
+        <div class="level">Nível: <span id="level">1</span></div>
+        <div class="moves">Movimentos: <span id="moves">0</span></div>
+    </div>
+    <div class="game-container">
+        <div class="tubes-container" id="tubes">
+            <!-- Os tubos serão inseridos aqui via JavaScript -->
         </div>
-        <div class="game-info d-flex justify-content-between align-items-center mt-3">
-            <div class="level fw-bold">Nível: <span id="level">1</span></div>
-            <div class="moves fw-bold">Movimentos: <span id="moves">0</span></div>
-        </div>
-        <div class="game-container">
-            <div class="tubes-container" id="tubes">
-                <!-- Os tubos serão inseridos aqui via JavaScript -->
-            </div>
-        </div>
-        <div class="controls">
-            <button class="btn btn-custom">Reiniciar</button>
-            <button class="btn btn-custom">Desfazer</button>
-            <button class="btn btn-custom">Dica</button>
-        </div>
-        <div class="message" id="message">
-            <h2>Parabéns!</h2>
-            <p>Você completou o nível!</p>
-            <button class="btn btn-custom">Próximo Nível</button>
-        </div>
+    </div>
+    <div class="controls">
+        <button class="btn btn-custom">Reiniciar</button>
+        <button class="btn btn-custom">Desfazer</button>
+        <button class="btn btn-custom">Dica</button>
+    </div>
+    <div class="message" id="message">
+        <h2>Parabéns!</h2>
+        <p>Você completou o nível!</p>
+        <button class="btn btn-custom">Próximo Nível</button>
     </div>
 
     <!-- Bootstrap 5 JS Bundle with Popper -->
