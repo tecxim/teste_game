@@ -207,6 +207,7 @@
     </div>
     <script>
         // Configurações do jogo
+        // Configurações do jogo
         const gameConfig = {
             currentLevel: 1,
             moves: 0,
@@ -214,13 +215,14 @@
             gameHistory: [],
             maxBallsPerTube: 4,
             levels: [
-                { tubes: 4, colors: ['#FF5252', '#4CAF50', '#2196F3'] },
-                { tubes: 5, colors: ['#FF5252', '#4CAF50', '#2196F3', '#FFC107'] },
-                { tubes: 6, colors: ['#FF5252', '#4CAF50', '#2196F3', '#FFC107', '#9C27B0'] },
-                { tubes: 7, colors: ['#FF5252', '#4CAF50', '#2196F3', '#FFC107', '#9C27B0', '#00BCD4'] },
-                { tubes: 8, colors: ['#FF5252', '#4CAF50', '#2196F3', '#FFC107', '#9C27B0', '#00BCD4', '#795548'] }
+                {
+                    tubes: 6, // 3 tubos cheios + 3 tubos vazios
+                    colors: ['#4CAF50', '#2196F3', '#FFEB3B', '#FFFFFF', '#E91E63']
+                    // verde, azul, amarela, branca, rosa
+                }
             ]
         };
+
 
         // Elementos DOM
         const tubesContainer = document.getElementById('tubes-container');
