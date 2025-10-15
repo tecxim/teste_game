@@ -121,7 +121,7 @@
       align-items: center;
       width: 100%;
       padding: 0.75rem 0;
-      gap: 2rem;
+      gap: 1rem;
       flex-shrink: 0;
     }
     .btn {
@@ -146,7 +146,8 @@
       border: 2px solid var(--primary-color);
       background: rgba(125, 211, 252, 0.2);
       color: white;
-      min-width: 100px;
+      min-width: 80px;
+      font-size: 0.9rem;
     }
     .btn:active {
       transform: scale(0.95);
@@ -157,22 +158,23 @@
       left: 0;
       width: 100%;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       pointer-events: none;
       z-index: 1000;
       padding: 0 2rem;
       height: auto;
+      gap: 4rem;
     }
     .mobile-btn {
       pointer-events: all;
-      background: var(--btn-bg);
-      border: 2px solid var(--btn-border);
+      background: rgba(125, 211, 252, 0.2);
+      border: 2px solid var(--primary-color);
       color: white;
-      font-size: 1.8rem;
+      font-size: 2.2rem;
       border-radius: 50%;
-      width: 70px;
-      height: 70px;
+      width: 80px;
+      height: 80px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -199,11 +201,12 @@
       .mobile-controls {
         bottom: 0.5rem;
         padding: 0 1.5rem;
+        gap: 3rem;
       }
       .mobile-btn {
-        width: 65px;
-        height: 65px;
-        font-size: 1.6rem;
+        width: 70px;
+        height: 70px;
+        font-size: 2rem;
       }
       .game-controls {
         padding: 0.5rem 0;
@@ -236,11 +239,12 @@
       .mobile-controls {
         bottom: 0.3rem;
         padding: 0 1rem;
+        gap: 2.5rem;
       }
       .mobile-btn {
-        width: 60px;
-        height: 60px;
-        font-size: 1.4rem;
+        width: 65px;
+        height: 65px;
+        font-size: 1.8rem;
       }
       .btn {
         font-size: 0.9rem;
@@ -376,8 +380,8 @@
       </div>
     </div>
     <div class="mobile-controls">
-      <button id="leftBtn" class="mobile-btn">←</button>
-      <button id="rightBtn" class="mobile-btn">→</button>
+      <button id="leftBtn" class="mobile-btn">⬅</button>
+      <button id="rightBtn" class="mobile-btn">➡</button>
     </div>
   </div>
   <div id="instructionsOverlay" class="instructions-overlay">
@@ -440,7 +444,6 @@
     bestEl.textContent = best;
     levelEl.textContent = level;
     speedEl.textContent = '1x';
-
     function resizeCanvas() {
       const gameArea = document.querySelector('.game-area');
       canvas.width = gameArea.offsetWidth;
@@ -449,7 +452,6 @@
       player.y = canvas.height - 70;
       createStars();
     }
-
     function createStars() {
       stars = [];
       const starCount = Math.min(100, Math.floor((canvas.width * canvas.height) / 1000));
@@ -463,7 +465,6 @@
         });
       }
     }
-
     window.addEventListener('resize', () => {
       resizeCanvas();
       if (running) {
@@ -471,20 +472,17 @@
         loop();
       }
     });
-
     resizeCanvas();
-
     function getObstacleColor(score) {
       if (score >= 100) return '--brilliant';
       if (score >= 50) return '--gold';
       if (score >= 20) return '--silver';
       return ['#ff6b35', '#ffa500', '#ff4757', '#ff6348'][Math.floor(Math.random() * 4)];
     }
-
     function spawnObstacle() {
       const size = 20 + Math.random() * 40;
       const x = Math.random() * (canvas.width - size);
-      const baseSpeed = 1.5 + Math.random() * 2; // Velocidade base reduzida
+      const baseSpeed = 1.2 + Math.random() * 1.5; // Velocidade das bolas brilhantes reduzida
       const color = getObstacleColor(score);
       obstacles.push({
         x,
@@ -495,7 +493,6 @@
         color: color
       });
     }
-
     function update() {
       if (!running || paused) return;
       const newLevel = Math.floor(score / 10) + 1;
@@ -504,25 +501,20 @@
         levelEl.textContent = level;
         speedEl.textContent = `${(1 + level * 0.15).toFixed(1)}x`;
       }
-
       let difficulty;
       if (score < 20) difficulty = 0.8;
       else if (score < 50) difficulty = 1.0;
-      else if (score < 100) difficulty = 1.2;
-      else difficulty = 1 + level * 0.2;
-
+      else if (score < 100) difficulty = 1.1;
+      else difficulty = 1 + level * 0.15; // Dificuldade ajustada para não ficar muito fácil
       player.x += player.vx * player.speed;
       if (player.x < 0) player.x = 0;
       if (player.x + player.w > canvas.width) player.x = canvas.width - player.w;
-
       let spawnRate;
       if (score < 20) spawnRate = 0.01;
       else if (score < 50) spawnRate = 0.015;
       else if (score < 100) spawnRate = 0.018;
-      else spawnRate = 0.02 * difficulty;
-
+      else spawnRate = 0.018 * difficulty;
       if (Math.random() < spawnRate) spawnObstacle();
-
       for (let i = obstacles.length - 1; i >= 0; i--) {
         const o = obstacles[i];
         o.y += o.speed * difficulty;
@@ -548,7 +540,6 @@
           return;
         }
       }
-
       for (let star of stars) {
         star.y += star.speed;
         if (star.y > canvas.height) {
@@ -557,7 +548,6 @@
         }
       }
     }
-
     function winGame() {
       running = false;
       paused = false;
@@ -571,14 +561,12 @@
       document.getElementById('restartBtn').addEventListener('click', restartGame);
       cancelAnimationFrame(animationId);
     }
-
     function rectCollide(a, b) {
       return !(a.x > b.x + b.w ||
                a.x + a.w < b.x ||
                a.y > b.y + b.h ||
                a.y + a.h < b.y);
     }
-
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       for (let star of stars) {
@@ -618,7 +606,6 @@
         ctx.fill();
       }
     }
-
     function loop() {
       update();
       draw();
@@ -626,7 +613,6 @@
         animationId = requestAnimationFrame(loop);
       }
     }
-
     function gameOver() {
       running = false;
       paused = false;
@@ -637,7 +623,6 @@
       gameOverScreen.style.display = 'flex';
       cancelAnimationFrame(animationId);
     }
-
     function restartGame() {
       score = 0;
       level = 1;
@@ -651,7 +636,6 @@
       gameOverScreen.style.display = 'none';
       startGame();
     }
-
     function startGame() {
       instructionsOverlay.style.display = 'none';
       if (!running) {
@@ -662,7 +646,6 @@
         loop();
       }
     }
-
     function togglePause() {
       if (!running) return;
       paused = !paused;
@@ -671,7 +654,6 @@
         loop();
       }
     }
-
     window.addEventListener('keydown', e => {
       if (e.key === 'ArrowLeft') {
         player.vx = -1;
@@ -688,40 +670,34 @@
         else togglePause();
       }
     });
-
     window.addEventListener('keyup', e => {
       if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
         player.vx = 0;
         moveSound.pause();
       }
     });
-
     leftBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
       player.vx = -1;
       moveSound.currentTime = 0;
       moveSound.play();
     });
-
     rightBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
       player.vx = 1;
       moveSound.currentTime = 0;
       moveSound.play();
     });
-
     leftBtn.addEventListener('touchend', (e) => {
       e.preventDefault();
       player.vx = 0;
       moveSound.pause();
     });
-
     rightBtn.addEventListener('touchend', (e) => {
       e.preventDefault();
       player.vx = 0;
       moveSound.pause();
     });
-
     closeInstructionsBtn.addEventListener('click', startGame);
     startBtn.addEventListener('click', startGame);
     pauseBtn.addEventListener('click', togglePause);
