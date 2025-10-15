@@ -240,11 +240,11 @@
                     colors: ['#4CAF50', '#2196F3', '#FFEB3B', '#E91E63']
                 },
                 {
-                    tubes: 7,
+                    tubes: 8,
                     colors: ['#4CAF50', '#2196F3', '#FFEB3B', '#E91E63', '#9C27B0']
                 },
                 {
-                    tubes: 8,
+                    tubes: 9,
                     colors: ['#4CAF50', '#2196F3', '#FFEB3B', '#E91E63', '#9C27B0', '#FF9800']
                 }
             ]
@@ -492,7 +492,7 @@
             const tubes = document.querySelectorAll('.tube');
             let fromTube = null;
             let toTube = null;
-            for (let i = 0;í < tubes.length; i++) {
+            for (let i = 0; i < tubes.length; i++) {
                 const currentTube = tubes[i];
                 if (currentTube.children.length === 0) continue;
                 const topBallColor = currentTube.lastElementChild.style.backgroundColor;
