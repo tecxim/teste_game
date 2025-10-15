@@ -156,15 +156,14 @@
       position: fixed;
       bottom: 1rem;
       left: 0;
-      width: 100%;
+      right: 0;
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
       pointer-events: none;
       z-index: 1000;
       padding: 0 2rem;
       height: auto;
-      gap: 4rem;
     }
     .mobile-btn {
       pointer-events: all;
@@ -201,7 +200,6 @@
       .mobile-controls {
         bottom: 0.5rem;
         padding: 0 1.5rem;
-        gap: 3rem;
       }
       .mobile-btn {
         width: 70px;
@@ -239,7 +237,6 @@
       .mobile-controls {
         bottom: 0.3rem;
         padding: 0 1rem;
-        gap: 2.5rem;
       }
       .mobile-btn {
         width: 65px;
@@ -381,6 +378,10 @@
     </div>
     <div class="mobile-controls">
       <button id="leftBtn" class="mobile-btn">⬅</button>
+      <div style="position: absolute; left: 50%; transform: translateX(-50%); display: flex; gap: 1rem;">
+        <button id="startBtnMobile" class="btn btn-primary" style="pointer-events: all;">Iniciar</button>
+        <button id="pauseBtnMobile" class="btn btn-outline-light" style="pointer-events: all;">Pausar</button>
+      </div>
       <button id="rightBtn" class="mobile-btn">➡</button>
     </div>
   </div>
@@ -402,6 +403,8 @@
     const ctx = canvas.getContext('2d');
     const startBtn = document.getElementById('startBtn');
     const pauseBtn = document.getElementById('pauseBtn');
+    const startBtnMobile = document.getElementById('startBtnMobile');
+    const pauseBtnMobile = document.getElementById('pauseBtnMobile');
     const restartBtn = document.getElementById('restartBtn');
     const leftBtn = document.getElementById('leftBtn');
     const rightBtn = document.getElementById('rightBtn');
@@ -482,7 +485,7 @@
     function spawnObstacle() {
       const size = 20 + Math.random() * 40;
       const x = Math.random() * (canvas.width - size);
-      const baseSpeed = 1.2 + Math.random() * 1.5; // Velocidade das bolas brilhantes reduzida
+      const baseSpeed = 1.2 + Math.random() * 1.5;
       const color = getObstacleColor(score);
       obstacles.push({
         x,
@@ -505,7 +508,7 @@
       if (score < 20) difficulty = 0.8;
       else if (score < 50) difficulty = 1.0;
       else if (score < 100) difficulty = 1.1;
-      else difficulty = 1 + level * 0.15; // Dificuldade ajustada para não ficar muito fácil
+      else difficulty = 1 + level * 0.15;
       player.x += player.vx * player.speed;
       if (player.x < 0) player.x = 0;
       if (player.x + player.w > canvas.width) player.x = canvas.width - player.w;
@@ -650,6 +653,7 @@
       if (!running) return;
       paused = !paused;
       pauseBtn.textContent = paused ? 'Continuar' : 'Pausar';
+      pauseBtnMobile.textContent = paused ? 'Continuar' : 'Pausar';
       if (!paused) {
         loop();
       }
@@ -700,7 +704,9 @@
     });
     closeInstructionsBtn.addEventListener('click', startGame);
     startBtn.addEventListener('click', startGame);
+    startBtnMobile.addEventListener('click', startGame);
     pauseBtn.addEventListener('click', togglePause);
+    pauseBtnMobile.addEventListener('click', togglePause);
     restartBtn.addEventListener('click', restartGame);
   </script>
 </body>
