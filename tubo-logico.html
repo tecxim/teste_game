@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TuboLógico</title>
+    <title>TuboLógico Plus</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         * {
@@ -23,7 +23,7 @@
             flex-direction: column;
             align-items: center;
             padding: 10px;
-            padding-bottom: 120px; /* Aumentado para evitar corte no rodapé */
+            padding-bottom: 120px;
             position: relative;
         }
         .header {
@@ -55,32 +55,32 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* Alterado para evitar corte */
+            justify-content: flex-start;
             align-items: center;
             width: 100%;
             max-width: 600px;
             position: relative;
-            margin-bottom: 20px; /* Ajustado para evitar corte */
+            margin-bottom: 20px;
         }
         .tubes-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 15px; /* Reduzido para melhor ajuste em telas pequenas */
+            gap: 15px;
             padding: 15px;
             width: 100%;
             margin-top: 10px;
         }
         .tube {
-            width: 80px; /* Reduzido para melhor ajuste */
-            height: 220px; /* Reduzido para evitar corte */
+            width: 80px;
+            height: 220px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px 15px 10px 10px;
             position: relative;
             display: flex;
             flex-direction: column-reverse;
             align-items: center;
-            padding: 5px; /* Reduzido para melhor ajuste */
+            padding: 5px;
             border: 2px solid rgba(255, 255, 255, 0.3);
             cursor: pointer;
             transition: all 0.2s;
@@ -93,17 +93,35 @@
         .tube.full {
             pointer-events: none;
         }
-        .ball {
-            width: 60px; /* Reduzido para melhor ajuste */
-            height: 60px; /* Reduzido para melhor ajuste */
-            border-radius: 50%;
-            margin: 3px 0; /* Reduzido para melhor ajuste */
+        .ball, .square, .diamond, .emerald, .gold {
+            width: 60px;
+            height: 60px;
+            margin: 3px 0;
             transition: transform 0.3s;
             box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
             cursor: grab;
             border: 2px solid rgba(255, 255, 255, 0.2);
         }
-        .ball.dragging {
+        .ball {
+            border-radius: 50%;
+        }
+        .square {
+            border-radius: 5px;
+        }
+        .diamond {
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            background-size: 150% 150%;
+        }
+        .emerald {
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            background-size: 150% 150%;
+        }
+        .gold {
+            border-radius: 50%;
+            background: linear-gradient(145deg, #FFD700, #DAA520);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+        .ball.dragging, .square.dragging, .diamond.dragging, .emerald.dragging, .gold.dragging {
             transform: scale(1.15);
             z-index: 10;
         }
@@ -166,7 +184,7 @@
                 width: 70px;
                 height: 190px;
             }
-            .ball {
+            .ball, .square, .diamond, .emerald, .gold {
                 width: 50px;
                 height: 50px;
             }
@@ -192,7 +210,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>TuboLógico</h1>
+        <h1>TuboLógico Plus</h1>
         <div class="game-info">
             <div class="level">Nível: <span id="level">1</span></div>
             <div class="moves">Movimentos: <span id="moves">0</span></div>
@@ -227,17 +245,68 @@
             gameHistory: [],
             maxBallsPerTube: 4,
             levels: [
+                // Níveis originais (bolas)
                 {
                     tubes: 6,
-                    colors: ['#4CAF50', '#2196F3', '#FFEB3B', '#E91E63']
+                    elements: [
+                        { type: 'ball', colors: ['#4CAF50', '#2196F3', '#FFEB3B', '#E91E63'] }
+                    ]
                 },
                 {
                     tubes: 8,
-                    colors: ['#4CAF50', '#2196F3', '#FFEB3B', '#E91E63', '#9C27B0']
+                    elements: [
+                        { type: 'ball', colors: ['#4CAF50', '#2196F3', '#FFEB3B', '#E91E63', '#9C27B0'] }
+                    ]
                 },
                 {
                     tubes: 9,
-                    colors: ['#4CAF50', '#2196F3', '#FFEB3B', '#E91E63', '#9C27B0', '#FF9800']
+                    elements: [
+                        { type: 'ball', colors: ['#4CAF50', '#2196F3', '#FFEB3B', '#E91E63', '#9C27B0', '#FF9800'] }
+                    ]
+                },
+                // Novos níveis (quadradinhos)
+                {
+                    tubes: 8,
+                    elements: [
+                        { type: 'ball', colors: ['#4CAF50', '#2196F3', '#FFEB3B'] },
+                        { type: 'square', colors: ['#E91E63', '#9C27B0', '#FF9800'] }
+                    ]
+                },
+                // Nível com diamantes
+                {
+                    tubes: 9,
+                    elements: [
+                        { type: 'ball', colors: ['#4CAF50', '#2196F3'] },
+                        { type: 'diamond', colors: ['#FFEB3B', '#E91E63', '#9C27B0'] }
+                    ]
+                },
+                // Nível com esmeraldas
+                {
+                    tubes: 10,
+                    elements: [
+                        { type: 'ball', colors: ['#4CAF50', '#2196F3', '#FFEB3B'] },
+                        { type: 'emerald', colors: ['#2E7D32', '#006064', '#388E3C'] }
+                    ]
+                },
+                // Nível com bolas de ouro
+                {
+                    tubes: 10,
+                    elements: [
+                        { type: 'ball', colors: ['#4CAF50', '#2196F3'] },
+                        { type: 'gold', colors: ['#FFD700'] },
+                        { type: 'square', colors: ['#E91E63', '#9C27B0'] }
+                    ]
+                },
+                // Nível final (todos os elementos)
+                {
+                    tubes: 12,
+                    elements: [
+                        { type: 'ball', colors: ['#4CAF50', '#2196F3', '#FFEB3B'] },
+                        { type: 'square', colors: ['#E91E63', '#9C27B0'] },
+                        { type: 'diamond', colors: ['#FF9800', '#607D8B'] },
+                        { type: 'emerald', colors: ['#2E7D32', '#006064'] },
+                        { type: 'gold', colors: ['#FFD700'] }
+                    ]
                 }
             ]
         };
@@ -255,7 +324,7 @@
         const nextLevelButton = document.getElementById('next-level');
 
         // Variável para arraste
-        let draggedBall = null;
+        let draggedElement = null;
         let draggedFromTube = null;
         let isMusicPlaying = false;
 
@@ -273,41 +342,39 @@
         function generateLevel() {
             tubesContainer.innerHTML = '';
             const level = gameConfig.levels[gameConfig.currentLevel - 1];
-            const colors = [...level.colors];
-            let balls = [];
+            let allElements = [];
 
-            // Criar bolas (4 bolas por cor)
-            colors.forEach(color => {
-                for (let i = 0; i < gameConfig.maxBallsPerTube; i++) {
-                    balls.push(color);
-                }
+            // Criar elementos (bolas, quadradinhos, diamantes, etc.)
+            level.elements.forEach(elementType => {
+                elementType.colors.forEach(color => {
+                    for (let i = 0; i < gameConfig.maxBallsPerTube; i++) {
+                        allElements.push({ type: elementType.type, color: color });
+                    }
+                });
             });
 
-            // Embaralhar bolas
-            balls = shuffleArray(balls);
-
-            // Número de tubos = número de cores + 2 (tubos vazios extras)
-            const numTubes = colors.length + 2;
+            // Embaralhar elementos
+            allElements = shuffleArray(allElements);
 
             // Criar tubos
-            for (let i = 0; i < numTubes; i++) {
+            for (let i = 0; i < level.tubes; i++) {
                 const tube = document.createElement('div');
                 tube.className = 'tube';
                 tube.dataset.index = i;
                 tubesContainer.appendChild(tube);
             }
 
-            // Distribuir bolas aleatoriamente nos tubos
+            // Distribuir elementos aleatoriamente nos tubos
             const tubes = document.querySelectorAll('.tube');
-            for (let i = 0; i < balls.length; i++) {
-                const randomTubeIndex = Math.floor(Math.random() * numTubes);
+            for (let i = 0; i < allElements.length; i++) {
+                const randomTubeIndex = Math.floor(Math.random() * level.tubes);
                 const tube = tubes[randomTubeIndex];
                 if (tube.children.length < gameConfig.maxBallsPerTube) {
-                    const ball = document.createElement('div');
-                    ball.className = 'ball';
-                    ball.style.backgroundColor = balls[i];
-                    ball.draggable = true;
-                    tube.appendChild(ball);
+                    const element = document.createElement('div');
+                    element.className = allElements[i].type;
+                    element.style.backgroundColor = allElements[i].color;
+                    element.draggable = true;
+                    tube.appendChild(element);
                 } else {
                     i--;
                 }
@@ -319,72 +386,72 @@
             document.querySelectorAll('.tube').forEach(tube => {
                 tube.addEventListener('click', handleTubeClick);
             });
-
-            document.querySelectorAll('.ball').forEach(ball => {
-                ball.addEventListener('dragstart', handleDragStart);
-                ball.addEventListener('dragend', handleDragEnd);
+            document.querySelectorAll('.ball, .square, .diamond, .emerald, .gold').forEach(element => {
+                element.addEventListener('dragstart', handleDragStart);
+                element.addEventListener('dragend', handleDragEnd);
             });
-
             document.querySelectorAll('.tube').forEach(tube => {
                 tube.addEventListener('dragover', handleDragOver);
                 tube.addEventListener('dragenter', handleDragEnter);
                 tube.addEventListener('dragleave', handleDragLeave);
                 tube.addEventListener('drop', handleDrop);
             });
-
             resetButton.addEventListener('click', resetLevel);
             undoButton.addEventListener('click', undoMove);
             hintButton.addEventListener('click', showHint);
             nextLevelButton.addEventListener('click', nextLevel);
-
             document.addEventListener('touchmove', function(e) {
-                if (e.target.classList.contains('ball') || e.target.classList.contains('tube')) {
+                if (e.target.classList.contains('ball') ||
+                    e.target.classList.contains('square') ||
+                    e.target.classList.contains('diamond') ||
+                    e.target.classList.contains('emerald') ||
+                    e.target.classList.contains('gold') ||
+                    e.target.classList.contains('tube')) {
                     e.preventDefault();
                 }
             }, { passive: false });
         }
 
-        // Início do arraste da bola
+        // Início do arraste
         function handleDragStart(e) {
-            draggedBall = e.target;
+            draggedElement = e.target;
             draggedFromTube = e.target.parentElement;
-            draggedBall.classList.add('dragging');
+            draggedElement.classList.add('dragging');
             e.dataTransfer.setData('text/plain', '');
         }
 
-        // Fim do arraste da bola
+        // Fim do arraste
         function handleDragEnd() {
-            draggedBall.classList.remove('dragging');
-            draggedBall = null;
+            draggedElement.classList.remove('dragging');
+            draggedElement = null;
             draggedFromTube = null;
         }
 
-        // Permitir soltar a bola no tubo
+        // Permitir soltar no tubo
         function handleDragOver(e) {
             e.preventDefault();
         }
 
-        // Destacar tubo ao entrar com a bola
+        // Destacar tubo ao entrar
         function handleDragEnter(e) {
             e.preventDefault();
             e.currentTarget.classList.add('selected');
         }
 
-        // Remover destaque ao sair do tubo
+        // Remover destaque ao sair
         function handleDragLeave(e) {
             e.currentTarget.classList.remove('selected');
         }
 
-        // Soltar a bola no tubo
+        // Soltar no tubo
         function handleDrop(e) {
             e.preventDefault();
             const toTube = e.currentTarget;
             toTube.classList.remove('selected');
-            if (!draggedBall || !draggedFromTube) return;
-
+            if (!draggedElement || !draggedFromTube) return;
             if (isValidMove(draggedFromTube, toTube)) {
                 saveGameState();
-                toTube.appendChild(draggedBall);
+                toTube.appendChild(draggedElement);
                 gameConfig.moves++;
                 updateGameInfo();
                 moveSound.currentTime = 0;
@@ -395,14 +462,16 @@
             }
         }
 
-        // Verificar se o movimento é válido
+        // Verificar movimento válido
         function isValidMove(fromTube, toTube) {
             if (fromTube === toTube) return false;
             if (toTube.children.length >= gameConfig.maxBallsPerTube) return false;
             if (fromTube.children.length === 0) return false;
-            const topBall = fromTube.lastElementChild;
-            const toTopBall = toTube.lastElementChild;
-            return !toTopBall || toTopBall.style.backgroundColor === topBall.style.backgroundColor;
+            const topElement = fromTube.lastElementChild;
+            const toTopElement = toTube.lastElementChild;
+            return !toTopElement ||
+                   (toTopElement.className === topElement.className &&
+                    toTopElement.style.backgroundColor === topElement.style.backgroundColor);
         }
 
         // Clique no tubo
@@ -439,11 +508,14 @@
         function saveGameState() {
             const state = [];
             document.querySelectorAll('.tube').forEach(tube => {
-                const balls = [];
-                tube.querySelectorAll('.ball').forEach(ball => {
-                    balls.push(ball.style.backgroundColor);
+                const elements = [];
+                tube.querySelectorAll('.ball, .square, .diamond, .emerald, .gold').forEach(element => {
+                    elements.push({
+                        type: element.className,
+                        color: element.style.backgroundColor
+                    });
                 });
-                state.push(balls);
+                state.push(elements);
             });
             gameConfig.gameHistory.push(state);
             if (gameConfig.gameHistory.length > 50) {
@@ -458,14 +530,14 @@
             document.querySelectorAll('.tube').forEach(tube => {
                 tube.innerHTML = '';
             });
-            previousState.forEach((balls, index) => {
+            previousState.forEach((elements, index) => {
                 const tube = document.querySelector(`.tube[data-index="${index}"]`);
-                balls.forEach(color => {
-                    const ball = document.createElement('div');
-                    ball.className = 'ball';
-                    ball.style.backgroundColor = color;
-                    ball.draggable = true;
-                    tube.appendChild(ball);
+                elements.forEach(element => {
+                    const el = document.createElement('div');
+                    el.className = element.type;
+                    el.style.backgroundColor = element.color;
+                    el.draggable = true;
+                    tube.appendChild(el);
                 });
             });
             if (gameConfig.moves > 0) {
@@ -487,13 +559,15 @@
             for (let i = 0; i < tubes.length; i++) {
                 const currentTube = tubes[i];
                 if (currentTube.children.length === 0) continue;
-                const topBallColor = currentTube.lastElementChild.style.backgroundColor;
+                const topElement = currentTube.lastElementChild;
                 for (let j = 0; j < tubes.length; j++) {
                     if (i === j) continue;
                     const targetTube = tubes[j];
                     if (targetTube.children.length >= gameConfig.maxBallsPerTube) continue;
-                    const targetTopBall = targetTube.lastElementChild;
-                    if (!targetTopBall || targetTopBall.style.backgroundColor === topBallColor) {
+                    const targetTopElement = targetTube.lastElementChild;
+                    if (!targetTopElement ||
+                        (targetTopElement.className === topElement.className &&
+                         targetTopElement.style.backgroundColor === topElement.style.backgroundColor)) {
                         fromTube = currentTube;
                         toTube = targetTube;
                         break;
@@ -515,12 +589,13 @@
         function checkWinCondition() {
             const tubes = document.querySelectorAll('.tube');
             for (let tube of tubes) {
-                const balls = tube.querySelectorAll('.ball');
-                if (balls.length === 0) continue;
-                if (balls.length < gameConfig.maxBallsPerTube) return false;
-                const firstColor = balls[0].style.backgroundColor;
-                for (let ball of balls) {
-                    if (ball.style.backgroundColor !== firstColor) {
+                const elements = tube.querySelectorAll('.ball, .square, .diamond, .emerald, .gold');
+                if (elements.length === 0) continue;
+                if (elements.length < gameConfig.maxBallsPerTube) return false;
+                const firstType = elements[0].className;
+                const firstColor = elements[0].style.backgroundColor;
+                for (let element of elements) {
+                    if (element.className !== firstType || element.style.backgroundColor !== firstColor) {
                         return false;
                     }
                 }
