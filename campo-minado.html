@@ -57,6 +57,13 @@
 </head>
 <body>
 
+<script>
+// Protege esta página
+if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
+    window.location.href = "login.html";
+}
+</script>
+
   <h1>💣 Campo Minado Cartoon</h1>
   <div id="status">Clique no botão abaixo para começar!</div>
   <div id="controls">
