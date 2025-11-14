@@ -62,6 +62,13 @@
   </style>
 </head>
 <body>
+
+<script>
+// Protege esta página
+if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
+    window.location.href = "login.html";
+}
+</script>
   <div id="start-screen">
     <h1>Bailarina – Pule os Obstáculos</h1>
     <p>Toque na tela ou pressione ESPAÇO para pular.</p>
