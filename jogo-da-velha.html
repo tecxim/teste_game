@@ -55,6 +55,13 @@
 </head>
 <body>
 
+<script>
+// Protege esta página
+if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
+    window.location.href = "login.html";
+}
+</script>
+
   <div class="container text-center">
     <h1>🎮 Jogo da Velha Cartoon</h1>
 
