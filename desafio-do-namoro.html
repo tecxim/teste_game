@@ -341,7 +341,7 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
     let boyName = "Rapaz";
     let girlName = "Mocinha";
     let attempts = 0;
-    const maxAttempts = 10;
+    const maxAttempts = 14;
 
     function startGame() {
       boyName = document.getElementById('boy-name').value || "Rapaz";
@@ -443,7 +443,7 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
     }
 
     function checkGameEnd() {
-      if (score === 5) {
+      if (score === 7) {
         gameOver = true;
         document.getElementById('success-sound').play();
         document.getElementById('cheer-sound').play();
@@ -462,7 +462,7 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
         showRestart();
       }
 
-      if (errors === 5) {
+      if (errors === 7) {
         gameOver = true;
         document.getElementById('fail-sound').play();
         document.getElementById('boo-sound').play();
