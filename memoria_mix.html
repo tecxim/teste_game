@@ -61,11 +61,18 @@
             background-color: #6c757d;
             transform: rotateY(180deg);
         }
+        .cards-wrapper {
+            overflow-x: auto;
+            max-width: 100%;
+        }
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
             gap: 10px;
             margin-top: 20px;
+            justify-content: center;
+            padding: 10px;
+            min-width: 340px;
         }
         .win-message {
             display: none;
@@ -104,10 +111,18 @@
         .icon-plane { color: #7158e2; }
         .icon-house { color: #6c5ce7; }
         .icon-tree { color: #00b894; }
+        @media (max-width: 768px) {
+            .card {
+                width: 70px;
+                height: 90px;
+            }
+            .icon {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
-
 <script>
 // Protege esta página
 if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
@@ -131,13 +146,14 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
                     <button id="restart" class="btn btn-danger">Reiniciar</button>
                 </div>
             </div>
-            <div class="cards-container" id="cards"></div>
+            <div class="cards-wrapper">
+                <div class="cards-container" id="cards"></div>
+            </div>
             <div class="win-message" id="winMessage">
                 <h3 id="winText">Parabéns!</h3>
             </div>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const cards = document.getElementById('cards');
@@ -147,14 +163,12 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
             const winMessage = document.getElementById('winMessage');
             const winText = document.getElementById('winText');
             const phaseElement = document.getElementById('phase');
-
             // Sons e música de fundo
             const flipSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3");
             const matchSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3");
             const bgMusic = new Audio("https://www.bensound.com/bensound-music/bensound-sunny.mp3");
             bgMusic.loop = true;
             bgMusic.volume = 0.3;
-
             let moves = 0;
             let time = 0;
             let timer;
@@ -162,7 +176,6 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
             let matchedPairs = 0;
             let currentPhase = 0;
             let isMusicPlaying = false;
-
             const phases = [
                 {
                     name: "Alimentos",
@@ -204,7 +217,6 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
                     ]
                 }
             ];
-
             function initGame() {
                 moves = 0;
                 time = 0;
@@ -218,10 +230,8 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
                     time++;
                     timeElement.textContent = time;
                 }, 1000);
-
                 const cardValues = [...phases[currentPhase].cards, ...phases[currentPhase].cards];
                 cardValues.sort(() => 0.5 - Math.random());
-
                 cards.innerHTML = '';
                 cardValues.forEach((value, index) => {
                     const card = document.createElement('div');
@@ -241,7 +251,6 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
                     cards.appendChild(card);
                 });
                 phaseElement.textContent = `Fase: ${phases[currentPhase].name}`;
-
                 // Inicia a música após interação do usuário
                 if (!isMusicPlaying) {
                     document.addEventListener('click', () => {
@@ -250,14 +259,12 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
                     }, { once: true });
                 }
             }
-
             function flipCard() {
                 if (flippedCards.length < 2 && !this.classList.contains('flipped') && !flippedCards.includes(this)) {
                     this.classList.add('flipped');
                     flippedCards.push(this);
                     flipSound.currentTime = 0;
                     flipSound.play();
-
                     if (flippedCards.length === 2) {
                         moves++;
                         movesElement.textContent = moves;
@@ -265,7 +272,6 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
                     }
                 }
             }
-
             function checkMatch() {
                 const [card1, card2] = flippedCards;
                 if (card1.dataset.value === card2.dataset.value) {
@@ -296,7 +302,6 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
                     }, 1000);
                 }
             }
-
             restartButton.addEventListener('click', () => {
                 bgMusic.pause();
                 bgMusic.currentTime = 0;
@@ -304,18 +309,15 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
                 currentPhase = 0;
                 initGame();
             });
-
             initGame();
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
 // Bloqueia clique direito
 document.addEventListener("contextmenu", function(e){
     e.preventDefault();
 });
-
 // Bloqueia teclas que abrem o DevTools
 document.onkeydown = function(e) {
     if (
@@ -329,17 +331,14 @@ document.onkeydown = function(e) {
         return false;
     }
 };
-
 // Bloqueia arrastar para fora, copiar e recortar
 document.addEventListener("copy", (e) => e.preventDefault());
 document.addEventListener("cut", (e) => e.preventDefault());
 document.addEventListener("dragstart", (e) => e.preventDefault());
-
 // Bloqueia seleção de texto
 document.querySelectorAll("*").forEach(el => {
     el.style.userSelect = "none";
 });
 </script>
-
 </body>
 </html>
