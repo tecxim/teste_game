@@ -326,146 +326,119 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
   <audio id="boo-sound" src="https://www.soundjay.com/human/sounds/boo-1.mp3"></audio>
   <script>
     let score = 0;
-    let errors = 0;
-    let gameOver = false;
-    let boyName = "Rapaz";
-    let girlName = "Mocinha";
-    let attempts = 0;
-    let isThrowing = false; // Controle para lançar uma rosa por vez
-    const maxAttempts = 10; // Alterado para 10 chances
+let errors = 0;
+let gameOver = false;
+let boyName = "Rapaz";
+let girlName = "Mocinha";
+let isThrowing = false;
 
-    function startGame() {
-      boyName = document.getElementById('boy-name').value || "Rapaz";
-      girlName = document.getElementById('girl-name').value || "Mocinha";
-      document.getElementById('boy-name-display').textContent = boyName;
-      document.getElementById('girl-name-display').textContent = girlName;
-      document.getElementById('name-form').style.display = 'none';
-      document.getElementById('game-content').style.display = 'block';
-      document.getElementById('game-area').addEventListener('click', throwRose);
-      document.getElementById('game-area').addEventListener('touchstart', throwRose, {passive: true});
-      updateScoreDisplay();
+function startGame() {
+  boyName = document.getElementById('boy-name').value || "Rapaz";
+  girlName = document.getElementById('girl-name').value || "Mocinha";
+  document.getElementById('boy-name-display').textContent = boyName;
+  document.getElementById('girl-name-display').textContent = girlName;
+  document.getElementById('name-form').style.display = 'none';
+  document.getElementById('game-content').style.display = 'block';
+  document.getElementById('game-area').addEventListener('click', throwRose);
+  document.getElementById('game-area').addEventListener('touchstart', throwRose, {passive: true});
+  updateScoreDisplay();
+}
+
+function throwRose(e) {
+  if (gameOver || isThrowing) return;
+  isThrowing = true;
+
+  if (e.type === 'touchstart') {
+    e.preventDefault();
+  }
+
+  const gameArea = document.getElementById('game-area');
+  const basket = document.getElementById('basket');
+
+  const rose = document.createElement('div');
+  rose.className = 'rose';
+  rose.innerHTML = '🌹';
+  rose.style.left = '15%';
+  rose.style.bottom = '30%';
+  gameArea.appendChild(rose);
+
+  document.getElementById('throw-sound').play();
+
+  const basketRect = basket.getBoundingClientRect();
+  const gameRect = gameArea.getBoundingClientRect();
+
+  const hit = Math.random() > 0.5;
+  let targetX, targetY;
+
+  if (hit) {
+    const basketCenterX = (basketRect.left + basketRect.right) / 2 - gameRect.left;
+    const basketCenterY = basketRect.top - gameRect.top;
+    targetX = (basketCenterX / gameRect.width * 100) + '%';
+    targetY = (basketCenterY / gameRect.height * 100) + '%';
+  } else {
+    let randomX, randomY;
+    do {
+      randomX = 10 + Math.random() * 80;
+      randomY = 10 + Math.random() * 60;
+      const basketX = (basketRect.left + basketRect.right) / 2 - gameRect.left;
+      const basketY = basketRect.top - gameRect.top;
+      const distance = Math.sqrt(
+        Math.pow(randomX - (basketX / gameRect.width * 100), 2) +
+        Math.pow(randomY - (basketY / gameRect.height * 100), 2)
+      );
+      if (distance > 15) break;
+    } while (true);
+    targetX = randomX + '%';
+    targetY = randomY + '%';
+  }
+
+  setTimeout(() => {
+    rose.style.left = targetX;
+    rose.style.bottom = targetY;
+  }, 100);
+
+  setTimeout(() => {
+    if (hit) {
+      score++;
+      document.getElementById('acertos-count').textContent = "Acertos: " + score;
+    } else {
+      errors++;
+      document.getElementById('erros-count').textContent = "Erros: " + errors;
     }
+    rose.remove();
+    isThrowing = false;
+    checkGameEnd();
+  }, 1600);
+}
 
-    function throwRose(e) {
-      if (gameOver || attempts >= maxAttempts || isThrowing) return;
-      isThrowing = true; // Bloqueia novos lançamentos até terminar a animação
+function checkGameEnd() {
+  if (score === 10) { // Ganha com 10 acertos
+    gameOver = true;
+    document.getElementById('success-sound').play();
+    document.getElementById('cheer-sound').play();
+    document.getElementById('basket').style.display = 'none';
+    document.getElementById('boy').classList.add('together');
+    document.getElementById('girl').classList.add('together');
+    spawnHearts();
+    setTimeout(() => document.getElementById('love-sound').play(), 2000);
+    document.getElementById('result-message').innerText = "Namorados! 💕";
+    document.getElementById('result-message').style.display = "block";
+    showRestart();
+  }
+  if (errors === 10) { // Perde com 10 erros
+    gameOver = true;
+    document.getElementById('fail-sound').play();
+    document.getElementById('boo-sound').play();
+    document.getElementById('boy-char').innerText = "😢";
+    document.getElementById('girl-char').innerText = "😭";
+    document.getElementById('boy-char').classList.add('sad');
+    document.getElementById('girl-char').classList.add('sad');
+    document.getElementById('result-message').innerText = "Encalhados! 😢";
+    document.getElementById('result-message').style.display = "block";
+    showRestart();
+  }
+}
 
-      if (e.type === 'touchstart') {
-        e.preventDefault();
-      }
-
-      const gameArea = document.getElementById('game-area');
-      const basket = document.getElementById('basket');
-
-      const rose = document.createElement('div');
-      rose.className = 'rose';
-      rose.innerHTML = '🌹';
-      rose.style.left = '15%';
-      rose.style.bottom = '30%';
-      gameArea.appendChild(rose);
-
-      document.getElementById('throw-sound').play();
-
-      const basketRect = basket.getBoundingClientRect();
-      const gameRect = gameArea.getBoundingClientRect();
-
-      const hit = Math.random() > 0.5;
-      let targetX, targetY;
-
-      if (hit) {
-        const basketCenterX = (basketRect.left + basketRect.right) / 2 - gameRect.left;
-        const basketCenterY = basketRect.top - gameRect.top;
-        targetX = (basketCenterX / gameRect.width * 100) + '%';
-        targetY = (basketCenterY / gameRect.height * 100) + '%';
-      } else {
-        let randomX, randomY;
-        do {
-          randomX = 10 + Math.random() * 80;
-          randomY = 10 + Math.random() * 60;
-          const basketX = (basketRect.left + basketRect.right) / 2 - gameRect.left;
-          const basketY = basketRect.top - gameRect.top;
-          const distance = Math.sqrt(
-            Math.pow(randomX - (basketX / gameRect.width * 100), 2) +
-            Math.pow(randomY - (basketY / gameRect.height * 100), 2)
-          );
-          if (distance > 15) break;
-        } while (true);
-        targetX = randomX + '%';
-        targetY = randomY + '%';
-      }
-
-      setTimeout(() => {
-        rose.style.left = targetX;
-        rose.style.bottom = targetY;
-      }, 100);
-
-      setTimeout(() => {
-        attempts++;
-        if (hit) {
-          score++;
-          document.getElementById('acertos-count').textContent = "Acertos: " + score;
-        } else {
-          errors++;
-          document.getElementById('erros-count').textContent = "Erros: " + errors;
-        }
-        rose.remove();
-        isThrowing = false; // Permite novo lançamento
-        checkGameEnd();
-      }, 1600);
-    }
-
-    function checkGameEnd() {
-      if (score === 10) {
-        gameOver = true;
-        document.getElementById('success-sound').play();
-        document.getElementById('cheer-sound').play();
-        document.getElementById('basket').style.display = 'none';
-        document.getElementById('boy').classList.add('together');
-        document.getElementById('girl').classList.add('together');
-        spawnHearts();
-        setTimeout(() => document.getElementById('love-sound').play(), 2000);
-        document.getElementById('result-message').innerText = "Namorados! 💕";
-        document.getElementById('result-message').style.display = "block";
-        showRestart();
-      }
-      if (errors === 10) {
-        gameOver = true;
-        document.getElementById('fail-sound').play();
-        document.getElementById('boo-sound').play();
-        document.getElementById('boy-char').innerText = "😢";
-        document.getElementById('girl-char').innerText = "😭";
-        document.getElementById('boy-char').classList.add('sad');
-        document.getElementById('girl-char').classList.add('sad');
-        document.getElementById('result-message').innerText = "Encalhados! 😢";
-        document.getElementById('result-message').style.display = "block";
-        showRestart();
-      }
-      if (attempts >= maxAttempts && !gameOver) {
-        gameOver = true;
-        if (score > errors) {
-          document.getElementById('success-sound').play();
-          document.getElementById('cheer-sound').play();
-          document.getElementById('basket').style.display = 'none';
-          document.getElementById('boy').classList.add('together');
-          document.getElementById('girl').classList.add('together');
-          spawnHearts();
-          setTimeout(() => document.getElementById('love-sound').play(), 2000);
-          document.getElementById('result-message').innerText = "Namorados! 💕";
-          document.getElementById('result-message').style.display = "block";
-          showRestart();
-        } else {
-          document.getElementById('fail-sound').play();
-          document.getElementById('boo-sound').play();
-          document.getElementById('boy-char').innerText = "😢";
-          document.getElementById('girl-char').innerText = "😭";
-          document.getElementById('boy-char').classList.add('sad');
-          document.getElementById('girl-char').classList.add('sad');
-          document.getElementById('result-message').innerText = "Encalhados! 😢";
-          document.getElementById('result-message').style.display = "block";
-          showRestart();
-        }
-      }
-    }
 
     function spawnHearts() {
       const gameArea = document.getElementById('game-area');
