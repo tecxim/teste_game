@@ -12,7 +12,7 @@
       --success-color: #28a745;
       --error-color: #dc3545;
     }
-    
+
     body {
       background: linear-gradient(to bottom, #ffe6f2, #e6f7ff);
       text-align: center;
@@ -27,7 +27,7 @@
       justify-content: center;
       touch-action: manipulation;
     }
-    
+
     .container {
       width: 100%;
       max-width: 100vw;
@@ -36,19 +36,19 @@
       flex-direction: column;
       min-height: 100vh;
     }
-    
+
     .header {
       flex-shrink: 0;
       padding: 10px 0;
     }
-    
+
     .game-content {
       flex: 1;
       display: flex;
       flex-direction: column;
       width: 100%;
     }
-    
+
     .game-area {
       position: relative;
       flex: 1;
@@ -62,39 +62,39 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       min-height: 60vh;
     }
-    
+
     .boy, .girl, .basket {
       position: absolute;
-      bottom: 10%;
+      bottom: 20%; /* Ajustado para subir mais */
       text-align: center;
       width: 20%;
       max-width: 100px;
       z-index: 10;
     }
-    
-    .boy { 
-      left: 5%; 
+
+    .boy {
+      left: 5%;
     }
-    
-    .girl { 
-      right: 5%; 
+
+    .girl {
+      right: 5%;
       transition: all 2s ease;
     }
-    
+
     .basket {
       left: 50%;
       transform: translateX(-50%);
-      bottom: 15%;
+      bottom: 25%; /* Ajustado para subir mais */
       width: 25%;
       max-width: 120px;
     }
-    
+
     .character {
       font-size: 15vw;
       max-font-size: 80px;
       transition: all 1.5s ease;
     }
-    
+
     .rose {
       position: absolute;
       font-size: 10vw;
@@ -103,20 +103,20 @@
       pointer-events: none;
       z-index: 5;
     }
-    
+
     .together {
       bottom: 20% !important;
     }
-    
-    .boy.together { 
-      left: 35% !important; 
+
+    .boy.together {
+      left: 35% !important;
     }
-    
-    .girl.together { 
-      left: 65% !important; 
-      right: auto !important; 
+
+    .girl.together {
+      left: 65% !important;
+      right: auto !important;
     }
-    
+
     .hearts {
       position: absolute;
       font-size: 8vw;
@@ -126,30 +126,30 @@
       pointer-events: none;
       z-index: 20;
     }
-    
+
     @keyframes floatUp {
-      0% { 
-        transform: translateY(0) scale(1); 
-        opacity: 1; 
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
       }
-      100% { 
-        transform: translateY(-100px) scale(1.5); 
-        opacity: 0; 
+      100% {
+        transform: translateY(-100px) scale(1.5);
+        opacity: 0;
       }
     }
-    
+
     .sad {
       transform: scale(1.1);
       color: #555;
     }
-    
+
     #restart-btn {
       display: none;
       margin: 10px auto;
       font-size: 16px;
       padding: 10px 20px;
     }
-    
+
     #result-message {
       position: absolute;
       top: 50%;
@@ -166,7 +166,7 @@
       padding: 10px 20px;
       border-radius: 10px;
     }
-    
+
     #name-form {
       margin: 10px auto;
       width: 90%;
@@ -176,35 +176,35 @@
       border-radius: 10px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    
+
     button {
       margin: 5px;
       padding: 10px 15px;
       font-size: 16px;
     }
-    
+
     h1 {
       font-size: 24px;
       margin: 10px 0;
       color: #d63384;
     }
-    
+
     h3 {
       font-size: 18px;
       margin: 10px 0;
     }
-    
+
     p {
       font-size: 14px;
       margin: 5px 0;
       line-height: 1.4;
     }
-    
+
     input.form-control {
       font-size: 16px;
       padding: 8px;
     }
-    
+
     .score-display {
       font-size: 16px;
       font-weight: bold;
@@ -213,15 +213,15 @@
       justify-content: center;
       gap: 15px;
     }
-    
+
     .score-acertos {
       color: var(--success-color);
     }
-    
+
     .score-erros {
       color: var(--error-color);
     }
-    
+
     .name-display {
       font-size: 14px;
       font-weight: bold;
@@ -230,17 +230,17 @@
       border-radius: 10px;
       display: inline-block;
     }
-    
+
     .boy-name {
       background-color: var(--boy-color);
       color: white;
     }
-    
+
     .girl-name {
       background-color: var(--girl-color);
       color: white;
     }
-    
+
     .instructions {
       background: #f8f9fa;
       padding: 10px;
@@ -248,8 +248,7 @@
       margin: 10px 0;
       font-size: 14px;
     }
-    
-    /* Media queries para diferentes tamanhos de tela */
+
     @media (min-width: 768px) {
       h1 { font-size: 32px; }
       h3 { font-size: 22px; }
@@ -259,7 +258,7 @@
       .hearts { font-size: 50px; }
       #result-message { font-size: 40px; }
     }
-    
+
     @media (max-height: 700px) {
       .game-area {
         min-height: 50vh;
@@ -277,7 +276,6 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
   <div class="container">
     <div class="header">
       <h1 class="mb-2">🌹 Pedido de Namoro 🌹</h1>
-
       <div id="name-form">
         <div class="mb-2">
           <label for="boy-name" class="form-label">Nome do Rapaz:</label>
@@ -290,7 +288,6 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
         <button class="btn btn-primary" onclick="startGame()">Começar Jogo</button>
       </div>
     </div>
-
     <div class="game-content">
       <div id="game-content" style="display: none;">
         <div class="instructions">
@@ -298,27 +295,21 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
           <p>✅ Se acertar 7 → ela aceita e os dois se aproximam ❤️</p>
           <p>❌ Se errar 7 → os dois ficam tristes 😢</p>
         </div>
-
         <div class="score-display">
           <span class="score-acertos" id="acertos-count">Acertos: 0</span>
           <span class="score-erros" id="erros-count">Erros: 0</span>
         </div>
-
         <button id="restart-btn" class="btn btn-primary" onclick="restartGame()">🔄 Recomeçar</button>
       </div>
-
       <div class="game-area" id="game-area">
         <div id="result-message"></div>
-
         <div class="boy" id="boy">
           <div class="character" id="boy-char">👦</div>
           <div id="boy-name-display" class="name-display boy-name">Rapaz</div>
         </div>
-
         <div class="basket" id="basket">
           <div class="character">🧺</div>
         </div>
-
         <div class="girl" id="girl">
           <div class="character" id="girl-char">👧</div>
           <div id="girl-name-display" class="name-display girl-name">Mocinha</div>
@@ -333,7 +324,6 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
   <audio id="fail-sound" src="https://www.soundjay.com/misc/sounds/fail-buzzer-01.mp3"></audio>
   <audio id="cheer-sound" src="https://www.soundjay.com/human/sounds/cheering-2.mp3"></audio>
   <audio id="boo-sound" src="https://www.soundjay.com/human/sounds/boo-1.mp3"></audio>
-
   <script>
     let score = 0;
     let errors = 0;
@@ -341,28 +331,25 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
     let boyName = "Rapaz";
     let girlName = "Mocinha";
     let attempts = 0;
-    const maxAttempts = 14;
+    let isThrowing = false; // Controle para lançar uma rosa por vez
+    const maxAttempts = 10; // Alterado para 10 chances
 
     function startGame() {
       boyName = document.getElementById('boy-name').value || "Rapaz";
       girlName = document.getElementById('girl-name').value || "Mocinha";
-
       document.getElementById('boy-name-display').textContent = boyName;
       document.getElementById('girl-name-display').textContent = girlName;
-
       document.getElementById('name-form').style.display = 'none';
       document.getElementById('game-content').style.display = 'block';
-
       document.getElementById('game-area').addEventListener('click', throwRose);
       document.getElementById('game-area').addEventListener('touchstart', throwRose, {passive: true});
-
       updateScoreDisplay();
     }
 
     function throwRose(e) {
-      if (gameOver || attempts >= maxAttempts) return;
+      if (gameOver || attempts >= maxAttempts || isThrowing) return;
+      isThrowing = true; // Bloqueia novos lançamentos até terminar a animação
 
-      // Prevenir comportamento padrão em dispositivos touch
       if (e.type === 'touchstart') {
         e.preventDefault();
       }
@@ -370,7 +357,6 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
       const gameArea = document.getElementById('game-area');
       const basket = document.getElementById('basket');
 
-      // Criar rosa
       const rose = document.createElement('div');
       rose.className = 'rose';
       rose.innerHTML = '🌹';
@@ -378,55 +364,41 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
       rose.style.bottom = '30%';
       gameArea.appendChild(rose);
 
-      // Tocar som de lançamento
       document.getElementById('throw-sound').play();
 
-      // Calcular posição do cesto
       const basketRect = basket.getBoundingClientRect();
       const gameRect = gameArea.getBoundingClientRect();
 
-      // Definir se acertou ou errou - agora com lógica real de colisão
-      const hit = Math.random() > 0.5; // 50% de chance de acerto
-
+      const hit = Math.random() > 0.5;
       let targetX, targetY;
 
       if (hit) {
-        // Acertou o cesto - posição precisa do cesto
         const basketCenterX = (basketRect.left + basketRect.right) / 2 - gameRect.left;
         const basketCenterY = basketRect.top - gameRect.top;
-
         targetX = (basketCenterX / gameRect.width * 100) + '%';
         targetY = (basketCenterY / gameRect.height * 100) + '%';
       } else {
-        // Errou - posição aleatória fora do cesto
         let randomX, randomY;
         do {
-          randomX = 10 + Math.random() * 80; // 10% a 90%
-          randomY = 10 + Math.random() * 60; // 10% a 70%
-
-          // Verificar se está longe o suficiente do cesto
+          randomX = 10 + Math.random() * 80;
+          randomY = 10 + Math.random() * 60;
           const basketX = (basketRect.left + basketRect.right) / 2 - gameRect.left;
           const basketY = basketRect.top - gameRect.top;
           const distance = Math.sqrt(
             Math.pow(randomX - (basketX / gameRect.width * 100), 2) +
             Math.pow(randomY - (basketY / gameRect.height * 100), 2)
           );
-
-          // Se estiver longe o suficiente do cesto, usar esta posição
           if (distance > 15) break;
         } while (true);
-
         targetX = randomX + '%';
         targetY = randomY + '%';
       }
 
-      // Animar a rosa
       setTimeout(() => {
         rose.style.left = targetX;
         rose.style.bottom = targetY;
       }, 100);
 
-      // Processar resultado após a animação
       setTimeout(() => {
         attempts++;
         if (hit) {
@@ -436,8 +408,8 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
           errors++;
           document.getElementById('erros-count').textContent = "Erros: " + errors;
         }
-
         rose.remove();
+        isThrowing = false; // Permite novo lançamento
         checkGameEnd();
       }, 1600);
     }
@@ -447,63 +419,47 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
         gameOver = true;
         document.getElementById('success-sound').play();
         document.getElementById('cheer-sound').play();
-
-        // Animação de sucesso
         document.getElementById('basket').style.display = 'none';
         document.getElementById('boy').classList.add('together');
         document.getElementById('girl').classList.add('together');
-
         spawnHearts();
-
         setTimeout(() => document.getElementById('love-sound').play(), 2000);
-
         document.getElementById('result-message').innerText = "Namorados! 💕";
         document.getElementById('result-message').style.display = "block";
         showRestart();
       }
-
       if (errors === 7) {
         gameOver = true;
         document.getElementById('fail-sound').play();
         document.getElementById('boo-sound').play();
-
-        // Animação de fracasso
         document.getElementById('boy-char').innerText = "😢";
         document.getElementById('girl-char').innerText = "😭";
         document.getElementById('boy-char').classList.add('sad');
         document.getElementById('girl-char').classList.add('sad');
-
         document.getElementById('result-message').innerText = "Encalhados! 😢";
         document.getElementById('result-message').style.display = "block";
         showRestart();
       }
-
       if (attempts >= maxAttempts && !gameOver) {
         gameOver = true;
         if (score > errors) {
           document.getElementById('success-sound').play();
           document.getElementById('cheer-sound').play();
-
           document.getElementById('basket').style.display = 'none';
           document.getElementById('boy').classList.add('together');
           document.getElementById('girl').classList.add('together');
-
           spawnHearts();
-
           setTimeout(() => document.getElementById('love-sound').play(), 2000);
-
           document.getElementById('result-message').innerText = "Namorados! 💕";
           document.getElementById('result-message').style.display = "block";
           showRestart();
         } else {
           document.getElementById('fail-sound').play();
           document.getElementById('boo-sound').play();
-
           document.getElementById('boy-char').innerText = "😢";
           document.getElementById('girl-char').innerText = "😭";
           document.getElementById('boy-char').classList.add('sad');
           document.getElementById('girl-char').classList.add('sad');
-
           document.getElementById('result-message').innerText = "Encalhados! 😢";
           document.getElementById('result-message').style.display = "block";
           showRestart();
@@ -515,22 +471,17 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
       const gameArea = document.getElementById('game-area');
       const centerX = gameArea.offsetWidth / 2;
       const centerY = gameArea.offsetHeight / 2;
-
       for (let i = 0; i < 15; i++) {
         setTimeout(() => {
           const heart = document.createElement('div');
           heart.className = 'hearts';
           heart.innerHTML = '❤️';
-
-          // Posicionar coração em posição aleatória ao redor do centro
           const angle = Math.random() * Math.PI * 2;
           const distance = 30 + Math.random() * 50;
           const x = centerX + Math.cos(angle) * distance;
           const y = centerY + Math.sin(angle) * distance;
-
           heart.style.left = (x - 20) + 'px';
           heart.style.bottom = (gameArea.offsetHeight - y) + 'px';
-
           gameArea.appendChild(heart);
           setTimeout(() => heart.remove(), 2000);
         }, i * 200);
@@ -551,10 +502,7 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
       errors = 0;
       gameOver = false;
       attempts = 0;
-
       updateScoreDisplay();
-
-      // Resetar elementos visuais
       document.getElementById('boy-char').innerText = "👦";
       document.getElementById('girl-char').innerText = "👧";
       document.getElementById('boy-char').classList.remove('sad');
@@ -565,11 +513,8 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
       document.getElementById('girl').style.right = "5%";
       document.getElementById('girl').style.left = "auto";
       document.getElementById('basket').style.display = 'block';
-
-      // Limpar elementos criados dinamicamente
       document.querySelectorAll('.hearts').forEach(h => h.remove());
       document.querySelectorAll('.rose').forEach(r => r.remove());
-
       document.getElementById('result-message').style.display = "none";
       document.getElementById("restart-btn").style.display = "none";
     }
@@ -601,7 +546,5 @@ document.querySelectorAll("*").forEach(el => {
     el.style.userSelect = "none";
 });
 </script>
-
-
 </body>
 </html>
