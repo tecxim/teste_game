@@ -17,7 +17,6 @@
             height: 100vh;
             width: 100vw;
         }
-
         #hud {
             position: fixed;
             top: 10px;
@@ -32,12 +31,10 @@
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
             z-index: 100;
         }
-
         #hud span {
             font-weight: bold;
             color: #ffeb3b;
         }
-
         #messageBox {
             position: fixed;
             top: 50%;
@@ -55,12 +52,10 @@
             animation: fadeIn 0.5s ease-in-out;
             max-width: 80%;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translate(-50%, -60%); }
             to { opacity: 1; transform: translate(-50%, -50%); }
         }
-
         #messageBox button {
             margin-top: 15px;
             padding: 8px 20px;
@@ -73,13 +68,22 @@
             transition: all 0.3s ease;
             box-shadow: 0 0 6px rgba(0, 170, 255, 0.5);
         }
-
         #messageBox button:hover {
             background: rgba(0, 170, 255, 1);
             box-shadow: 0 0 12px rgba(0, 170, 255, 0.8);
         }
 
-      
+        #controles {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between; /* Afasta os botões para os lados */
+            padding: 0 20px;
+            z-index: 100;
+        }
+
         #controles button {
             padding: 12px 18px;
             font-size: 16px;
@@ -138,22 +142,18 @@
         let touchX = 0;
         let touchY = 0;
         let isTouching = false;
-
         // Emojis dos barcos
         const inimigos = ["🚤", "⛵", "🛥️", "🚢"];
         const jogadorEmoji = "🚢";
-
         // Player
         const player = {
             x: 0,
             y: 0,
-            size: 50, // Aumentado para 50px
+            size: 50,
             speed: 5
         };
-
         // Ondas animadas
         let ondaOffset = 0;
-
         // Fases do jogo
         const fases = [
             { fundo: "rgba(0, 0, 20, 0.3)", velocidadeBarcos: 1, quantidadeBarcos: 1, faseFinal: false },
@@ -169,7 +169,7 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             player.x = canvas.width / 2 - player.size / 2;
-            player.y = canvas.height - player.size - 80;
+            player.y = canvas.height - player.size - 80; // Navio mais acima
         }
 
         // ---------------------------------------------
@@ -182,24 +182,26 @@
 
         document.addEventListener("keyup", e => keys[e.key] = false);
 
-        let isShooting = false;
-
-        // Adicione ao evento touchstart
+        // Controles de toque para mover o navio (apenas horizontal)
         canvas.addEventListener("touchstart", e => {
             e.preventDefault();
             isTouching = true;
-            isShooting = true; // Começa a atirar
             touchX = e.touches[0].clientX;
-            touchY = e.touches[0].clientY;
         });
-        
-        // Adicione ao evento touchend
+
+        canvas.addEventListener("touchmove", e => {
+            e.preventDefault();
+            if (!isTouching) return;
+            touchX = e.touches[0].clientX;
+            player.x = touchX - player.size / 2;
+            if (player.x < 0) player.x = 0;
+            if (player.x > canvas.width - player.size) player.x = canvas.width - player.size;
+        });
+
         canvas.addEventListener("touchend", e => {
             e.preventDefault();
             isTouching = false;
-            isShooting = false; // Para de atirar
         });
-
 
         // ---------------------------------------------
         // SONS
@@ -218,9 +220,9 @@
             for (let i = 0; i < fase.quantidadeBarcos; i++) {
                 barcos.push({
                     emoji: inimigos[Math.floor(Math.random() * inimigos.length)],
-                    x: Math.random() * (canvas.width - 50), // Ajustado para 50px
+                    x: Math.random() * (canvas.width - 50),
                     y: -70,
-                    size: 50, // Aumentado para 50px
+                    size: Math.random() < 0.5 ? 50 : 80, // Tamanhos diferentes
                     speed: fase.velocidadeBarcos,
                     podeAtirar: Math.random() < 0.3
                 });
@@ -232,13 +234,38 @@
         // ---------------------------------------------
         function atirarJogador() {
             if (jogoPausado || !jogoAtivo) return;
-            tirosJogador.push({
-                x: player.x + player.size/2 - 5,
-                y: player.y - 10,
-                w: 8,
-                h: 14,
-                speed: 7
+            // Verifica se está mirando em um barco grande
+            let barcoGrandeMirado = false;
+            barcos.forEach(barco => {
+                if (barco.size === 80 && colide(
+                    {x: player.x, y: player.y, w: player.size, h: player.size},
+                    {x: barco.x, y: barco.y, w: barco.size, h: barco.size}
+                )) {
+                    barcoGrandeMirado = true;
+                }
             });
+
+            // Dispara sequencia se mirar em barco grande
+            if (barcoGrandeMirado) {
+                for (let i = 0; i < 3; i++) {
+                    tirosJogador.push({
+                        x: player.x + player.size/2 - 5,
+                        y: player.y - 10,
+                        w: 8,
+                        h: 14,
+                        speed: 7
+                    });
+                }
+            } else {
+                // Dispara tiro único
+                tirosJogador.push({
+                    x: player.x + player.size/2 - 5,
+                    y: player.y - 10,
+                    w: 8,
+                    h: 14,
+                    speed: 7
+                });
+            }
             tocarSomTiro();
         }
 
@@ -289,19 +316,15 @@
         // ---------------------------------------------
         function update() {
             if (!jogoAtivo || jogoPausado) return;
-
             // Movimentos do jogador (teclado)
             if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
             if (keys["ArrowRight"] && player.x < canvas.width - player.size) player.x += player.speed;
-
             // Tiros do jogador
             tirosJogador.forEach(t => t.y -= t.speed);
             tirosJogador = tirosJogador.filter(t => t.y > -20);
-
             // Tiros dos inimigos
             tirosInimigos.forEach(t => t.y += t.speed);
             tirosInimigos = tirosInimigos.filter(t => t.y < canvas.height + 20);
-
             // Barcos inimigos
             barcos.forEach(barco => {
                 barco.y += barco.speed;
@@ -310,7 +333,6 @@
                 }
             });
             barcos = barcos.filter(barco => barco.y < canvas.height + 70);
-
             // Colisão tiro do jogador / barco inimigo
             for (let i = barcos.length - 1; i >= 0; i--) {
                 for (let j = tirosJogador.length - 1; j >= 0; j--) {
@@ -322,7 +344,6 @@
                     }
                 }
             }
-
             // Colisão tiro inimigo / jogador
             for (let i = tirosInimigos.length - 1; i >= 0; i--) {
                 if (colide(tirosInimigos[i], player)) {
@@ -331,7 +352,6 @@
                     if (vidas <= 0) fimDeJogo(false);
                 }
             }
-
             // Colisão barco inimigo / jogador
             for (let i = barcos.length - 1; i >= 0; i--) {
                 if (colide(
@@ -343,19 +363,16 @@
                     if (vidas <= 0) fimDeJogo(false);
                 }
             }
-
             // Avançar de fase
             if (barcos.length === 0 && faseAtual < fases.length - 1) {
                 faseAtual++;
                 document.getElementById("fase").textContent = faseAtual + 1;
                 gerarBarco();
             }
-
             // Vitória
             if (faseAtual === fases.length - 1 && barcos.length === 0) {
                 fimDeJogo(true);
             }
-
             // HUD
             document.getElementById("score").textContent = score;
             document.getElementById("vidas").textContent = vidas;
@@ -367,15 +384,15 @@
         function draw() {
             desenharFundo();
             // Player
-            ctx.font = "50px Arial"; // Ajustado para 50px
+            ctx.font = "50px Arial";
             ctx.textAlign = "left";
             ctx.fillStyle = "white";
-            ctx.fillText(jogadorEmoji, player.x, player.y + 45); // Ajustado para 45px
+            ctx.fillText(jogadorEmoji, player.x, player.y + 45);
             // Inimigos
             barcos.forEach(barco => {
-                ctx.font = "50px Arial"; // Ajustado para 50px
+                ctx.font = barco.size + "px Arial";
                 ctx.fillStyle = "white";
-                ctx.fillText(barco.emoji, barco.x, barco.y + 45); // Ajustado para 45px
+                ctx.fillText(barco.emoji, barco.x, barco.y + barco.size - 5);
             });
             // Tiros do jogador
             ctx.fillStyle = "#ffeb3b";
@@ -402,12 +419,6 @@
             draw();
             ondaOffset += 0.02;
             spawnTimer++;
-        
-            // Dispara tiros enquanto isShooting for verdadeiro
-            if (isShooting && jogoAtivo && !jogoPausado) {
-                atirarJogador();
-            }
-        
             if (spawnTimer > 120 && jogoAtivo && !jogoPausado) {
                 gerarBarco();
                 spawnTimer = 0;
@@ -440,7 +451,7 @@
             jogoPausado = false;
             jogoAtivo = true;
             player.x = canvas.width / 2 - player.size / 2;
-            player.y = canvas.height - player.size - 20;
+            player.y = canvas.height - player.size - 80;
             document.getElementById("messageBox").style.display = "none";
             document.getElementById("fase").textContent = faseAtual + 1;
             document.getElementById("btnPausar").textContent = "⏸ Pausar";
