@@ -8,7 +8,7 @@
         body {
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            overflow: hidden;\a
             background: linear-gradient(to bottom, #000428, #004e92);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: white;
@@ -193,15 +193,17 @@
             e.preventDefault();
             if (!isTouching) return;
             touchX = e.touches[0].clientX;
-            player.x = touchX - player.size / 2;
+            // Suaviza o movimento usando a velocidade do player
+            if (touchX - player.size / 2 > player.x) {
+                player.x += player.speed;
+            } else if (touchX - player.size / 2 < player.x) {
+                player.x -= player.speed;
+            }
+            // Limita a posição do player
             if (player.x < 0) player.x = 0;
             if (player.x > canvas.width - player.size) player.x = canvas.width - player.size;
         });
 
-        canvas.addEventListener("touchend", e => {
-            e.preventDefault();
-            isTouching = false;
-        });
 
         // ---------------------------------------------
         // SONS
