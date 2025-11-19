@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Batalha Naval Arcade - Emojis & Ondas</title>
     <style>
         body {
@@ -13,6 +13,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: white;
             user-select: none;
+            touch-action: manipulation;
         }
 
         #hud {
@@ -76,6 +77,31 @@
             box-shadow: 0 0 12px rgba(0, 170, 255, 0.8);
         }
 
+        #controles {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 100;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px 10px 0 0;
+        }
+
+        #controles button {
+            padding: 12px 18px;
+            font-size: 16px;
+            background: rgba(0, 170, 255, 0.8);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            min-width: 100px;
+        }
+
         canvas {
             display: block;
             max-width: 100%;
@@ -85,10 +111,13 @@
             margin: 10px auto;
             background: rgba(0, 0, 20, 0.3);
             touch-action: none;
+            width: 100vw;
+            height: 100vh;
         }
     </style>
 </head>
 <body>
+    <audio id="somTiro" src="https://assets.mixkit.co/sfx/preview/mixkit-laser-gun-shoot-1717.mp3" preload="auto"></audio>
     <div id="hud">
         Fase: <span id="fase">1</span> |
         Pontos: <span id="score">0</span> |
@@ -98,6 +127,10 @@
     <div id="messageBox">
         <div id="messageText"></div>
         <button onclick="restartGame()">Jogar Novamente</button>
+    </div>
+    <div id="controles">
+        <button id="btnPausar" onclick="pausarJogo()">⏸ Pausar</button>
+        <button id="btnDisparar" onclick="atirarJogador()">🔫 Disparar</button>
     </div>
     <script>
         // ---------------------------------------------
@@ -113,11 +146,10 @@
         let vidas = 3;
         let faseAtual = 0;
         let jogoAtivo = true;
-
+        let jogoPausado = false;
         // Emojis dos barcos
         const inimigos = ["🚤", "⛵", "🛥️", "🚢"];
         const jogadorEmoji = "🚢";
-
         // Player
         const player = {
             x: 0,
@@ -125,10 +157,8 @@
             size: 40,
             speed: 5
         };
-
         // Ondas animadas
         let ondaOffset = 0;
-
         // Fases do jogo
         const fases = [
             { fundo: "rgba(0, 0, 20, 0.3)", velocidadeBarcos: 1, quantidadeBarcos: 1, faseFinal: false },
@@ -141,19 +171,8 @@
         // REDIMENSIONAR CANVAS
         // ---------------------------------------------
         function redimensionarCanvas() {
-            const maxWidth = window.innerWidth - 20;
-            const maxHeight = window.innerHeight - 100;
-            const ratio = 950 / 600;
-
-            if (maxWidth / ratio < maxHeight) {
-                canvas.width = maxWidth;
-                canvas.height = maxWidth / ratio;
-            } else {
-                canvas.height = maxHeight;
-                canvas.width = maxHeight * ratio;
-            }
-
-            // Reposiciona o jogador
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight - 80; // Deixa espaço para os controles
             player.x = canvas.width / 2 - player.size / 2;
             player.y = canvas.height - player.size - 20;
         }
@@ -161,33 +180,19 @@
         // ---------------------------------------------
         // CONTROLES (Teclado e Toque)
         // ---------------------------------------------
-        document.addEventListener("keydown", e => keys[e.key] = true);
-        document.addEventListener("keyup", e => keys[e.key] = false);
-
-        // Controles de toque para celular
-        let touchX = 0;
-        canvas.addEventListener("touchmove", e => {
-            e.preventDefault();
-            touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
-            player.x = touchX - player.size / 2;
-            if (player.x < 0) player.x = 0;
-            if (player.x > canvas.width - player.size) player.x = canvas.width - player.size;
+        document.addEventListener("keydown", e => {
+            keys[e.key] = true;
+            if (e.key === " ") atirarJogador();
         });
+        document.addEventListener("keyup", e => keys[e.key] = false);
 
         // ---------------------------------------------
         // SONS
         // ---------------------------------------------
-        function beep(freq, dur=0.1) {
-            let ctxA = new AudioContext();
-            let o = ctxA.createOscillator();
-            let g = ctxA.createGain();
-            o.connect(g);
-            g.connect(ctxA.destination);
-            o.frequency.value = freq;
-            o.type = "square";
-            o.start();
-            g.gain.exponentialRampToValueAtTime(0.0001, ctxA.currentTime + dur);
-            o.stop(ctxA.currentTime + dur);
+        function tocarSomTiro() {
+            const somTiro = document.getElementById("somTiro");
+            somTiro.currentTime = 0;
+            somTiro.play().catch(e => console.log("Erro ao tocar som:", e));
         }
 
         // ---------------------------------------------
@@ -211,6 +216,7 @@
         // TIROS DO JOGADOR
         // ---------------------------------------------
         function atirarJogador() {
+            if (jogoPausado || !jogoAtivo) return;
             tirosJogador.push({
                 x: player.x + player.size/2 - 5,
                 y: player.y - 10,
@@ -218,7 +224,7 @@
                 h: 14,
                 speed: 7
             });
-            beep(250, 0.05);
+            tocarSomTiro();
         }
 
         // ---------------------------------------------
@@ -251,10 +257,8 @@
             const fase = fases[faseAtual];
             ctx.fillStyle = fase.fundo;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
             ctx.strokeStyle = "rgba(0, 170, 255, 0.7)";
             ctx.lineWidth = 2;
-
             for (let i = 0; i < 3; i++) {
                 ctx.beginPath();
                 for (let x = 0; x < canvas.width; x++) {
@@ -269,7 +273,7 @@
         // UPDATE DO JOGO
         // ---------------------------------------------
         function update() {
-            if (!jogoAtivo) return;
+            if (!jogoAtivo || jogoPausado) return;
 
             // Movimentos do jogador (teclado)
             if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
@@ -286,13 +290,10 @@
             // Barcos inimigos
             barcos.forEach(barco => {
                 barco.y += barco.speed;
-
-                // 30% de chance de atirar
                 if (barco.podeAtirar && Math.random() < 0.01) {
                     atirarInimigo(barco);
                 }
             });
-
             barcos = barcos.filter(barco => barco.y < canvas.height + 60);
 
             // Colisão tiro do jogador / barco inimigo
@@ -300,7 +301,6 @@
                 for (let j = tirosJogador.length - 1; j >= 0; j--) {
                     if (colide(tirosJogador[j], barcos[i])) {
                         score += 10;
-                        beep(600, 0.1);
                         barcos.splice(i, 1);
                         tirosJogador.splice(j, 1);
                         break;
@@ -312,7 +312,6 @@
             for (let i = tirosInimigos.length - 1; i >= 0; i--) {
                 if (colide(tirosInimigos[i], player)) {
                     vidas--;
-                    beep(120, 0.2);
                     tirosInimigos.splice(i, 1);
                     if (vidas <= 0) fimDeJogo(false);
                 }
@@ -325,7 +324,6 @@
                     {x: barcos[i].x, y: barcos[i].y, w: barcos[i].size, h: barcos[i].size}
                 )) {
                     vidas--;
-                    beep(120, 0.2);
                     barcos.splice(i, 1);
                     if (vidas <= 0) fimDeJogo(false);
                 }
@@ -353,20 +351,17 @@
         // ---------------------------------------------
         function draw() {
             desenharFundo();
-
             // Player
             ctx.font = "40px Arial";
             ctx.textAlign = "left";
             ctx.fillStyle = "white";
             ctx.fillText(jogadorEmoji, player.x, player.y + 30);
-
             // Inimigos
             barcos.forEach(barco => {
                 ctx.font = "40px Arial";
                 ctx.fillStyle = "white";
                 ctx.fillText(barco.emoji, barco.x, barco.y + 30);
             });
-
             // Tiros do jogador
             ctx.fillStyle = "#ffeb3b";
             tirosJogador.forEach(t => {
@@ -374,7 +369,6 @@
                 ctx.arc(t.x + t.w/2, t.y + t.h/2, t.w/2, 0, Math.PI * 2);
                 ctx.fill();
             });
-
             // Tiros dos inimigos
             ctx.fillStyle = "red";
             tirosInimigos.forEach(t => {
@@ -388,12 +382,12 @@
         // LOOP
         // ---------------------------------------------
         let spawnTimer = 0;
-
         function gameLoop() {
             update();
             draw();
+            ondaOffset += 0.02;
             spawnTimer++;
-            if (spawnTimer > 120) {
+            if (spawnTimer > 120 && jogoAtivo && !jogoPausado) {
                 gerarBarco();
                 spawnTimer = 0;
             }
@@ -422,22 +416,27 @@
             score = 0;
             vidas = 3;
             faseAtual = 0;
+            jogoPausado = false;
+            jogoAtivo = true;
             player.x = canvas.width / 2 - player.size / 2;
             player.y = canvas.height - player.size - 20;
-            jogoAtivo = true;
             document.getElementById("messageBox").style.display = "none";
             document.getElementById("fase").textContent = faseAtual + 1;
+            document.getElementById("btnPausar").textContent = "⏸ Pausar";
             gerarBarco();
         }
 
         // ---------------------------------------------
-        // CONTROLE DE TIRO DO JOGADOR
+        // PAUSAR JOGO
         // ---------------------------------------------
-        document.addEventListener("keydown", e => {
-            if (e.key === " ") atirarJogador();
-        });
+        function pausarJogo() {
+            jogoPausado = !jogoPausado;
+            document.getElementById("btnPausar").textContent = jogoPausado ? "▶ Continuar" : "⏸ Pausar";
+        }
 
-        // Iniciar
+        // ---------------------------------------------
+        // INICIAR
+        // ---------------------------------------------
         window.addEventListener("resize", redimensionarCanvas);
         redimensionarCanvas();
         gerarBarco();
