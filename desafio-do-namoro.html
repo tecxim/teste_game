@@ -292,8 +292,8 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
       <div id="game-content" style="display: none;">
         <div class="instructions">
           <p>Toque na tela para lançar rosas no cesto.</p>
-          <p>✅ Se acertar 7 → ela aceita e os dois se aproximam ❤️</p>
-          <p>❌ Se errar 7 → os dois ficam tristes 😢</p>
+          <p>✅ Se acertar 10 → ela aceita e os dois se aproximam ❤️</p>
+          <p>❌ Se errar 10 → os dois ficam tristes 😢</p>
         </div>
         <div class="score-display">
           <span class="score-acertos" id="acertos-count">Acertos: 0</span>
@@ -415,7 +415,7 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
     }
 
     function checkGameEnd() {
-      if (score === 7) {
+      if (score === 10) {
         gameOver = true;
         document.getElementById('success-sound').play();
         document.getElementById('cheer-sound').play();
@@ -428,7 +428,7 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
         document.getElementById('result-message').style.display = "block";
         showRestart();
       }
-      if (errors === 7) {
+      if (errors === 10) {
         gameOver = true;
         document.getElementById('fail-sound').play();
         document.getElementById('boo-sound').play();
