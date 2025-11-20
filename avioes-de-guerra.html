@@ -857,5 +857,15 @@
             el.style.userSelect = "none";
         });
     </script>
+
+    <script>
+    const bgMusic = document.getElementById("bgMusic");
+    const soundBtn = document.getElementById("sound-btn");
+
+    soundBtn.addEventListener("click", () => {
+        bgMusic.muted = !bgMusic.muted;
+        soundBtn.textContent = bgMusic.muted ? "🔇" : "🔊";
+    });
+  </script>
 </body>
 </html>
