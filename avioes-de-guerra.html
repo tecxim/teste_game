@@ -229,9 +229,8 @@
 <body>
     <!-- 🎵 Música de fundo -->
   <audio id="bgMusic" autoplay loop>
-    <source src="https://raw.githubusercontent.com/tecxim/teste_game/main/avioes.mp3
-   " type="audio/mpeg">
-    Seu navegador não suporta áudio HTML5.
+  <source src="https://raw.githubusercontent.com/tecxim/teste_game/main/avioes.mp3" type="audio/mpeg">
+  Seu navegador não suporta áudio HTML5.
   </audio>
     
     <div id="game-container">
@@ -857,21 +856,22 @@
             el.style.userSelect = "none";
         });
     </script>
-
+   
+    //muta o audio 
     <script>
-  const bgMusic = document.getElementById("bgMusic");
-  const soundBtn = document.getElementById("sound-btn");
-
-  // Certifica que o áudio foi carregado
-  bgMusic.addEventListener("canplaythrough", () => {
-    soundBtn.addEventListener("click", () => {
-      bgMusic.muted = !bgMusic.muted; // alterna mudo
-
-      // Atualiza ícone
-      soundBtn.textContent = bgMusic.muted ? "🔇" : "🔊";
-    });
-  });
-</script>
+      const bgMusic = document.getElementById("bgMusic");
+      const soundBtn = document.getElementById("sound-btn");
+    
+      // Certifica que o áudio foi carregado
+      bgMusic.addEventListener("canplaythrough", () => {
+        soundBtn.addEventListener("click", () => {
+          bgMusic.muted = !bgMusic.muted; // alterna mudo
+    
+          // Atualiza ícone
+          soundBtn.textContent = bgMusic.muted ? "🔇" : "🔊";
+        });
+      });
+    </script>
 
 </body>
 </html>
