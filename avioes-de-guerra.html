@@ -228,13 +228,12 @@
             </div>
             <div class="controls">
                 <div class="control-btn" id="left-btn">←</div>
-                <div class="control-btn fire-btn" id="fire-btn">F</div>
                 <div class="control-btn" id="right-btn">→</div>
             </div>
         </div>
         <div id="start-screen" class="screen">
             <h1>SKY WARRIORS</h1>
-            <p class="instructions">Controle seu avião, desvie dos inimigos e atire para destruí-los!<br>Complete todas as fases para se tornar um Ás da Aviação!</p>
+            <p class="instructions">Controle seu avião, desvie dos inimigos e toque na tela para atirar!<br>Complete todas as fases para se tornar um Ás da Aviação!</p>
             <button id="start-btn">Iniciar Jogo</button>
             <button id="instructions-btn">Instruções</button>
         </div>
@@ -243,9 +242,9 @@
             <div class="instructions">
                 <p><strong>Controles PC:</strong></p>
                 <p>← → : Mover avião</p>
-                <p>Espaço: Atirar</p>
+                <p>Clique na tela: Atirar</p>
                 <p><strong>Controles Mobile:</strong></p>
-                <p>Use os botões na tela</p>
+                <p>Use os botões na tela para mover e toque na tela para atirar</p>
                 <p><strong>Objetivo:</strong></p>
                 <p>Destrua todos os inimigos para avançar de fase.</p>
                 <p>Colete power-ups para melhorar suas armas.</p>
@@ -290,10 +289,8 @@
         const levelScoreElement = document.getElementById('level-score');
         const leftBtn = document.getElementById('left-btn');
         const rightBtn = document.getElementById('right-btn');
-        const fireBtn = document.getElementById('fire-btn');
         const soundBtn = document.getElementById('sound-btn');
         const gameAudio = document.getElementById('game-audio');
-
         // Configurações do jogo
         let gameActive = false;
         let score = 0;
@@ -305,43 +302,39 @@
         let enemyBullets = [];
         let powerUps = [];
         let lastEnemySpawn = 0;
-        let enemySpawnRate = 2000; // Aumentado para espaçar mais os inimigos
+        let enemySpawnRate = 2000;
         let lastPowerUpSpawn = 0;
-        let powerUpSpawnRate = 15000; // ms
+        let powerUpSpawnRate = 15000;
         let keys = {};
         let touchControls = {
             left: false,
-            right: false,
-            fire: false
+            right: false
         };
         let isSoundOn = true;
-
         // Configuração do canvas
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
-
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
-
         // Classes do jogo
         class Player {
             constructor(x, y) {
                 this.x = x;
-                this.y = canvas.height - 150; // Ajustado para ficar acima dos botões
+                this.y = canvas.height - 150;
                 this.width = 60;
                 this.height = 40;
                 this.speed = 4;
                 this.color = '#2196f3';
                 this.bullets = [];
                 this.lastShot = 0;
-                this.shotDelay = 500; // ms
+                this.shotDelay = 500;
                 this.powerLevel = 1;
                 this.velocityX = 0;
                 this.acceleration = 0.2;
                 this.friction = 0.9;
-                this.maxSpeed = 6;
+                this.maxSpeed = 8; // Aumentado em 2 pontos
             }
             draw() {
                 ctx.fillStyle = this.color;
@@ -385,11 +378,6 @@
                     this.x = canvas.width - this.width/2;
                     this.velocityX = 0;
                 }
-                const now = Date.now();
-                if ((keys[' '] || touchControls.fire) && now - this.lastShot > this.shotDelay) {
-                    this.shoot();
-                    this.lastShot = now;
-                }
             }
             shoot() {
                 const bulletCount = this.powerLevel;
@@ -400,7 +388,6 @@
                 }
             }
         }
-
         class Enemy {
             constructor(x, y, type = 1) {
                 this.x = x;
@@ -450,7 +437,6 @@
                 enemyBullets.push(new Bullet(this.x, this.y + this.height/2, 4, '#ff5252'));
             }
         }
-
         class Bullet {
             constructor(x, y, speed, color) {
                 this.x = x;
@@ -475,7 +461,6 @@
                 return this.y < -this.height || this.y > canvas.height + this.height;
             }
         }
-
         class PowerUp {
             constructor(x, y, type) {
                 this.x = x;
@@ -515,7 +500,6 @@
                 return this.y > canvas.height + this.height;
             }
         }
-
         // Funções do jogo
         function startGame() {
             gameOverScreen.classList.add('hidden');
@@ -533,7 +517,6 @@
             gameLoop();
             if (isSoundOn) gameAudio.play();
         }
-
         function nextLevel() {
             level++;
             player.x = canvas.width / 2;
@@ -547,7 +530,6 @@
             gameActive = true;
             gameLoop();
         }
-
         function gameOver() {
             gameActive = false;
             finalScoreElement.textContent = score;
@@ -555,31 +537,26 @@
             gameOverScreen.classList.remove('hidden');
             gameAudio.pause();
         }
-
         function levelComplete() {
             gameActive = false;
             levelScoreElement.textContent = score;
             levelCompleteScreen.classList.remove('hidden');
         }
-
         function updateUI() {
             scoreElement.textContent = score;
             livesElement.textContent = lives;
             levelElement.textContent = level;
         }
-
         function spawnEnemy() {
-            const x = Math.random() * (canvas.width - 100) + 50; // Ajustado para espaçar mais os inimigos
+            const x = Math.random() * (canvas.width - 100) + 50;
             const type = Math.random() < 0.8 ? 1 : 2;
             enemies.push(new Enemy(x, -50, type));
         }
-
         function spawnPowerUp() {
             const x = Math.random() * (canvas.width - 40) + 20;
             const type = Math.floor(Math.random() * 3) + 1;
             powerUps.push(new PowerUp(x, -30, type));
         }
-
         function checkCollisions() {
             for (let i = bullets.length - 1; i >= 0; i--) {
                 for (let j = enemies.length - 1; j >= 0; j--) {
@@ -640,7 +617,6 @@
                 }
             }
         }
-
         function applyPowerUp(type) {
             switch(type) {
                 case 1: // Speed
@@ -655,12 +631,10 @@
                     break;
             }
         }
-
         function checkLevelComplete() {
             const levelTarget = level * 500;
             if (score >= levelTarget) levelComplete();
         }
-
         function gameLoop() {
             if (!gameActive) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -696,7 +670,6 @@
             checkLevelComplete();
             requestAnimationFrame(gameLoop);
         }
-
         function drawBackground() {
             const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             skyGradient.addColorStop(0, '#87CEEB');
@@ -716,7 +689,6 @@
                 ctx.fill();
             }
         }
-
         // Event Listeners
         startBtn.addEventListener('click', startGame);
         instructionsBtn.addEventListener('click', () => {
@@ -735,21 +707,18 @@
             if (isSoundOn && gameActive) gameAudio.play();
             else gameAudio.pause();
         });
-
         window.addEventListener('keydown', (e) => {
-            if (['ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+            if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
                 e.preventDefault();
                 keys[e.key] = true;
             }
             if (e.key === 'Enter') e.preventDefault();
         });
-
         window.addEventListener('keyup', (e) => {
-            if (['ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+            if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
                 keys[e.key] = false;
             }
         });
-
         leftBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
             touchControls.left = true;
@@ -766,24 +735,23 @@
             e.preventDefault();
             touchControls.right = false;
         });
-        fireBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            touchControls.fire = true;
-        });
-        fireBtn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            touchControls.fire = false;
-        });
-
         leftBtn.addEventListener('mousedown', () => touchControls.left = true);
         leftBtn.addEventListener('mouseup', () => touchControls.left = false);
         leftBtn.addEventListener('mouseleave', () => touchControls.left = false);
         rightBtn.addEventListener('mousedown', () => touchControls.right = true);
         rightBtn.addEventListener('mouseup', () => touchControls.right = false);
         rightBtn.addEventListener('mouseleave', () => touchControls.right = false);
-        fireBtn.addEventListener('mousedown', () => touchControls.fire = true);
-        fireBtn.addEventListener('mouseup', () => touchControls.fire = false);
-        fireBtn.addEventListener('mouseleave', () => touchControls.fire = false);
+        canvas.addEventListener('click', (e) => {
+            if (gameActive) {
+                player.shoot();
+            }
+        });
+        canvas.addEventListener('touchstart', (e) => {
+            if (gameActive) {
+                e.preventDefault();
+                player.shoot();
+            }
+        });
     </script>
 </body>
 </html>
