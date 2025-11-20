@@ -859,13 +859,19 @@
     </script>
 
     <script>
-    const bgMusic = document.getElementById("bgMusic");
-    const soundBtn = document.getElementById("sound-btn");
+  const bgMusic = document.getElementById("bgMusic");
+  const soundBtn = document.getElementById("sound-btn");
 
+  // Certifica que o áudio foi carregado
+  bgMusic.addEventListener("canplaythrough", () => {
     soundBtn.addEventListener("click", () => {
-        bgMusic.muted = !bgMusic.muted;
-        soundBtn.textContent = bgMusic.muted ? "🔇" : "🔊";
+      bgMusic.muted = !bgMusic.muted; // alterna mudo
+
+      // Atualiza ícone
+      soundBtn.textContent = bgMusic.muted ? "🔇" : "🔊";
     });
-  </script>
+  });
+</script>
+
 </body>
 </html>
