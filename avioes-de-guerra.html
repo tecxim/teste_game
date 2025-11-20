@@ -107,10 +107,8 @@
         .controls {
             position: fixed;
             bottom: 20px;
-            width: 100%;
+            left: 20px;
             display: flex;
-            justify-content: space-between;
-            padding: 0 20px;
             z-index: 11;
             pointer-events: auto;
         }
@@ -128,6 +126,25 @@
             pointer-events: auto;
             user-select: none;
             touch-action: manipulation;
+            margin: 0 10px;
+        }
+        #shoot-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(244, 67, 54, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            pointer-events: auto;
+            user-select: none;
+            touch-action: manipulation;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
         }
         .instructions {
             max-width: 80%;
@@ -201,6 +218,11 @@
                 height: 60px;
                 font-size: 1.2rem;
             }
+            #shoot-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
@@ -227,6 +249,7 @@
                 <div class="control-btn" id="left-btn">←</div>
                 <div class="control-btn" id="right-btn">→</div>
             </div>
+            <div class="control-btn" id="shoot-btn">🔥</div>
         </div>
         <div id="start-screen" class="screen">
             <h1>SKY WARRIORS</h1>
@@ -241,7 +264,7 @@
                 <p>← → : Mover avião</p>
                 <p>Clique na tela: Atirar</p>
                 <p><strong>Controles Mobile:</strong></p>
-                <p>Use os botões na tela para mover e toque na tela para atirar</p>
+                <p>Use os botões na tela para mover e toque no botão de fogo para atirar</p>
                 <p><strong>Objetivo:</strong></p>
                 <p>Destrua todos os inimigos para avançar de fase.</p>
                 <p>Colete power-ups para melhorar suas armas.</p>
@@ -266,10 +289,6 @@
         Seu navegador não suporta o elemento de áudio.
     </audio>
     <script>
-
-        let isShooting = false;
-        let shootInterval;
-
         // Elementos do DOM
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
@@ -290,8 +309,10 @@
         const levelScoreElement = document.getElementById('level-score');
         const leftBtn = document.getElementById('left-btn');
         const rightBtn = document.getElementById('right-btn');
+        const shootBtn = document.getElementById('shoot-btn');
         const soundBtn = document.getElementById('sound-btn');
         const gameAudio = document.getElementById('game-audio');
+
         // Configurações do jogo
         let gameActive = false;
         let score = 0;
@@ -312,6 +333,9 @@
             right: false
         };
         let isSoundOn = true;
+        let isShooting = false;
+        let shootInterval;
+
         // Configuração do canvas
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -319,6 +343,7 @@
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
+
         // Classes do jogo
         class Player {
             constructor(x, y) {
@@ -389,6 +414,7 @@
                 }
             }
         }
+
         class Enemy {
             constructor(x, y, type = 1) {
                 this.x = x;
@@ -438,6 +464,7 @@
                 enemyBullets.push(new Bullet(this.x, this.y + this.height/2, 4, '#ff5252'));
             }
         }
+
         class Bullet {
             constructor(x, y, speed, color) {
                 this.x = x;
@@ -462,6 +489,7 @@
                 return this.y < -this.height || this.y > canvas.height + this.height;
             }
         }
+
         class PowerUp {
             constructor(x, y, type) {
                 this.x = x;
@@ -501,6 +529,7 @@
                 return this.y > canvas.height + this.height;
             }
         }
+
         // Funções do jogo
         function startGame() {
             gameOverScreen.classList.add('hidden');
@@ -518,6 +547,7 @@
             gameLoop();
             if (isSoundOn) gameAudio.play();
         }
+
         function nextLevel() {
             level++;
             player.x = canvas.width / 2;
@@ -531,6 +561,7 @@
             gameActive = true;
             gameLoop();
         }
+
         function gameOver() {
             gameActive = false;
             finalScoreElement.textContent = score;
@@ -538,26 +569,31 @@
             gameOverScreen.classList.remove('hidden');
             gameAudio.pause();
         }
+
         function levelComplete() {
             gameActive = false;
             levelScoreElement.textContent = score;
             levelCompleteScreen.classList.remove('hidden');
         }
+
         function updateUI() {
             scoreElement.textContent = score;
             livesElement.textContent = lives;
             levelElement.textContent = level;
         }
+
         function spawnEnemy() {
             const x = Math.random() * (canvas.width - 100) + 50;
             const type = Math.random() < 0.8 ? 1 : 2;
             enemies.push(new Enemy(x, -50, type));
         }
+
         function spawnPowerUp() {
             const x = Math.random() * (canvas.width - 40) + 20;
             const type = Math.floor(Math.random() * 3) + 1;
             powerUps.push(new PowerUp(x, -30, type));
         }
+
         function checkCollisions() {
             for (let i = bullets.length - 1; i >= 0; i--) {
                 for (let j = enemies.length - 1; j >= 0; j--) {
@@ -618,6 +654,7 @@
                 }
             }
         }
+
         function applyPowerUp(type) {
             switch(type) {
                 case 1: // Speed
@@ -632,10 +669,12 @@
                     break;
             }
         }
+
         function checkLevelComplete() {
             const levelTarget = level * 500;
             if (score >= levelTarget) levelComplete();
         }
+
         function gameLoop() {
             if (!gameActive) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -671,6 +710,7 @@
             checkLevelComplete();
             requestAnimationFrame(gameLoop);
         }
+
         function drawBackground() {
             const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             skyGradient.addColorStop(0, '#87CEEB');
@@ -690,6 +730,7 @@
                 ctx.fill();
             }
         }
+
         // Event Listeners
         startBtn.addEventListener('click', startGame);
         instructionsBtn.addEventListener('click', () => {
@@ -736,40 +777,47 @@
             e.preventDefault();
             touchControls.right = false;
         });
-        canvas.addEventListener('mousedown', (e) => {
-    if (gameActive && !isShooting) {
-        isShooting = true;
-        shootInterval = setInterval(() => {
-            player.shoot();
-        }, 100); // Dispara a cada 100ms (ajuste conforme necessário)
-    }
-});
+        leftBtn.addEventListener('mousedown', () => touchControls.left = true);
+        leftBtn.addEventListener('mouseup', () => touchControls.left = false);
+        leftBtn.addEventListener('mouseleave', () => touchControls.left = false);
+        rightBtn.addEventListener('mousedown', () => touchControls.right = true);
+        rightBtn.addEventListener('mouseup', () => touchControls.right = false);
+        rightBtn.addEventListener('mouseleave', () => touchControls.right = false);
 
-canvas.addEventListener('mouseup', () => {
-    isShooting = false;
-    clearInterval(shootInterval);
-});
+        // Disparo contínuo ao segurar o botão de atirar
+        shootBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (gameActive && !isShooting) {
+                isShooting = true;
+                shootInterval = setInterval(() => {
+                    player.shoot();
+                }, 100);
+            }
+        });
 
-canvas.addEventListener('mouseleave', () => {
-    isShooting = false;
-    clearInterval(shootInterval);
-});
+        shootBtn.addEventListener('touchend', () => {
+            isShooting = false;
+            clearInterval(shootInterval);
+        });
 
-canvas.addEventListener('touchstart', (e) => {
-    if (gameActive && !isShooting) {
-        e.preventDefault();
-        isShooting = true;
-        shootInterval = setInterval(() => {
-            player.shoot();
-        }, 100); // Dispara a cada 100ms (ajuste conforme necessário)
-    }
-});
+        shootBtn.addEventListener('mousedown', () => {
+            if (gameActive && !isShooting) {
+                isShooting = true;
+                shootInterval = setInterval(() => {
+                    player.shoot();
+                }, 100);
+            }
+        });
 
-canvas.addEventListener('touchend', () => {
-    isShooting = false;
-    clearInterval(shootInterval);
-});
+        shootBtn.addEventListener('mouseup', () => {
+            isShooting = false;
+            clearInterval(shootInterval);
+        });
 
+        shootBtn.addEventListener('mouseleave', () => {
+            isShooting = false;
+            clearInterval(shootInterval);
+        });
     </script>
 </body>
 </html>
