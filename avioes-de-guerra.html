@@ -129,9 +129,6 @@
             user-select: none;
             touch-action: manipulation;
         }
-        .fire-btn {
-            background: rgba(244, 67, 54, 0.7);
-        }
         .instructions {
             max-width: 80%;
             text-align: center;
@@ -334,7 +331,7 @@
                 this.velocityX = 0;
                 this.acceleration = 0.2;
                 this.friction = 0.9;
-                this.maxSpeed = 8; // Aumentado em 2 pontos
+                this.maxSpeed = 8;
             }
             draw() {
                 ctx.fillStyle = this.color;
