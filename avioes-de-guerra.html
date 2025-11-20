@@ -266,6 +266,10 @@
         Seu navegador não suporta o elemento de áudio.
     </audio>
     <script>
+
+        let isShooting = false;
+        let shootInterval;
+
         // Elementos do DOM
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
@@ -732,23 +736,40 @@
             e.preventDefault();
             touchControls.right = false;
         });
-        leftBtn.addEventListener('mousedown', () => touchControls.left = true);
-        leftBtn.addEventListener('mouseup', () => touchControls.left = false);
-        leftBtn.addEventListener('mouseleave', () => touchControls.left = false);
-        rightBtn.addEventListener('mousedown', () => touchControls.right = true);
-        rightBtn.addEventListener('mouseup', () => touchControls.right = false);
-        rightBtn.addEventListener('mouseleave', () => touchControls.right = false);
-        canvas.addEventListener('click', (e) => {
-            if (gameActive) {
-                player.shoot();
-            }
-        });
-        canvas.addEventListener('touchstart', (e) => {
-            if (gameActive) {
-                e.preventDefault();
-                player.shoot();
-            }
-        });
+        canvas.addEventListener('mousedown', (e) => {
+    if (gameActive && !isShooting) {
+        isShooting = true;
+        shootInterval = setInterval(() => {
+            player.shoot();
+        }, 100); // Dispara a cada 100ms (ajuste conforme necessário)
+    }
+});
+
+canvas.addEventListener('mouseup', () => {
+    isShooting = false;
+    clearInterval(shootInterval);
+});
+
+canvas.addEventListener('mouseleave', () => {
+    isShooting = false;
+    clearInterval(shootInterval);
+});
+
+canvas.addEventListener('touchstart', (e) => {
+    if (gameActive && !isShooting) {
+        e.preventDefault();
+        isShooting = true;
+        shootInterval = setInterval(() => {
+            player.shoot();
+        }, 100); // Dispara a cada 100ms (ajuste conforme necessário)
+    }
+});
+
+canvas.addEventListener('touchend', () => {
+    isShooting = false;
+    clearInterval(shootInterval);
+});
+
     </script>
 </body>
 </html>
