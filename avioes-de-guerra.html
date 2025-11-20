@@ -756,7 +756,10 @@
         nextLevelBtn.addEventListener('click', nextLevel);
         soundBtn.addEventListener('click', () => {
             isSoundOn = !isSoundOn;
+            bgMusic.muted = !isSoundOn;
             soundBtn.textContent = isSoundOn ? '🔊' : '🔇';
+        });
+
             if (isSoundOn && gameActive) {
                 bgMusic.volume = 0.5;
                 bgMusic.play().catch(() => {});
