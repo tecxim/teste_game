@@ -284,9 +284,15 @@
             <button id="next-level-btn">Próxima Fase</button>
         </div>
     </div>
-    <audio id="game-audio" loop>
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" type="audio/mpeg">
-        Seu navegador não suporta o elemento de áudio.
+    <audio id="bg-music" loop>
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-airplane-flying-loop-1161.mp3" type="audio/mpeg">
+        Seu navegador não suporta áudio HTML5.
+    </audio>
+    <audio id="shoot-sound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-laser-gun-shot-1861.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="explosion-sound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-explosion-with-debris-2807.mp3" type="audio/mpeg">
     </audio>
     <script>
         // Elementos do DOM
@@ -311,7 +317,9 @@
         const rightBtn = document.getElementById('right-btn');
         const shootBtn = document.getElementById('shoot-btn');
         const soundBtn = document.getElementById('sound-btn');
-        const gameAudio = document.getElementById('game-audio');
+        const bgMusic = document.getElementById('bg-music');
+        const shootSound = document.getElementById('shoot-sound');
+        const explosionSound = document.getElementById('explosion-sound');
 
         // Configurações do jogo
         let gameActive = false;
@@ -324,7 +332,7 @@
         let enemyBullets = [];
         let powerUps = [];
         let lastEnemySpawn = 0;
-        let enemySpawnRate = 2000;
+        let enemySpawnRate = 1500;
         let lastPowerUpSpawn = 0;
         let powerUpSpawnRate = 15000;
         let keys = {};
@@ -335,6 +343,8 @@
         let isSoundOn = true;
         let isShooting = false;
         let shootInterval;
+        let enemiesToKill = 7; // Aumentado para 7 inimigos por fase
+        let enemiesKilled = 0;
 
         // Configuração do canvas
         function resizeCanvas() {
@@ -412,6 +422,7 @@
                     const offset = (i - (bulletCount - 1) / 2) * spread;
                     bullets.push(new Bullet(this.x + offset, this.y - this.height/2, -8, '#ffeb3b'));
                 }
+                if (isSoundOn) shootSound.play();
             }
         }
 
@@ -537,6 +548,8 @@
             score = 0;
             lives = 3;
             level = 1;
+            enemiesToKill = 7;
+            enemiesKilled = 0;
             player = new Player(canvas.width / 2, canvas.height - 150);
             bullets = [];
             enemies = [];
@@ -545,11 +558,13 @@
             updateUI();
             startScreen.classList.add('hidden');
             gameLoop();
-            if (isSoundOn) gameAudio.play();
+            if (isSoundOn) bgMusic.play();
         }
 
         function nextLevel() {
             level++;
+            enemiesToKill = 7 + (level * 1); // Aumenta 1 inimigo por fase
+            enemiesKilled = 0;
             player.x = canvas.width / 2;
             player.velocityX = 0;
             bullets = [];
@@ -567,13 +582,16 @@
             finalScoreElement.textContent = score;
             finalLevelElement.textContent = level;
             gameOverScreen.classList.remove('hidden');
-            gameAudio.pause();
+            bgMusic.pause();
         }
 
         function levelComplete() {
             gameActive = false;
             levelScoreElement.textContent = score;
             levelCompleteScreen.classList.remove('hidden');
+            setTimeout(() => {
+                nextLevel();
+            }, 1500);
         }
 
         function updateUI() {
@@ -606,7 +624,12 @@
                         enemies[j].health--;
                         if (enemies[j].health <= 0) {
                             score += enemies[j].type * 100;
+                            enemiesKilled++;
+                            if (enemiesKilled >= enemiesToKill) {
+                                levelComplete();
+                            }
                             enemies.splice(j, 1);
+                            if (isSoundOn) explosionSound.play();
                         }
                         bullets.splice(i, 1);
                         break;
@@ -670,11 +693,6 @@
             }
         }
 
-        function checkLevelComplete() {
-            const levelTarget = level * 500;
-            if (score >= levelTarget) levelComplete();
-        }
-
         function gameLoop() {
             if (!gameActive) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -707,7 +725,6 @@
                 else powerUps[i].draw();
             }
             checkCollisions();
-            checkLevelComplete();
             requestAnimationFrame(gameLoop);
         }
 
@@ -746,8 +763,8 @@
         soundBtn.addEventListener('click', () => {
             isSoundOn = !isSoundOn;
             soundBtn.textContent = isSoundOn ? '🔊' : '🔇';
-            if (isSoundOn && gameActive) gameAudio.play();
-            else gameAudio.pause();
+            if (isSoundOn && gameActive) bgMusic.play();
+            else bgMusic.pause();
         });
         window.addEventListener('keydown', (e) => {
             if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
@@ -794,12 +811,10 @@
                 }, 100);
             }
         });
-
         shootBtn.addEventListener('touchend', () => {
             isShooting = false;
             clearInterval(shootInterval);
         });
-
         shootBtn.addEventListener('mousedown', () => {
             if (gameActive && !isShooting) {
                 isShooting = true;
@@ -808,12 +823,10 @@
                 }, 100);
             }
         });
-
         shootBtn.addEventListener('mouseup', () => {
             isShooting = false;
             clearInterval(shootInterval);
         });
-
         shootBtn.addEventListener('mouseleave', () => {
             isShooting = false;
             clearInterval(shootInterval);
