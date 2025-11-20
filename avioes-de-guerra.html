@@ -295,6 +295,12 @@
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-explosion-with-debris-2807.mp3" type="audio/mpeg">
     </audio>
     <script>
+        
+        // Protege esta página
+        if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
+            window.location.href = "login.html";
+        }
+
         // Elementos do DOM
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
