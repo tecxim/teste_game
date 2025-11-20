@@ -109,7 +109,6 @@
     </style>
 </head>
 <body>
-    <audio id="somTiro" src="https://assets.mixkit.co/sfx/preview/mixkit-laser-gun-shoot-1717.mp3" preload="auto"></audio>
     <div id="hud">
         Fase: <span id="fase">1</span> |
         Pontos: <span id="score">0</span> |
@@ -208,6 +207,12 @@
             if (player.x < 0) player.x = 0;
             if (player.x > canvas.width - player.size) player.x = canvas.width - player.size;
         });
+
+          <!-- 🎵 Música de fundo -->
+          <audio id="bgMusic" autoplay loop>
+            <source src="https://www.bensound.com/bensound-music/bensound-buddy.mp3" type="audio/mpeg">
+            Seu navegador não suporta áudio HTML5.
+          </audio>
 
 
         // ---------------------------------------------
