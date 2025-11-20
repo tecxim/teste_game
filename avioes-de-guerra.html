@@ -285,24 +285,19 @@
         </div>
     </div>
     <audio id="bg-music" loop>
-    <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_2d7fa1d724.mp3" type="audio/mpeg">
+        <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_2d7fa1d724.mp3" type="audio/mpeg">
     </audio>
-    
     <audio id="shoot-sound">
         <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_31af3ef0e2.mp3" type="audio/mpeg">
     </audio>
-    
     <audio id="explosion-sound">
         <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_52c98b03c4.mp3" type="audio/mpeg">
     </audio>
-
     <script>
-        
         // Protege esta página
         if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
             window.location.href = "login.html";
         }
-
         // Elementos do DOM
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
@@ -328,7 +323,6 @@
         const bgMusic = document.getElementById('bg-music');
         const shootSound = document.getElementById('shoot-sound');
         const explosionSound = document.getElementById('explosion-sound');
-
         // Configurações do jogo
         let gameActive = false;
         let score = 0;
@@ -351,9 +345,8 @@
         let isSoundOn = true;
         let isShooting = false;
         let shootInterval;
-        let enemiesToKill = 7; // Aumentado para 7 inimigos por fase
+        let enemiesToKill = 7;
         let enemiesKilled = 0;
-
         // Configuração do canvas
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -361,7 +354,6 @@
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
-
         // Classes do jogo
         class Player {
             constructor(x, y) {
@@ -430,10 +422,12 @@
                     const offset = (i - (bulletCount - 1) / 2) * spread;
                     bullets.push(new Bullet(this.x + offset, this.y - this.height/2, -8, '#ffeb3b'));
                 }
-                if (isSoundOn) shootSound.play();
+                if (isSoundOn) {
+                    shootSound.currentTime = 0;
+                    shootSound.play().catch(() => {});
+                }
             }
         }
-
         class Enemy {
             constructor(x, y, type = 1) {
                 this.x = x;
@@ -483,7 +477,6 @@
                 enemyBullets.push(new Bullet(this.x, this.y + this.height/2, 4, '#ff5252'));
             }
         }
-
         class Bullet {
             constructor(x, y, speed, color) {
                 this.x = x;
@@ -508,7 +501,6 @@
                 return this.y < -this.height || this.y > canvas.height + this.height;
             }
         }
-
         class PowerUp {
             constructor(x, y, type) {
                 this.x = x;
@@ -548,7 +540,6 @@
                 return this.y > canvas.height + this.height;
             }
         }
-
         // Funções do jogo
         function startGame() {
             gameOverScreen.classList.add('hidden');
@@ -566,12 +557,14 @@
             updateUI();
             startScreen.classList.add('hidden');
             gameLoop();
-            if (isSoundOn) bgMusic.play();
+            if (isSoundOn) {
+                bgMusic.volume = 0.5;
+                bgMusic.play().catch(() => {});
+            }
         }
-
         function nextLevel() {
             level++;
-            enemiesToKill = 7 + (level * 1); // Aumenta 1 inimigo por fase
+            enemiesToKill = 7 + (level * 1);
             enemiesKilled = 0;
             player.x = canvas.width / 2;
             player.velocityX = 0;
@@ -583,8 +576,11 @@
             levelCompleteScreen.classList.add('hidden');
             gameActive = true;
             gameLoop();
+            if (isSoundOn) {
+                bgMusic.volume = 0.5;
+                bgMusic.play().catch(() => {});
+            }
         }
-
         function gameOver() {
             gameActive = false;
             finalScoreElement.textContent = score;
@@ -592,34 +588,27 @@
             gameOverScreen.classList.remove('hidden');
             bgMusic.pause();
         }
-
         function levelComplete() {
             gameActive = false;
             levelScoreElement.textContent = score;
             levelCompleteScreen.classList.remove('hidden');
-            setTimeout(() => {
-                nextLevel();
-            }, 1500);
+            bgMusic.pause();
         }
-
         function updateUI() {
             scoreElement.textContent = score;
             livesElement.textContent = lives;
             levelElement.textContent = level;
         }
-
         function spawnEnemy() {
             const x = Math.random() * (canvas.width - 100) + 50;
             const type = Math.random() < 0.8 ? 1 : 2;
             enemies.push(new Enemy(x, -50, type));
         }
-
         function spawnPowerUp() {
             const x = Math.random() * (canvas.width - 40) + 20;
             const type = Math.floor(Math.random() * 3) + 1;
             powerUps.push(new PowerUp(x, -30, type));
         }
-
         function checkCollisions() {
             for (let i = bullets.length - 1; i >= 0; i--) {
                 for (let j = enemies.length - 1; j >= 0; j--) {
@@ -637,7 +626,10 @@
                                 levelComplete();
                             }
                             enemies.splice(j, 1);
-                            if (isSoundOn) explosionSound.play();
+                            if (isSoundOn) {
+                                explosionSound.currentTime = 0;
+                                explosionSound.play().catch(() => {});
+                            }
                         }
                         bullets.splice(i, 1);
                         break;
@@ -685,7 +677,6 @@
                 }
             }
         }
-
         function applyPowerUp(type) {
             switch(type) {
                 case 1: // Speed
@@ -700,7 +691,6 @@
                     break;
             }
         }
-
         function gameLoop() {
             if (!gameActive) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -735,7 +725,6 @@
             checkCollisions();
             requestAnimationFrame(gameLoop);
         }
-
         function drawBackground() {
             const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             skyGradient.addColorStop(0, '#87CEEB');
@@ -755,7 +744,6 @@
                 ctx.fill();
             }
         }
-
         // Event Listeners
         startBtn.addEventListener('click', startGame);
         instructionsBtn.addEventListener('click', () => {
@@ -771,8 +759,12 @@
         soundBtn.addEventListener('click', () => {
             isSoundOn = !isSoundOn;
             soundBtn.textContent = isSoundOn ? '🔊' : '🔇';
-            if (isSoundOn && gameActive) bgMusic.play();
-            else bgMusic.pause();
+            if (isSoundOn && gameActive) {
+                bgMusic.volume = 0.5;
+                bgMusic.play().catch(() => {});
+            } else {
+                bgMusic.pause();
+            }
         });
         window.addEventListener('keydown', (e) => {
             if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
@@ -808,7 +800,6 @@
         rightBtn.addEventListener('mousedown', () => touchControls.right = true);
         rightBtn.addEventListener('mouseup', () => touchControls.right = false);
         rightBtn.addEventListener('mouseleave', () => touchControls.right = false);
-
         // Disparo contínuo ao segurar o botão de atirar
         shootBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
@@ -840,33 +831,32 @@
             clearInterval(shootInterval);
         });
     </script>
-
     <script>
-// Bloqueia clique direito
-document.addEventListener("contextmenu", function(e){
-    e.preventDefault();
-});
-// Bloqueia teclas que abrem o DevTools
-document.onkeydown = function(e) {
-    if (
-        e.keyCode === 123 ||                     // F12
-        (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
-        (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
-        (e.ctrlKey && e.keyCode === 85) ||       // Ctrl+U
-        (e.ctrlKey && e.keyCode === 83)          // Ctrl+S
-    ) {
-        e.preventDefault();
-        return false;
-    }
-};
-// Bloqueia arrastar para fora, copiar e recortar
-document.addEventListener("copy", (e) => e.preventDefault());
-document.addEventListener("cut", (e) => e.preventDefault());
-document.addEventListener("dragstart", (e) => e.preventDefault());
-// Bloqueia seleção de texto
-document.querySelectorAll("*").forEach(el => {
-    el.style.userSelect = "none";
-});
-</script>
+        // Bloqueia clique direito
+        document.addEventListener("contextmenu", function(e){
+            e.preventDefault();
+        });
+        // Bloqueia teclas que abrem o DevTools
+        document.onkeydown = function(e) {
+            if (
+                e.keyCode === 123 ||                     // F12
+                (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+                (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
+                (e.ctrlKey && e.keyCode === 85) ||       // Ctrl+U
+                (e.ctrlKey && e.keyCode === 83)          // Ctrl+S
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        };
+        // Bloqueia arrastar para fora, copiar e recortar
+        document.addEventListener("copy", (e) => e.preventDefault());
+        document.addEventListener("cut", (e) => e.preventDefault());
+        document.addEventListener("dragstart", (e) => e.preventDefault());
+        // Bloqueia seleção de texto
+        document.querySelectorAll("*").forEach(el => {
+            el.style.userSelect = "none";
+        });
+    </script>
 </body>
 </html>
