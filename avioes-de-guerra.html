@@ -228,11 +228,17 @@
 </head>
 <body>
     <!-- 🎵 Música de fundo -->
-  <audio id="bgMusic" autoplay loop>
-  <source src="https://raw.githubusercontent.com/tecxim/teste_game/main/avioes.mp3" type="audio/mpeg">
-  Seu navegador não suporta áudio HTML5.
-  </audio>
-    
+    <audio id="bgMusic" loop>
+        <source src="https://raw.githubusercontent.com/tecxim/teste_game/main/avioes.mp3" type="audio/mpeg">
+        Seu navegador não suporta áudio HTML5.
+    </audio>
+    <audio id="shoot-sound">
+        <source src="https://raw.githubusercontent.com/tecxim/teste_game/main/shoot.wav" type="audio/wav">
+    </audio>
+    <audio id="explosion-sound">
+        <source src="https://raw.githubusercontent.com/tecxim/teste_game/main/explosion.wav" type="audio/wav">
+    </audio>
+
     <div id="game-container">
         <canvas id="game-canvas"></canvas>
         <div id="ui-overlay">
@@ -290,12 +296,13 @@
             <button id="next-level-btn">Próxima Fase</button>
         </div>
     </div>
-    
+
     <script>
         // Protege esta página
         if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
             window.location.href = "login.html";
         }
+
         // Elementos do DOM
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
@@ -321,6 +328,7 @@
         const bgMusic = document.getElementById('bgMusic');
         const shootSound = document.getElementById('shoot-sound');
         const explosionSound = document.getElementById('explosion-sound');
+
         // Configurações do jogo
         let gameActive = false;
         let score = 0;
@@ -345,6 +353,7 @@
         let shootInterval;
         let enemiesToKill = 7;
         let enemiesKilled = 0;
+
         // Configuração do canvas
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -352,6 +361,7 @@
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
+
         // Classes do jogo
         class Player {
             constructor(x, y) {
@@ -426,6 +436,7 @@
                 }
             }
         }
+
         class Enemy {
             constructor(x, y, type = 1) {
                 this.x = x;
@@ -475,6 +486,7 @@
                 enemyBullets.push(new Bullet(this.x, this.y + this.height/2, 4, '#ff5252'));
             }
         }
+
         class Bullet {
             constructor(x, y, speed, color) {
                 this.x = x;
@@ -499,6 +511,7 @@
                 return this.y < -this.height || this.y > canvas.height + this.height;
             }
         }
+
         class PowerUp {
             constructor(x, y, type) {
                 this.x = x;
@@ -538,9 +551,11 @@
                 return this.y > canvas.height + this.height;
             }
         }
+
         // Funções do jogo
         function startGame() {
             gameOverScreen.classList.add('hidden');
+            levelCompleteScreen.classList.add('hidden');
             gameActive = true;
             score = 0;
             lives = 3;
@@ -560,6 +575,7 @@
                 bgMusic.play().catch(() => {});
             }
         }
+
         function nextLevel() {
             level++;
             enemiesToKill = 7 + (level * 1);
@@ -579,6 +595,7 @@
                 bgMusic.play().catch(() => {});
             }
         }
+
         function gameOver() {
             gameActive = false;
             finalScoreElement.textContent = score;
@@ -586,27 +603,32 @@
             gameOverScreen.classList.remove('hidden');
             bgMusic.pause();
         }
+
         function levelComplete() {
             gameActive = false;
             levelScoreElement.textContent = score;
             levelCompleteScreen.classList.remove('hidden');
             bgMusic.pause();
         }
+
         function updateUI() {
             scoreElement.textContent = score;
             livesElement.textContent = lives;
             levelElement.textContent = level;
         }
+
         function spawnEnemy() {
             const x = Math.random() * (canvas.width - 100) + 50;
             const type = Math.random() < 0.8 ? 1 : 2;
             enemies.push(new Enemy(x, -50, type));
         }
+
         function spawnPowerUp() {
             const x = Math.random() * (canvas.width - 40) + 20;
             const type = Math.floor(Math.random() * 3) + 1;
             powerUps.push(new PowerUp(x, -30, type));
         }
+
         function checkCollisions() {
             for (let i = bullets.length - 1; i >= 0; i--) {
                 for (let j = enemies.length - 1; j >= 0; j--) {
@@ -675,6 +697,7 @@
                 }
             }
         }
+
         function applyPowerUp(type) {
             switch(type) {
                 case 1: // Speed
@@ -689,6 +712,7 @@
                     break;
             }
         }
+
         function gameLoop() {
             if (!gameActive) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -723,6 +747,7 @@
             checkCollisions();
             requestAnimationFrame(gameLoop);
         }
+
         function drawBackground() {
             const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             skyGradient.addColorStop(0, '#87CEEB');
@@ -742,31 +767,32 @@
                 ctx.fill();
             }
         }
+
         // Event Listeners
-        startBtn.addEventListener('click', startGame);
+        startBtn.addEventListener('click', () => {
+            startGame();
+        });
+
         instructionsBtn.addEventListener('click', () => {
             startScreen.classList.add('hidden');
             instructionsScreen.classList.remove('hidden');
         });
+
         backBtn.addEventListener('click', () => {
             instructionsScreen.classList.add('hidden');
             startScreen.classList.remove('hidden');
         });
+
         restartBtn.addEventListener('click', startGame);
+
         nextLevelBtn.addEventListener('click', nextLevel);
+
         soundBtn.addEventListener('click', () => {
             isSoundOn = !isSoundOn;
             bgMusic.muted = !isSoundOn;
             soundBtn.textContent = isSoundOn ? '🔊' : '🔇';
         });
 
-            if (isSoundOn && gameActive) {
-                bgMusic.volume = 0.5;
-                bgMusic.play().catch(() => {});
-            } else {
-                bgMusic.pause();
-            }
-        });
         window.addEventListener('keydown', (e) => {
             if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
                 e.preventDefault();
@@ -774,33 +800,41 @@
             }
             if (e.key === 'Enter') e.preventDefault();
         });
+
         window.addEventListener('keyup', (e) => {
             if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
                 keys[e.key] = false;
             }
         });
+
         leftBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
             touchControls.left = true;
         });
+
         leftBtn.addEventListener('touchend', (e) => {
             e.preventDefault();
             touchControls.left = false;
         });
+
         rightBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
             touchControls.right = true;
         });
+
         rightBtn.addEventListener('touchend', (e) => {
             e.preventDefault();
             touchControls.right = false;
         });
+
         leftBtn.addEventListener('mousedown', () => touchControls.left = true);
         leftBtn.addEventListener('mouseup', () => touchControls.left = false);
         leftBtn.addEventListener('mouseleave', () => touchControls.left = false);
+
         rightBtn.addEventListener('mousedown', () => touchControls.right = true);
         rightBtn.addEventListener('mouseup', () => touchControls.right = false);
         rightBtn.addEventListener('mouseleave', () => touchControls.right = false);
+
         // Disparo contínuo ao segurar o botão de atirar
         shootBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
@@ -811,10 +845,12 @@
                 }, 100);
             }
         });
+
         shootBtn.addEventListener('touchend', () => {
             isShooting = false;
             clearInterval(shootInterval);
         });
+
         shootBtn.addEventListener('mousedown', () => {
             if (gameActive && !isShooting) {
                 isShooting = true;
@@ -823,20 +859,22 @@
                 }, 100);
             }
         });
+
         shootBtn.addEventListener('mouseup', () => {
             isShooting = false;
             clearInterval(shootInterval);
         });
+
         shootBtn.addEventListener('mouseleave', () => {
             isShooting = false;
             clearInterval(shootInterval);
         });
-    </script>
-    <script>
+
         // Bloqueia clique direito
-        document.addEventListener("contextmenu", function(e){
+        document.addEventListener("contextmenu", function(e) {
             e.preventDefault();
         });
+
         // Bloqueia teclas que abrem o DevTools
         document.onkeydown = function(e) {
             if (
@@ -850,31 +888,16 @@
                 return false;
             }
         };
+
         // Bloqueia arrastar para fora, copiar e recortar
         document.addEventListener("copy", (e) => e.preventDefault());
         document.addEventListener("cut", (e) => e.preventDefault());
         document.addEventListener("dragstart", (e) => e.preventDefault());
+
         // Bloqueia seleção de texto
         document.querySelectorAll("*").forEach(el => {
             el.style.userSelect = "none";
         });
     </script>
-   
-    //muta o audio 
-    <script>
-      const bgMusic = document.getElementById("bgMusic");
-      const soundBtn = document.getElementById("sound-btn");
-    
-      // Certifica que o áudio foi carregado
-      bgMusic.addEventListener("canplaythrough", () => {
-        soundBtn.addEventListener("click", () => {
-          bgMusic.muted = !bgMusic.muted; // alterna mudo
-    
-          // Atualiza ícone
-          soundBtn.textContent = bgMusic.muted ? "🔇" : "🔊";
-        });
-      });
-    </script>
-
 </body>
 </html>
