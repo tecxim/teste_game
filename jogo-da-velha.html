@@ -82,13 +82,6 @@ if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
     <button id="restart" class="btn btn-warning d-none" onclick="restartGame()">🔁 Jogar Novamente</button>
   </div>
 
-  <!-- 🎵 Música de fundo -->
-  <audio id="bgMusic" autoplay loop>
-    <source src="https://raw.githubusercontent.com/tecxim/teste_game/main/minha_pasta/jogo_da_velha.mp3
-">
-    Seu navegador não suporta áudio HTML5.
-  </audio>
-
   <script>
     let board = ["", "", "", "", "", "", "", "", ""];
     let playerSymbol = "";
