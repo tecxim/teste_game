@@ -518,6 +518,18 @@ document.addEventListener("dragstart", (e) => e.preventDefault());
 document.querySelectorAll("*").forEach(el => {
     el.style.userSelect = "none";
 });
+
+  //Audio
+const bgMusic = new Audio("https://raw.githubusercontent.com/tecxim/teste_game/main/minha_pasta/avioes.mp3");
+bgMusic.loop = true;
+bgMusic.volume = 0.4;
+
+document.addEventListener("click", () => {
+    bgMusic.play();
+}, { once: true });
+
 </script>
+
+  
 </body>
 </html>
