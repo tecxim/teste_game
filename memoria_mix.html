@@ -155,9 +155,6 @@
         </div>
     </div>
 
-    <!-- Elemento de áudio para música de fundo -->
-    <audio id="bgMusic" src="https://www.bensound.com/bensound-music/bensound-buddy.mp3" loop></audio>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const cards = document.getElementById('cards');
@@ -167,14 +164,10 @@
             const winMessage = document.getElementById('winMessage');
             const winText = document.getElementById('winText');
             const phaseElement = document.getElementById('phase');
-            const bgMusic = document.getElementById('bgMusic');
 
-            // Sons e música de fundo
+            // Sons para flip e match (Google Sounds)
             const flipSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3");
             const matchSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3");
-
-            bgMusic.loop = true;
-            bgMusic.volume = 0.3;
 
             let moves = 0;
             let time = 0;
@@ -182,7 +175,6 @@
             let flippedCards = [];
             let matchedPairs = 0;
             let currentPhase = 0;
-            let isMusicPlaying = false;
 
             const phases = [
                 {
@@ -263,14 +255,6 @@
                 });
 
                 phaseElement.textContent = `Fase: ${phases[currentPhase].name}`;
-
-                // Inicia a música após interação do usuário
-                if (!isMusicPlaying) {
-                    document.addEventListener('click', () => {
-                        bgMusic.play().catch(e => console.log("Playback failed:", e));
-                        isMusicPlaying = true;
-                    }, { once: true });
-                }
             }
 
             function flipCard() {
@@ -319,9 +303,6 @@
             }
 
             restartButton.addEventListener('click', () => {
-                bgMusic.pause();
-                bgMusic.currentTime = 0;
-                isMusicPlaying = false;
                 currentPhase = 0;
                 initGame();
             });
