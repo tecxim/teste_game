@@ -8,7 +8,7 @@
         body {
             margin: 0;
             padding: 0;
-            overflow: hidden;\a
+            overflow: hidden;
             background: linear-gradient(to bottom, #000428, #004e92);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: white;
@@ -72,18 +72,16 @@
             background: rgba(0, 170, 255, 1);
             box-shadow: 0 0 12px rgba(0, 170, 255, 0.8);
         }
-
         #controles {
             position: fixed;
             bottom: 20px;
             left: 0;
             right: 0;
             display: flex;
-            justify-content: space-between; /* Afasta os botões para os lados */
+            justify-content: space-between;
             padding: 0 20px;
             z-index: 100;
         }
-
         #controles button {
             padding: 12px 18px;
             font-size: 16px;
@@ -94,7 +92,6 @@
             cursor: pointer;
             min-width: 100px;
         }
-
         canvas {
             display: block;
             width: 100%;
@@ -109,14 +106,6 @@
     </style>
 </head>
 <body>
-     // ---------------------------------------------
-        // SONS
-        // ---------------------------------------------
-        function tocarSomTiro() {
-            const somTiro = document.getElementById("somTiro");
-            somTiro.currentTime = 0;
-            somTiro.play().catch(e => console.log("Erro ao tocar som:", e));
-        }
     <div id="hud">
         Fase: <span id="fase">1</span> |
         Pontos: <span id="score">0</span> |
@@ -131,12 +120,20 @@
         <button id="btnPausar" onclick="pausarJogo()">⏸ Pausar</button>
         <button id="btnDisparar" onclick="atirarJogador()">🔫 Disparar</button>
     </div>
-    <script>
 
-    // Protege esta página
-    if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
-         window.location.href = "login.html";
+    <!-- Elementos de áudio -->
+    <audio id="somTiro" src="https://assets.mixkit.co/sfx/preview/mixkit-laser-gun-sound-effect-2436.mp3" preload="auto"></audio>
+    <audio id="bgMusic" autoplay loop>
+        <source src="https://www.bensound.com/bensound-music/bensound-buddy.mp3" type="audio/mpeg">
+        Seu navegador não suporta áudio HTML5.
+    </audio>
+
+    <script>
+        // Protege esta página
+        if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
+            window.location.href = "login.html";
         }
+
         // ---------------------------------------------
         // CONFIG DO JOGO
         // ---------------------------------------------
@@ -154,9 +151,11 @@
         let touchX = 0;
         let touchY = 0;
         let isTouching = false;
+
         // Emojis dos barcos
         const inimigos = ["🚤", "⛵", "🛥️", "🚢"];
         const jogadorEmoji = "🚢";
+
         // Player
         const player = {
             x: 0,
@@ -164,8 +163,10 @@
             size: 50,
             speed: 5
         };
+
         // Ondas animadas
         let ondaOffset = 0;
+
         // Fases do jogo
         const fases = [
             { fundo: "rgba(0, 0, 20, 0.3)", velocidadeBarcos: 1, quantidadeBarcos: 1, faseFinal: false },
@@ -181,7 +182,7 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             player.x = canvas.width / 2 - player.size / 2;
-            player.y = canvas.height - player.size - 80; // Navio mais acima
+            player.y = canvas.height - player.size - 80;
         }
 
         // ---------------------------------------------
@@ -205,22 +206,23 @@
             e.preventDefault();
             if (!isTouching) return;
             touchX = e.touches[0].clientX;
-            // Suaviza o movimento usando a velocidade do player
             if (touchX - player.size / 2 > player.x) {
                 player.x += player.speed;
             } else if (touchX - player.size / 2 < player.x) {
                 player.x -= player.speed;
             }
-            // Limita a posição do player
             if (player.x < 0) player.x = 0;
             if (player.x > canvas.width - player.size) player.x = canvas.width - player.size;
         });
 
-          <!-- 🎵 Música de fundo -->
-          <audio id="bgMusic" autoplay loop>
-            <source src="https://www.bensound.com/bensound-music/bensound-buddy.mp3" type="audio/mpeg">
-            Seu navegador não suporta áudio HTML5.
-          </audio>
+        // ---------------------------------------------
+        // SONS
+        // ---------------------------------------------
+        function tocarSomTiro() {
+            const somTiro = document.getElementById("somTiro");
+            somTiro.currentTime = 0;
+            somTiro.play().catch(e => console.log("Erro ao tocar som:", e));
+        }
 
         // ---------------------------------------------
         // GERAR BARCO EMOJI
@@ -232,7 +234,7 @@
                     emoji: inimigos[Math.floor(Math.random() * inimigos.length)],
                     x: Math.random() * (canvas.width - 50),
                     y: -70,
-                    size: Math.random() < 0.5 ? 50 : 80, // Tamanhos diferentes
+                    size: Math.random() < 0.5 ? 50 : 80,
                     speed: fase.velocidadeBarcos,
                     podeAtirar: Math.random() < 0.3
                 });
@@ -244,35 +246,29 @@
         // ---------------------------------------------
         function atirarJogador() {
             if (jogoPausado || !jogoAtivo) return;
-            // Verifica se está mirando em um barco grande
             let barcoGrandeMirado = false;
             barcos.forEach(barco => {
                 if (barco.size === 80 && colide(
-                    {x: player.x, y: player.y, w: player.size, h: player.size},
-                    {x: barco.x, y: barco.y, w: barco.size, h: barco.size}
+                    {x: player.x, y: player.y, size: player.size},
+                    {x: barco.x, y: barco.y, size: barco.size}
                 )) {
                     barcoGrandeMirado = true;
                 }
             });
-
-            // Dispara sequencia se mirar em barco grande
             if (barcoGrandeMirado) {
                 for (let i = 0; i < 3; i++) {
                     tirosJogador.push({
                         x: player.x + player.size/2 - 5,
                         y: player.y - 10,
-                        w: 8,
-                        h: 14,
+                        size: 8,
                         speed: 7
                     });
                 }
             } else {
-                // Dispara tiro único
                 tirosJogador.push({
                     x: player.x + player.size/2 - 5,
                     y: player.y - 10,
-                    w: 8,
-                    h: 14,
+                    size: 8,
                     speed: 7
                 });
             }
@@ -283,23 +279,23 @@
         // TIROS DOS INIMIGOS
         // ---------------------------------------------
         function atirarInimigo(barco) {
+            if (jogoPausado || !jogoAtivo) return;
             tirosInimigos.push({
                 x: barco.x + barco.size/2 - 5,
                 y: barco.y + barco.size,
-                w: 8,
-                h: 14,
+                size: 8,
                 speed: 5
             });
         }
 
         // ---------------------------------------------
-        // COLISÃO AABB
+        // COLISÃO
         // ---------------------------------------------
         function colide(a, b) {
             return a.x < b.x + b.size &&
-                   a.x + a.w > b.x &&
+                   a.x + a.size > b.x &&
                    a.y < b.y + b.size &&
-                   a.y + a.h > b.y;
+                   a.y + a.size > b.y;
         }
 
         // ---------------------------------------------
@@ -326,16 +322,12 @@
         // ---------------------------------------------
         function update() {
             if (!jogoAtivo || jogoPausado) return;
-            // Movimentos do jogador (teclado)
             if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
             if (keys["ArrowRight"] && player.x < canvas.width - player.size) player.x += player.speed;
-            // Tiros do jogador
             tirosJogador.forEach(t => t.y -= t.speed);
             tirosJogador = tirosJogador.filter(t => t.y > -20);
-            // Tiros dos inimigos
             tirosInimigos.forEach(t => t.y += t.speed);
             tirosInimigos = tirosInimigos.filter(t => t.y < canvas.height + 20);
-            // Barcos inimigos
             barcos.forEach(barco => {
                 barco.y += barco.speed;
                 if (barco.podeAtirar && Math.random() < 0.01) {
@@ -343,7 +335,6 @@
                 }
             });
             barcos = barcos.filter(barco => barco.y < canvas.height + 70);
-            // Colisão tiro do jogador / barco inimigo
             for (let i = barcos.length - 1; i >= 0; i--) {
                 for (let j = tirosJogador.length - 1; j >= 0; j--) {
                     if (colide(tirosJogador[j], barcos[i])) {
@@ -354,7 +345,6 @@
                     }
                 }
             }
-            // Colisão tiro inimigo / jogador
             for (let i = tirosInimigos.length - 1; i >= 0; i--) {
                 if (colide(tirosInimigos[i], player)) {
                     vidas--;
@@ -362,28 +352,21 @@
                     if (vidas <= 0) fimDeJogo(false);
                 }
             }
-            // Colisão barco inimigo / jogador
             for (let i = barcos.length - 1; i >= 0; i--) {
-                if (colide(
-                    {x: player.x, y: player.y, w: player.size, h: player.size},
-                    {x: barcos[i].x, y: barcos[i].y, w: barcos[i].size, h: barcos[i].size}
-                )) {
+                if (colide(player, barcos[i])) {
                     vidas--;
                     barcos.splice(i, 1);
                     if (vidas <= 0) fimDeJogo(false);
                 }
             }
-            // Avançar de fase
             if (barcos.length === 0 && faseAtual < fases.length - 1) {
                 faseAtual++;
                 document.getElementById("fase").textContent = faseAtual + 1;
                 gerarBarco();
             }
-            // Vitória
             if (faseAtual === fases.length - 1 && barcos.length === 0) {
                 fimDeJogo(true);
             }
-            // HUD
             document.getElementById("score").textContent = score;
             document.getElementById("vidas").textContent = vidas;
         }
@@ -393,29 +376,25 @@
         // ---------------------------------------------
         function draw() {
             desenharFundo();
-            // Player
             ctx.font = "50px Arial";
             ctx.textAlign = "left";
             ctx.fillStyle = "white";
             ctx.fillText(jogadorEmoji, player.x, player.y + 45);
-            // Inimigos
             barcos.forEach(barco => {
                 ctx.font = barco.size + "px Arial";
                 ctx.fillStyle = "white";
                 ctx.fillText(barco.emoji, barco.x, barco.y + barco.size - 5);
             });
-            // Tiros do jogador
             ctx.fillStyle = "#ffeb3b";
             tirosJogador.forEach(t => {
                 ctx.beginPath();
-                ctx.arc(t.x + t.w/2, t.y + t.h/2, t.w/2, 0, Math.PI * 2);
+                ctx.arc(t.x + t.size/2, t.y + t.size/2, t.size/2, 0, Math.PI * 2);
                 ctx.fill();
             });
-            // Tiros dos inimigos
             ctx.fillStyle = "red";
             tirosInimigos.forEach(t => {
                 ctx.beginPath();
-                ctx.arc(t.x + t.w/2, t.y + t.h/2, t.w/2, 0, Math.PI * 2);
+                ctx.arc(t.x + t.size/2, t.y + t.size/2, t.size/2, 0, Math.PI * 2);
                 ctx.fill();
             });
         }
@@ -486,31 +465,34 @@
     </script>
 
     <script>
-    // Bloqueia clique direito
-    document.addEventListener("contextmenu", function(e){
-        e.preventDefault();
-    });
-    // Bloqueia teclas que abrem o DevTools
-    document.onkeydown = function(e) {
-        if (
-            e.keyCode === 123 ||                     // F12
-            (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
-            (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
-            (e.ctrlKey && e.keyCode === 85) ||       // Ctrl+U
-            (e.ctrlKey && e.keyCode === 83)          // Ctrl+S
-        ) {
+        // Bloqueia clique direito
+        document.addEventListener("contextmenu", function(e){
             e.preventDefault();
-            return false;
-        }
-    };
-    // Bloqueia arrastar para fora, copiar e recortar
-    document.addEventListener("copy", (e) => e.preventDefault());
-    document.addEventListener("cut", (e) => e.preventDefault());
-    document.addEventListener("dragstart", (e) => e.preventDefault());
-    // Bloqueia seleção de texto
-    document.querySelectorAll("*").forEach(el => {
-        el.style.userSelect = "none";
-    });
+        });
+
+        // Bloqueia teclas que abrem o DevTools
+        document.onkeydown = function(e) {
+            if (
+                e.keyCode === 123 ||                     // F12
+                (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+                (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
+                (e.ctrlKey && e.keyCode === 85) ||       // Ctrl+U
+                (e.ctrlKey && e.keyCode === 83)          // Ctrl+S
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        };
+
+        // Bloqueia arrastar para fora, copiar e recortar
+        document.addEventListener("copy", (e) => e.preventDefault());
+        document.addEventListener("cut", (e) => e.preventDefault());
+        document.addEventListener("dragstart", (e) => e.preventDefault());
+
+        // Bloqueia seleção de texto
+        document.querySelectorAll("*").forEach(el => {
+            el.style.userSelect = "none";
+        });
     </script>
 </body>
 </html>
