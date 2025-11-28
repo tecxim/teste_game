@@ -72,17 +72,15 @@
             background: rgba(0, 170, 255, 1);
             box-shadow: 0 0 12px rgba(0, 170, 255, 0.8);
         }
-        #controles {
+        #controles-movimento {
             position: fixed;
             bottom: 20px;
-            left: 0;
-            right: 0;
+            left: 20px;
             display: flex;
-            justify-content: space-between;
-            padding: 0 20px;
+            gap: 10px;
             z-index: 100;
         }
-        #controles button {
+        #controles-movimento button {
             padding: 12px 18px;
             font-size: 16px;
             background: rgba(0, 170, 255, 0.8);
@@ -90,7 +88,32 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            min-width: 100px;
+            min-width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #controles {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        #btnPausar {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            padding: 8px 12px;
+            font-size: 14px;
+            background: rgba(0, 170, 255, 0.8);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 100;
         }
         canvas {
             display: block;
@@ -116,24 +139,25 @@
         <div id="messageText"></div>
         <button onclick="restartGame()">Jogar Novamente</button>
     </div>
+    <div id="controles-movimento">
+        <button id="btnEsquerda" onclick="moverEsquerda()">←</button>
+        <button id="btnDireita" onclick="moverDireita()">→</button>
+    </div>
     <div id="controles">
-        <button id="btnPausar" onclick="pausarJogo()">⏸ Pausar</button>
         <button id="btnDisparar" onclick="atirarJogador()">🔫 Disparar</button>
     </div>
-
+    <button id="btnPausar" onclick="pausarJogo()">⏸ Pausar</button>
     <!-- Elementos de áudio -->
     <audio id="somTiro" src="https://assets.mixkit.co/sfx/preview/mixkit-laser-gun-sound-effect-2436.mp3" preload="auto"></audio>
     <audio id="bgMusic" autoplay loop>
         <source src="https://www.bensound.com/bensound-music/bensound-buddy.mp3" type="audio/mpeg">
         Seu navegador não suporta áudio HTML5.
     </audio>
-
     <script>
         // Protege esta página
         if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
             window.location.href = "login.html";
         }
-
         // ---------------------------------------------
         // CONFIG DO JOGO
         // ---------------------------------------------
@@ -151,11 +175,9 @@
         let touchX = 0;
         let touchY = 0;
         let isTouching = false;
-
         // Emojis dos barcos
         const inimigos = ["🚤", "⛵", "🛥️", "🚢"];
         const jogadorEmoji = "🚢";
-
         // Player
         const player = {
             x: 0,
@@ -163,10 +185,8 @@
             size: 50,
             speed: 5
         };
-
         // Ondas animadas
         let ondaOffset = 0;
-
         // Fases do jogo
         const fases = [
             { fundo: "rgba(0, 0, 20, 0.3)", velocidadeBarcos: 1, quantidadeBarcos: 1, faseFinal: false },
@@ -174,7 +194,6 @@
             { fundo: "rgba(0, 40, 60, 0.5)", velocidadeBarcos: 2, quantidadeBarcos: 3, faseFinal: false },
             { fundo: "rgba(40, 0, 60, 0.6)", velocidadeBarcos: 2.5, quantidadeBarcos: 5, faseFinal: true }
         ];
-
         // ---------------------------------------------
         // REDIMENSIONAR CANVAS
         // ---------------------------------------------
@@ -182,10 +201,8 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             player.x = canvas.width / 2 - player.size / 2;
-            player.y = canvas.height - player.size - 120; // Ajuste aqui
+            player.y = canvas.height - player.size - 140; // Ajuste aqui
         }
-
-
         // ---------------------------------------------
         // CONTROLES (Teclado e Toque)
         // ---------------------------------------------
@@ -193,16 +210,13 @@
             keys[e.key] = true;
             if (e.key === " ") atirarJogador();
         });
-
         document.addEventListener("keyup", e => keys[e.key] = false);
-
         // Controles de toque para mover o navio (apenas horizontal)
         canvas.addEventListener("touchstart", e => {
             e.preventDefault();
             isTouching = true;
             touchX = e.touches[0].clientX;
         });
-
         canvas.addEventListener("touchmove", e => {
             e.preventDefault();
             if (!isTouching) return;
@@ -215,7 +229,6 @@
             if (player.x < 0) player.x = 0;
             if (player.x > canvas.width - player.size) player.x = canvas.width - player.size;
         });
-
         // ---------------------------------------------
         // SONS
         // ---------------------------------------------
@@ -224,7 +237,6 @@
             somTiro.currentTime = 0;
             somTiro.play().catch(e => console.log("Erro ao tocar som:", e));
         }
-
         // ---------------------------------------------
         // GERAR BARCO EMOJI
         // ---------------------------------------------
@@ -241,7 +253,6 @@
                 });
             }
         }
-
         // ---------------------------------------------
         // TIROS DO JOGADOR
         // ---------------------------------------------
@@ -275,7 +286,6 @@
             }
             tocarSomTiro();
         }
-
         // ---------------------------------------------
         // TIROS DOS INIMIGOS
         // ---------------------------------------------
@@ -288,7 +298,6 @@
                 speed: 5
             });
         }
-
         // ---------------------------------------------
         // COLISÃO
         // ---------------------------------------------
@@ -298,7 +307,6 @@
                    a.y < b.y + b.size &&
                    a.y + a.size > b.y;
         }
-
         // ---------------------------------------------
         // DESENHAR FUNDO
         // ---------------------------------------------
@@ -317,7 +325,6 @@
                 ctx.stroke();
             }
         }
-
         // ---------------------------------------------
         // UPDATE DO JOGO
         // ---------------------------------------------
@@ -371,7 +378,6 @@
             document.getElementById("score").textContent = score;
             document.getElementById("vidas").textContent = vidas;
         }
-
         // ---------------------------------------------
         // DESENHAR
         // ---------------------------------------------
@@ -399,7 +405,6 @@
                 ctx.fill();
             });
         }
-
         // ---------------------------------------------
         // LOOP
         // ---------------------------------------------
@@ -415,7 +420,6 @@
             }
             requestAnimationFrame(gameLoop);
         }
-
         // ---------------------------------------------
         // FIM DE JOGO
         // ---------------------------------------------
@@ -427,7 +431,6 @@
                 : "💀 DERROTA!<br>Pontuação: " + score;
             document.getElementById("messageBox").style.display = "block";
         }
-
         // ---------------------------------------------
         // REINICIAR
         // ---------------------------------------------
@@ -441,13 +444,12 @@
             jogoPausado = false;
             jogoAtivo = true;
             player.x = canvas.width / 2 - player.size / 2;
-            player.y = canvas.height - player.size - 120; // Aumenta a margem inferior para 120px
+            player.y = canvas.height - player.size - 140; // Ajuste aqui
             document.getElementById("messageBox").style.display = "none";
             document.getElementById("fase").textContent = faseAtual + 1;
             document.getElementById("btnPausar").textContent = "⏸ Pausar";
             gerarBarco();
         }
-
         // ---------------------------------------------
         // PAUSAR JOGO
         // ---------------------------------------------
@@ -455,7 +457,15 @@
             jogoPausado = !jogoPausado;
             document.getElementById("btnPausar").textContent = jogoPausado ? "▶ Continuar" : "⏸ Pausar";
         }
-
+        // ---------------------------------------------
+        // MOVIMENTO
+        // ---------------------------------------------
+        function moverEsquerda() {
+            if (player.x > 0) player.x -= player.speed;
+        }
+        function moverDireita() {
+            if (player.x < canvas.width - player.size) player.x += player.speed;
+        }
         // ---------------------------------------------
         // INICIAR
         // ---------------------------------------------
@@ -464,13 +474,11 @@
         gerarBarco();
         gameLoop();
     </script>
-
     <script>
         // Bloqueia clique direito
         document.addEventListener("contextmenu", function(e){
             e.preventDefault();
         });
-
         // Bloqueia teclas que abrem o DevTools
         document.onkeydown = function(e) {
             if (
@@ -484,12 +492,10 @@
                 return false;
             }
         };
-
         // Bloqueia arrastar para fora, copiar e recortar
         document.addEventListener("copy", (e) => e.preventDefault());
         document.addEventListener("cut", (e) => e.preventDefault());
         document.addEventListener("dragstart", (e) => e.preventDefault());
-
         // Bloqueia seleção de texto
         document.querySelectorAll("*").forEach(el => {
             el.style.userSelect = "none";
