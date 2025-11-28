@@ -182,8 +182,9 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             player.x = canvas.width / 2 - player.size / 2;
-            player.y = canvas.height - player.size - 80;
+            player.y = canvas.height - player.size - 120; // Ajuste aqui
         }
+
 
         // ---------------------------------------------
         // CONTROLES (Teclado e Toque)
@@ -440,7 +441,7 @@
             jogoPausado = false;
             jogoAtivo = true;
             player.x = canvas.width / 2 - player.size / 2;
-            player.y = canvas.height - player.size - 80;
+            player.y = canvas.height - player.size - 120; // Aumenta a margem inferior para 120px
             document.getElementById("messageBox").style.display = "none";
             document.getElementById("fase").textContent = faseAtual + 1;
             document.getElementById("btnPausar").textContent = "⏸ Pausar";
