@@ -102,6 +102,29 @@
             gap: 10px;
             z-index: 100;
         }
+        #btnDisparar {
+            padding: 15px 25px;
+            font-size: 18px;
+            background: rgba(255, 69, 0, 0.9);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            min-width: 120px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(255, 69, 0, 0.7);
+            transition: all 0.2s ease;
+            font-weight: bold;
+            border: 2px solid rgba(255, 215, 0, 0.7);
+        }
+        #btnDisparar:hover {
+            background: rgba(255, 0, 0, 1);
+            box-shadow: 0 0 15px rgba(255, 69, 0, 0.9);
+            transform: scale(1.05);
+        }
         #btnPausar {
             position: fixed;
             top: 10px;
@@ -140,8 +163,8 @@
         <button onclick="restartGame()">Jogar Novamente</button>
     </div>
     <div id="controles-movimento">
-        <button id="btnEsquerda" onclick="moverEsquerda()">←</button>
-        <button id="btnDireita" onclick="moverDireita()">→</button>
+        <button id="btnEsquerda" onmousedown="keys['ArrowLeft'] = true" onmouseup="keys['ArrowLeft'] = false" ontouchstart="keys['ArrowLeft'] = true; event.preventDefault()" ontouchend="keys['ArrowLeft'] = false">←</button>
+        <button id="btnDireita" onmousedown="keys['ArrowRight'] = true" onmouseup="keys['ArrowRight'] = false" ontouchstart="keys['ArrowRight'] = true; event.preventDefault()" ontouchend="keys['ArrowRight'] = false">→</button>
     </div>
     <div id="controles">
         <button id="btnDisparar" onclick="atirarJogador()">🔫 Disparar</button>
@@ -183,7 +206,7 @@
             x: 0,
             y: 0,
             size: 50,
-            speed: 5
+            speed: 6 // Velocidade ajustada
         };
         // Ondas animadas
         let ondaOffset = 0;
@@ -456,15 +479,6 @@
         function pausarJogo() {
             jogoPausado = !jogoPausado;
             document.getElementById("btnPausar").textContent = jogoPausado ? "▶ Continuar" : "⏸ Pausar";
-        }
-        // ---------------------------------------------
-        // MOVIMENTO
-        // ---------------------------------------------
-        function moverEsquerda() {
-            if (player.x > 0) player.x -= player.speed;
-        }
-        function moverDireita() {
-            if (player.x < canvas.width - player.size) player.x += player.speed;
         }
         // ---------------------------------------------
         // INICIAR
