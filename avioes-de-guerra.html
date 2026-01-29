@@ -295,11 +295,17 @@
             <button id="next-level-btn">Próxima Fase</button>
         </div>
     </div>
-    <script>
-        // Protege esta página
-        if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
-            window.location.href = "login.html";
-        }
+        <!--
+        <script>
+            // Protege esta página
+            if (localStorage.getItem("token_acesso") !== "TOKEN_VALIDO") {
+                window.location.href = "login.html";
+            }
+    
+        </script>
+        -->
+
+        <script>
         // Elementos do DOM
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
